@@ -23,7 +23,7 @@ use Elementor\Modules\DynamicTags\Module as TagsModule;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Gallery
+ * Gallery
  *
  * @since 0.1.0
  */
@@ -75,32 +75,6 @@ class Gallery extends Extras_Widget {
 						'wordpress'	=> __( 'Wordpress', 'elementor-extras' ),
 						'manual' 	=> __( 'Manual', 'elementor-extras' ),
 					],
-					'separator'	=> 'after',
-				]
-			);
-
-			$this->add_control(
-				'images_heading',
-				[
-					'label' 	=> __( 'Images', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::HEADING,
-					'condition'	=> [
-						'gallery_type'	=> 'wordpress',
-					]
-				]
-			);
-
-			$this->add_control(
-				'wp_gallery',
-				[
-					'label' 	=> __( 'Add Images', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::GALLERY,
-					'dynamic'	=> [
-						'active' => true,
-					],
-					'condition'	=> [
-						'gallery_type'	=> 'wordpress',
-					]
 				]
 			);
 
@@ -227,7 +201,32 @@ class Gallery extends Extras_Widget {
 					],
 					'fields' 		=> $gallery_items->get_controls(),
 					'condition'		=> [
-						'gallery_type'		=> 'manual',
+						'gallery_type' => 'manual',
+					]
+				]
+			);
+
+			$this->add_control(
+				'images_heading',
+				[
+					'label' 	=> __( 'Images', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+					'condition'	=> [
+						'gallery_type' => 'wordpress',
+					]
+				]
+			);
+
+			$this->add_control(
+				'wp_gallery',
+				[
+					'label' 	=> __( 'Add Images', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::GALLERY,
+					'dynamic'	=> [
+						'active' => true,
+					],
+					'condition'	=> [
+						'gallery_type' => 'wordpress',
 					]
 				]
 			);
@@ -267,6 +266,18 @@ class Gallery extends Extras_Widget {
 					],
 					'prefix_class'	=> 'ee-grid-columns%s-',
 					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'columns_notice',
+				[
+					'type' 				=> Controls_Manager::RAW_HTML,
+					'raw' 				=> __( 'If you are specifying the widths for each image individually, set this to correspond to the lowest width in your gallery.', 'elementor-extras' ),
+					'content_classes' 	=> 'ee-raw-html ee-raw-html__info',
+					'condition'			=> [
+						'gallery_type'	 => 'manual',
+					]
 				]
 			);
 
@@ -480,18 +491,6 @@ class Gallery extends Extras_Widget {
 						'parallax_enable!' 		=> 'yes',
 					],
 					'prefix_class'		=> 'ee-grid-masonry-layout--',
-				]
-			);
-
-			$this->add_control(
-				'masonry_mixed_notice',
-				[
-					'type' 				=> Controls_Manager::RAW_HTML,
-					'raw' 				=> __( 'You can now specify the width and height ratio of each image individually under the Gallery section.', 'elementor-extras' ),
-					'content_classes' 	=> 'ee-raw-html ee-raw-html__info',
-					'condition'			=> [
-						'masonry_layout' => 'mixed'
-					]
 				]
 			);
 
@@ -734,12 +733,12 @@ class Gallery extends Extras_Widget {
 						'size' 	=> 24,
 					],
 					'selectors' => [
-						'{{WRAPPER}} .ee-gallery' 					=> $columns_horizontal_margin . ': -{{SIZE}}{{UNIT}};',
-						'{{WRAPPER}} .ee-gallery__item' 			=> $columns_horizontal_padding . ': {{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-gallery' 		=> $columns_horizontal_margin . ': -{{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-gallery__item' => $columns_horizontal_padding . ': {{SIZE}}{{UNIT}};',
 					],
 					'condition'	=> [
-						'image_horizontal_space' => 'custom'
-					]
+						'image_horizontal_space' => 'custom',
+					],
 				]
 			);
 
@@ -763,7 +762,7 @@ class Gallery extends Extras_Widget {
 					],
 					'condition'	=> [
 						'image_horizontal_space' => 'overlap'
-					]
+					],
 				]
 			);
 
@@ -1598,33 +1597,43 @@ class Gallery extends Extras_Widget {
 	protected function render() {
 		$settings = $this->get_settings();
 
-		$this->add_render_attribute( 'wrapper', 'class', 'ee-gallery-wrapper' );
-		$this->add_render_attribute( 'gallery', 'class', [
-			'ee-gallery',
-			'ee-grid',
-			'ee-grid--gallery',
-			'ee-gallery__gallery',
-		] );
-
-		$this->add_render_attribute( 'gallery-thumbnail', 'class', [
-			'ee-media__thumbnail',
-			'ee-gallery__media__thumbnail',
-		] );
-
-		$this->add_render_attribute( 'gallery-overlay', 'class', [
-			'ee-media__overlay',
-			'ee-gallery__media__overlay',
-		] );
-
-		$this->add_render_attribute( 'gallery-content', 'class', [
-			'ee-media__content',
-			'ee-gallery__media__content',
-		] );
-
-		$this->add_render_attribute( 'gallery-caption', 'class', [
-			'wp-caption-text',
-			'ee-media__content__caption',
-			'ee-gallery__media__caption',
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' => 'ee-gallery-wrapper',
+			],
+			'gallery' => [
+				'class' => [
+					'ee-gallery',
+					'ee-grid',
+					'ee-grid--gallery',
+					'ee-gallery__gallery',
+				],
+			],
+			'gallery-thumbnail' => [
+				'class' => [
+					'ee-media__thumbnail',
+					'ee-gallery__media__thumbnail',
+				],
+			],
+			'gallery-overlay' => [
+				'class' => [
+					'ee-media__overlay',
+					'ee-gallery__media__overlay',
+				],
+			],
+			'gallery-content' => [
+				'class' => [
+					'ee-media__content',
+					'ee-gallery__media__content',
+				],
+			],
+			'gallery-caption' => [
+				'class' => [
+					'wp-caption-text',
+					'ee-media__content__caption',
+					'ee-gallery__media__caption',
+				],
+			],
 		] );
 
 		if ( 'yes' === $settings['tilt_enable'] ) {
@@ -1659,11 +1668,11 @@ class Gallery extends Extras_Widget {
 		$settings 				= $this->get_settings();
 
 		// Quick fix for Elementor bug — Issue #4524
-		if ( 'wordpress' === $settings['gallery_type'] )
-			$this->remove_control( 'gallery' );
+		// if ( 'wordpress' === $settings['gallery_type'] )
+		// 	$this->remove_control( 'gallery' );
 
-		$gallery 				= $this->get_settings_for_display( 'wp_gallery' );
-		$media_tag 				= 'figure';
+		$gallery 	= $this->get_settings_for_display( 'wp_gallery' );
+		$media_tag 	= 'figure';
 
 		if ( ! empty( $settings['gallery_rand'] ) ) {
 			shuffle( $gallery );
@@ -1681,15 +1690,20 @@ class Gallery extends Extras_Widget {
 
 			$item['image'] = Module::get_image_info( $item['id'], $item_url, $settings['thumbnail_size'] );
 
-			$this->add_render_attribute( $gallery_media_key, 'class', [
-				'ee-media',
-				'ee-gallery__media',
-			] );
-
-			$this->add_render_attribute( $gallery_item_key, 'class', [
-				'ee-gallery__item',
-				'ee-gallery__item--' . ( $index + 1 ),
-				'ee-grid__item',
+			$this->add_render_attribute( [
+				$gallery_media_key => [
+					'class' => [
+						'ee-media',
+						'ee-gallery__media',
+					],
+				],
+				$gallery_item_key => [
+					'class' => [
+						'ee-gallery__item',
+						'ee-gallery__item--' . ( $index + 1 ),
+						'ee-grid__item',
+					],
+				],
 			] );
 
 			if ( '' !== $settings['gallery_link'] ) {
@@ -1753,20 +1767,25 @@ class Gallery extends Extras_Widget {
 			$item_key 	= $this->get_repeater_setting_key( 'item', 'gallery', $index );
 			$media_key 	= $this->get_repeater_setting_key( 'media', 'gallery', $index );
 
-			$this->add_render_attribute( $item_key, 'class', [
-				'ee-gallery__item',
-				'ee-grid__item',
-				'elementor-repeater-item-' . $item['_id'],
+			$this->add_render_attribute( [
+				$item_key => [
+					'class' => [
+						'ee-gallery__item',
+						'ee-grid__item',
+						'elementor-repeater-item-' . $item['_id'],
+					],
+				],
+				$media_key => [
+					'class' => [
+						'ee-media',
+						'ee-gallery__media',
+					],
+				],
 			] );
 
 			if ( '' !== $item['width'] ) {
 				$this->add_render_attribute( $item_key, 'class', 'ee-grid__item--' . $item['width'] );
 			}
-
-			$this->add_render_attribute( $media_key, 'class', [
-				'ee-media',
-				'ee-gallery__media',
-			] );
 
 			if ( 'yes' === $item['custom_size'] ) {
 				$this->add_render_attribute( $media_key, 'class', 'ee-media--stretch' );
@@ -1929,7 +1948,7 @@ class Gallery extends Extras_Widget {
 
 	protected function render_masonry_script() {
 
-		if ( \Elementor\Plugin::instance()->editor->is_edit_mode() === false )
+		if ( ! $this->_is_edit_mode )
 			return;
 
 		if ( 'yes' !== $this->get_settings( 'masonry_enable' ) || 'yes' === $this->get_settings( 'parallax_enable' ) )

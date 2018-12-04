@@ -1,6 +1,10 @@
 <?php
 namespace ElementorExtras\Modules\Posts\Skins;
 
+// Elementor Extras Classes
+use ElementorExtras\Utils;
+use ElementorExtras\Group_Control_Transition;
+
 // Elementor Classes
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
@@ -373,7 +377,7 @@ class Skin_Classic extends Skin_Base {
 			]
 		);
 
-			$taxonomies = $this->parent->get_taxonomies_options();
+			$taxonomies = Utils::get_taxonomies_options();
 
 			$this->add_control(
 				'filters_taxonomy',
@@ -452,6 +456,20 @@ class Skin_Classic extends Skin_Base {
 					'condition' 	=> [
 						$this->get_control_id( 'filters!' ) => '',
 					],
+				]
+			);
+
+			$this->add_control(
+				'filters_show_count',
+				[
+					'label' 		=> __( 'Show Post Count', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'return_value' 	=> 'yes',
+					'frontend_available' => true,
+					'condition'		=> [
+						$this->get_control_id( 'filters!' ) => '',
+					]
 				]
 			);
 
@@ -933,6 +951,196 @@ class Skin_Classic extends Skin_Base {
 
 			$this->end_controls_tabs();
 
+			$this->add_control(
+				'filters_count_heading',
+				[
+					'separator' => 'before',
+					'label' 	=> __( 'Post Count', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+					'condition' => [
+						$this->get_control_id( 'filters!' ) => '',
+						$this->get_control_id( 'filters_taxonomy!' ) => '',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'filters_count_distance',
+				[
+					'label' 		=> __( 'Distance', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SLIDER,
+					'range' 		=> [
+						'px' 		=> [
+							'min' => 0,
+							'max' => 48,
+						],
+					],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-filters__item__count' => 'margin-left: {{SIZE}}px',
+					],
+					'condition' => [
+						$this->get_control_id( 'filters!' ) => '',
+						$this->get_control_id( 'filters_taxonomy!' ) => '',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' 		=> 'filters_count_typography',
+					'label' 	=> __( 'Typography', 'elementor-extras' ),
+					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+					'selector' 	=> '{{WRAPPER}} .ee-filters__item__count',
+					'exclude'	=> [
+						'font-family',
+						'line_height',
+					],
+					'condition' => [
+						$this->get_control_id( 'filters!' ) => '',
+						$this->get_control_id( 'filters_taxonomy!' ) => '',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'filters_count_padding',
+				[
+					'label' 		=> __( 'Padding', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::DIMENSIONS,
+					'size_units' 	=> [ 'px', 'em', '%' ],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-filters__item__count' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+					'condition' => [
+						$this->get_control_id( 'filters!' ) => '',
+						$this->get_control_id( 'filters_taxonomy!' ) => '',
+					],
+				]
+			);
+
+			$this->add_control(
+				'filters_count_border_radius',
+				[
+					'type' 			=> Controls_Manager::DIMENSIONS,
+					'label' 		=> __( 'Border Radius', 'elementor-extras' ),
+					'size_units' 	=> [ 'px', '%' ],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-filters__item__count' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+					'condition' => [
+						$this->get_control_id( 'filters!' ) => '',
+						$this->get_control_id( 'filters_taxonomy!' ) => '',
+					],
+				]
+			);
+
+			$this->start_controls_tabs( 'filters_count_tabs' );
+
+			$this->start_controls_tab( 'filters_count_default', [ 'label' => __( 'Default', 'elementor-extras' ) ] );
+
+				$this->add_control(
+					'filters_count_color',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item__count' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+				$this->add_control(
+					'filters_count_background_color',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item__count' => 'background-color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab( 'filters_count_hover', [ 'label' => __( 'Hover', 'elementor-extras' ) ] );
+
+				$this->add_control(
+					'filters_count_color_hover',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item a:hover .ee-filters__item__count' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+				$this->add_control(
+					'filters_count_background_color_hover',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item a:hover .ee-filters__item__count' => 'background-color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab( 'filters_count_active', [ 'label' => __( 'Active', 'elementor-extras' ) ] );
+
+				$this->add_control(
+					'filters_count_color_active',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item a.ee--active .ee-filters__item__count' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+				$this->add_control(
+					'filters_count_background_color_active',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-filters__item a.ee--active .ee-filters__item__count' => 'background-color: {{VALUE}};',
+						],
+						'condition' => [
+							$this->get_control_id( 'filters!' ) => '',
+							$this->get_control_id( 'filters_taxonomy!' ) => '',
+						]
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->end_controls_tabs();
+
 		$this->end_controls_section();
 
 	}
@@ -1374,7 +1582,7 @@ class Skin_Classic extends Skin_Base {
 				[
 					'label' 		=> __( 'Align', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::CHOOSE,
-					'default' 		=> '',
+					'default' 		=> 'center',
 					'options' 		=> [
 						'flex-start' 	=> [
 							'title' 	=> __( 'Left', 'elementor-extras' ),
@@ -1415,6 +1623,19 @@ class Skin_Classic extends Skin_Base {
 				]
 			);
 
+			$this->add_group_control(
+				Group_Control_Border::get_type(),
+				[
+					'name' 		=> 'load_button',
+					'label' 	=> __( 'Border', 'elementor-extras' ),
+					'selector' 	=> '{{WRAPPER}} .ee-load-button__trigger',
+					'condition' => [
+						$this->get_control_id( 'infinite_scroll!' ) => '',
+						$this->get_control_id( 'infinite_scroll_button!' ) => '',
+					]
+				]
+			);
+
 			$this->add_control(
 				'infinite_scroll_button_border_radius',
 				[
@@ -1440,6 +1661,18 @@ class Skin_Classic extends Skin_Base {
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
 					'selector' 	=> '{{WRAPPER}} .ee-load-button__trigger',
 					'condition' => [
+						$this->get_control_id( 'infinite_scroll!' ) => '',
+						$this->get_control_id( 'infinite_scroll_button!' ) => '',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Transition::get_type(),
+				[
+					'name' 		=> 'load_button',
+					'selector' 	=> '{{WRAPPER}} .ee-load-button__trigger',
+					'condition'	=> [
 						$this->get_control_id( 'infinite_scroll!' ) => '',
 						$this->get_control_id( 'infinite_scroll_button!' ) => '',
 					],
@@ -1549,6 +1782,7 @@ class Skin_Classic extends Skin_Base {
 
 		$settings = $this->parent->get_settings();
 		$filter_classes = [];
+		$grid_item_key = 'grid-item-' . get_the_ID();
 
 		// Generate array with class names from filters
 		if ( isset( $post->filters ) ) {
@@ -1557,7 +1791,7 @@ class Skin_Classic extends Skin_Base {
 			}
 		}
 
-		$this->parent->add_render_attribute( 'grid-item' . get_the_ID(), [
+		$this->parent->add_render_attribute( $grid_item_key, [
 			'class'	=> [
 				'ee-grid__item',
 				'ee-loop__item',
@@ -1582,7 +1816,7 @@ class Skin_Classic extends Skin_Base {
 		}
 
 		?>
-		<div <?php echo $this->parent->get_render_attribute_string( 'grid-item' . get_the_ID() ); ?>>
+		<div <?php echo $this->parent->get_render_attribute_string( $grid_item_key ); ?>>
 			<article <?php post_class( $post_classes ); ?>>
 		<?php
 	}
@@ -1603,21 +1837,32 @@ class Skin_Classic extends Skin_Base {
 		if ( empty( $filters ) )
 			return;
 
-		$this->parent->add_render_attribute( 'filters', 'class', [
-			'ee-filters',
-			'ee-filters--' . $taxonomy,
-		] );
-
-		$this->parent->add_render_attribute( 'filter-all', 'class', [
-			'ee-filters__item',
-			'o-nav__item',
+		$this->parent->add_render_attribute( [
+			'filters' => [
+				'class' => [
+					'ee-filters',
+					'ee-filters--' . $taxonomy,
+				],
+			],
+			'filter-all' => [
+				'class' => [
+					'ee-filters__item',
+					'o-nav__item',
+				],
+			],
+			'filter-count' => [
+				'class' => [
+					'ee-filters__item__count',
+				],
+			],
+			$this->get_control_id( 'filters_all_text' ) => [
+				'data-filter' => '*',
+			],
 		] );
 
 		if ( '' === $default_filter ) {
 			$this->parent->add_render_attribute( $this->get_control_id( 'filters_all_text' ), 'class', 'ee--active' );
 		}
-
-		$this->parent->add_render_attribute( $this->get_control_id( 'filters_all_text' ), 'data-filter', '*' );
 
 		?><ul <?php echo $this->parent->get_render_attribute_string( 'filters' ); ?>>
 
@@ -1630,28 +1875,58 @@ class Skin_Classic extends Skin_Base {
 				$filter_term_key = 'filter-term-' . $filter->term_id;
 				$filter_link_key = 'filter-link-' . $filter->term_id;
 
-				$this->parent->add_render_attribute( $filter_term_key, 'class', [
-					'ee-filters__item',
-					'o-nav__item',
-					'ee-term',
-					'ee-term--' . $filter->slug,
-				] );
-
-				$this->parent->add_render_attribute( $filter_link_key, [
-					'data-filter' 	=> '.ee-filter-' . $filter->term_id,
-					'class' 		=> 'ee-term__link'
+				$this->parent->add_render_attribute( [
+					$filter_term_key => [
+						'class' => [
+							'ee-filters__item',
+							'o-nav__item',
+							'ee-term',
+							'ee-term--' . $filter->slug,
+						],
+					],
+					$filter_link_key => [
+						'data-filter' 	=> '.ee-filter-' . $filter->term_id,
+						'class' 		=> 'ee-term__link'
+					],
 				] );
 
 				if ( $filter->slug === $default_filter ) {
 					$this->parent->add_render_attribute( $filter_link_key, 'class', 'ee--active' );
 				}
 
-				?>
-				<li <?php echo $this->parent->get_render_attribute_string( $filter_term_key ); ?>>
-					<a <?php echo $this->parent->get_render_attribute_string( $filter_link_key ); ?>><?php echo $filter->name; ?></a>
+				?><li <?php echo $this->parent->get_render_attribute_string( $filter_term_key ); ?>>
+					<a <?php echo $this->parent->get_render_attribute_string( $filter_link_key ); ?>>
+						<?php echo $filter->name; ?>
+						<?php if ( $this->parent->get_settings( $this->get_control_id( 'filters_show_count' ) ) ) { ?>
+						<span <?php echo $this->parent->get_render_attribute_string( 'filter-count' ); ?>>
+							<?php echo $filter->count; ?>
+						</span>
+						<?php } ?>
+					</a>
 				</li>
 			<?php } ?>
 		</ul><?php
+
+		if ( 'yes' === $this->parent->get_settings( $this->get_control_id( 'filters_show_all' ) ) && 'yes' === $this->parent->get_settings( $this->get_control_id( 'infinite_scroll' ) ) ) {
+			$this->render_filters_not_found();
+		}
+	}
+
+	/**
+	 * @since 2.0.0
+	 */
+	protected function render_filters_not_found() {
+		$this->parent->add_render_attribute( 'filters-not-found', [
+			'class' => [
+				'ee-grid__notice',
+				'ee-grid__notice--not-found',
+				'ee-text--center'
+			],
+		] );
+
+		?><p <?php echo $this->parent->get_render_attribute_string( 'filters-not-found' ); ?>>
+			<?php echo $this->parent->get_settings( $this->get_control_id( 'filters_not_found_text' ) ); ?>
+		</p><?php
 	}
 
 	public function render_load_status() {
@@ -1659,20 +1934,28 @@ class Skin_Classic extends Skin_Base {
 		if ( 'yes' !== $this->get_instance_value( 'infinite_scroll_status' ) )
 			return;
 
-		$this->parent->add_render_attribute( 'status', 'class', 'ee-load-status' );
-		$this->parent->add_render_attribute( 'status-request', 'class', [
-			'ee-load-status__request',
-			'infinite-scroll-request'
-		] );
-
-		$this->parent->add_render_attribute( 'status-last', 'class', [
-			'ee-load-status__last',
-			'infinite-scroll-last'
-		] );
-
-		$this->parent->add_render_attribute( 'status-error', 'class', [
-			'ee-load-status__error',
-			'infinite-scroll-error'
+		$this->parent->add_render_attribute( [
+			'status' => [
+				'class' => 'ee-load-status',
+			],
+			'status-request' => [
+				'class' => [
+					'ee-load-status__request',
+					'infinite-scroll-request',
+				],
+			],
+			'status-last' => [
+				'class' => [
+					'ee-load-status__last',
+					'infinite-scroll-last',
+				],
+			],
+			'status-error' => [
+				'class' => [
+					'ee-load-status__error',
+					'infinite-scroll-error',
+				],
+			],
 		] );
 
 		?><div <?php echo $this->parent->get_render_attribute_string( 'status' ); ?>>
@@ -1703,21 +1986,33 @@ class Skin_Classic extends Skin_Base {
 			return;
 		}
 
-		$this->parent->add_render_attribute( 'load', 'class', [
-			'ee-load-button',
-		] );
-
-		$this->parent->add_render_attribute( 'load-button', 'class', [
-			'ee-load-button__trigger',
-			'ee-load-button__trigger--' . $this->parent->get_id(),
-			'ee-button',
-			'ee-size-sm',
+		$this->parent->add_render_attribute( [
+			'load' => [
+				'class' => [
+					'ee-load-button',
+				],
+			],
+			'load-button' => [
+				'class' => [
+					'ee-load-button__trigger',
+					'ee-load-button__trigger--' . $this->parent->get_id(),
+					'ee-button',
+					'ee-size-sm',
+				],
+				'href' => '',
+			],
+			'load-button-content-wrapper' => [
+				'class' => 'ee-button-content-wrapper',
+			],
+			'load-button-text' => [
+				'class' => 'ee-button-text',
+			],
 		] );
 
 		?><div <?php echo $this->parent->get_render_attribute_string( 'load' ); ?>>
-			<a href="" <?php echo $this->parent->get_render_attribute_string( 'load-button' ); ?>>
-				<span class="ee-button-content-wrapper ">
-					<span class="ee-button-text">
+			<a <?php echo $this->parent->get_render_attribute_string( 'load-button' ); ?>>
+				<span <?php echo $this->parent->get_render_attribute_string( 'load-button-content-wrapper' ); ?>>
+					<span <?php echo $this->parent->get_render_attribute_string( 'load-button-text' ); ?>>
 						<?php echo $this->get_instance_value( 'infinite_scroll_button_text' ); ?>
 					</span>
 				</span>
@@ -1778,8 +2073,7 @@ class Skin_Classic extends Skin_Base {
 		] );
 
 		?>
-		<nav <?php echo $this->parent->get_render_attribute_string( 'pagination' ); ?>>
-			<?php
+		<nav <?php echo $this->parent->get_render_attribute_string( 'pagination' ); ?>><?php
 
 			if ( 'yes' === $this->get_instance_value('pagination_prev_next') && 'yes' !== $this->get_instance_value('infinite_scroll') ) {
 				$this->parent->render_previous_nav_link();

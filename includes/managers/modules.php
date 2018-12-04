@@ -15,20 +15,26 @@ class Modules_Manager {
 	public function register_modules() {
 
 		$available_modules = [
-			'buttons',
-			'breadcrumbs',
-			'circle-progress',
-			'switcher',
-			'devices',
-			'gallery',
-			'heading',
+			'map',
+			'popup',
+			'toggle',
+			'calendar',
+			'media-player',
 			'hotspots',
-			'image-comparison',
+			'navigation',
+			'switcher',
+			'svg',
 			'posts',
 			'table',
 			'unfold',
-			'video',
-			'svg',
+			'image',
+			'gallery',
+			'heading',
+			'circle-progress',
+			'buttons',
+			'breadcrumbs',
+			'devices',
+			'templates-control',
 		];
 
 		foreach ( $available_modules as $module_name ) {

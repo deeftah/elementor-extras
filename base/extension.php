@@ -256,4 +256,18 @@ class Extension_Base {
 		return false;
 	}
 
+	/**
+	 * Is enabled by default
+	 *
+	 * Return wether or not the extension should be disabled by default,
+	 * prior to user actually saving a value in the admin page
+	 *
+	 * @access public
+	 * @since 2.0.0
+	 * @return bool
+	 */
+	public static function is_default_disabled() {
+		return false;
+	}
+
 }

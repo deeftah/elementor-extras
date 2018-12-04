@@ -3,10 +3,10 @@ namespace ElementorExtras\Modules\Breadcrumbs\Widgets;
 
 // Elementor Extras Classes
 use ElementorExtras\Base\Extras_Widget;
+use ElementorExtras\Utils;
 
 // Elementor Classes
 use Elementor\Controls_Manager;
-use Elementor\Utils;
 use Elementor\Repeater;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Typography;
@@ -20,7 +20,7 @@ use Elementor\Modules\DynamicTags\Module as TagsModule;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Breadcrumbs
+ * Breadcrumbs
  *
  * @since 1.2.0
  */
@@ -58,17 +58,9 @@ class Breadcrumbs extends Extras_Widget {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Breadcrumbs', 'elementor-extras' ),
+				'label' => __( 'Display', 'elementor-extras' ),
 			]
 		);
-
-			$this->add_control(
-				'display_heading',
-				[
-					'type'		=> Controls_Manager::HEADING,
-					'label' 	=> __( 'Display', 'elementor-extras' ),
-				]
-			);
 
 			$this->add_control(
 				'source',
@@ -109,6 +101,19 @@ class Breadcrumbs extends Extras_Widget {
 			);
 
 			$this->add_control(
+				'cpt_crumbs',
+				[
+					'label' 		=> __( 'CPT Crumbs', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SELECT,
+					'default' 		=> '',
+					'options'		=> [
+						'' 			=> __( 'CPT Name', 'elementor-extras' ),
+						'terms' 	=> __( 'Taxonomy Terms', 'elementor-extras' ),
+					],
+				]
+			);
+
+			$this->add_control(
 				'home_text',
 				[
 					'label' 		=> __( 'Home Text', 'elementor-extras' ),
@@ -124,18 +129,19 @@ class Breadcrumbs extends Extras_Widget {
 				]
 			);
 
-			$this->add_control(
-				'separator_heading',
-				[
-					'type'		=> Controls_Manager::HEADING,
-					'label' 	=> __( 'Separator', 'elementor-extras' ),
-				]
-			);
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_separator',
+			[
+				'label' => __( 'Separator', 'elementor-extras' ),
+			]
+		);
 
 			$this->add_control(
 				'separator_type',
 				[
-					'label'		=> __( 'Separator Type', 'elementor-extras' ),
+					'label'		=> __( 'Type', 'elementor-extras' ),
 					'type' 		=> Controls_Manager::SELECT,
 					'default' 	=> 'icon',
 					'options' 	=> [
@@ -148,7 +154,7 @@ class Breadcrumbs extends Extras_Widget {
 			$this->add_control(
 				'separator_text',
 				[
-					'label' 		=> __( 'Separator', 'elementor-extras' ),
+					'label' 		=> __( 'Text', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::TEXT,
 					'default' 		=> __( '>', 'elementor-extras' ),
 					'condition'		=> [
@@ -160,7 +166,7 @@ class Breadcrumbs extends Extras_Widget {
 			$this->add_control(
 				'separator_icon',
 				[
-					'label' 		=> __( 'Separator', 'elementor-extras' ),
+					'label' 		=> __( 'Icon', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::ICON,
 					'label_block' 	=> true,
 					'default' 		=> 'fa fa-angle-right',
@@ -326,7 +332,7 @@ class Breadcrumbs extends Extras_Widget {
 		$this->end_controls_section();
 
 		$this->start_controls_section(
-			'section_separators',
+			'section_separator_style',
 			[
 				'label' 	=> __( 'Separators', 'elementor-extras' ),
 				'tab' 		=> Controls_Manager::TAB_STYLE,
@@ -525,7 +531,11 @@ class Breadcrumbs extends Extras_Widget {
 		$_query 	= $this->get_query();
 
 		$this->set_separator();
-		$this->add_render_attribute( 'breadcrumbs', 'class', 'ee-breadcrumbs' );
+		$this->add_render_attribute( 'breadcrumbs', [
+			'class' => 'ee-breadcrumbs',
+			'itemscope' => "",
+			'itemtype' => "http://schema.org/BreadcrumbList",
+		]);
 
 		if ( $_query ) {
 			if ( $_query->have_posts() ) {
@@ -554,23 +564,32 @@ class Breadcrumbs extends Extras_Widget {
 	protected function render_home_link() {
 		$settings = $this->get_settings_for_display();
 
-		$this->add_inline_editing_attributes( 'home_text' );
-		$this->add_render_attribute( 'home_text', [
+		$this->add_item_render_attribute( 'home-item' );
+		$this->add_render_attribute( 'home-item', [
+			'class' => 'ee-breadcrumbs__item--home',
+		] );
+
+		$this->add_link_render_attribute( 'home-link' );
+		$this->add_render_attribute( 'home-link', [
 			'class' => [
 				'ee-breadcrumbs__crumb--link',
 				'ee-breadcrumbs__crumb--home'
 			],
 			'href' 	=> get_home_url(),
-			'title' => $settings['home_text']
+			'title' => $settings['home_text'],
 		] );
 
-		?>
-		<li class="ee-breadcrumbs__item ee-breadcrumbs__item--home">
-			<a <?php echo $this->get_render_attribute_string( 'home_text' ); ?>>
-				<?php echo $settings['home_text']; ?>
+		$this->add_render_attribute( 'home-text', [
+			'itemprop' => 'name',
+		] );
+
+		?><li <?php echo $this->get_render_attribute_string( 'home-item' ); ?>>
+			<a <?php echo $this->get_render_attribute_string( 'home-link' ); ?>>
+				<span <?php echo $this->get_render_attribute_string( 'home-text' ); ?>>
+					<?php echo $settings['home_text']; ?>
+				</span>
 			</a>
-		</li>
-		<?php
+		</li><?php
 
 		$this->render_separator();
 
@@ -620,56 +639,115 @@ class Breadcrumbs extends Extras_Widget {
 				$this->render_home_link();
 			}
 
-			if ( $query->is_archive() && ! $query->is_tax() && ! $query->is_category() && ! $query->is_tag() ) {
+			// ——— Custom Archive ——— //
+			if ( $query->is_archive() && ! $query->is_tax() && ! $query->is_category() && ! $query->is_tag() && ! $query->is_date() && ! $query->is_author() ) {
+
+				$this->render_item( 'archive', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'archive',
+					'content' 	=> post_type_archive_title( '', false ),
+				] );
 				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--archive"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--archive">' . post_type_archive_title( $prefix, false ) . '</strong></li>';
-				
+			// ——— Custom Taxonomy Archive ——— //
 			} else if ( $query->is_archive() && $query->is_tax() && ! $query->is_category() && ! $query->is_tag() ) {
 				
 				$post_type = get_post_type();
 				
-				if( $post_type != 'post' ) {
+				if ( $post_type != 'post' ) {
 					
-					$post_type_object = get_post_type_object($post_type);
-					$post_type_archive = get_post_type_archive_link($post_type);
-					
-					echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--cat ee-breadcrumbs__item--custom-post-type-' . $post_type . '"><a class="ee-breadcrumbs__crumb--cat ee-breadcrumbs__crumb--custom-post-type-' . $post_type . '" href="' . $post_type_archive . '" title="' . $post_type_object->labels->name . '">' . $post_type_object->labels->name . '</a></li>';
+					$post_type_object = get_post_type_object( $post_type );
 
-					$this->render_separator();
+					$this->render_item( 'post-type-archive', [
+						'current' 	=> false,
+						'separator'	=> true,
+						'key' 		=> 'post-type-archive',
+						'ids' 		=> [ $post_type ],
+						'content' 	=> $post_type_object->labels->name,
+						'link'		=> get_post_type_archive_link( $post_type ),
+					] );
 				}
+
 				$custom_tax_name = get_queried_object()->name;
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--archive"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--archive">' . $custom_tax_name . '</strong></li>';
+
+				$this->render_item( 'archive', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'archive',
+					'content' 	=> $custom_tax_name,
+				] );
 				
 			} else if ( $query->is_single() ) {
 				
 				$post_type = get_post_type();
 				
-				if( $post_type != 'post' ) {
-						$post_type_object = get_post_type_object($post_type);
-					$post_type_archive = get_post_type_archive_link($post_type);
-					echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--cat ee-breadcrumbs__item--custom-post-type-' . $post_type . '"><a class="ee-breadcrumbs__crumb--cat ee-breadcrumbs__crumb--custom-post-type-' . $post_type . '" href="' . $post_type_archive . '" title="' . $post_type_object->labels->name . '">' . $post_type_object->labels->name . '</a></li>';
+				if ( $post_type !== 'post' ) {
+
+					$post_type_object = get_post_type_object( $post_type );
+
+					$item_content = $post_type_object->labels->name;
+
+					if ( 'terms' === $settings['cpt_crumbs'] ) {
+						$item_content = 'terms';
+
+						$terms = Utils::get_parent_terms_highest( $post->ID );
+
+						if ( $terms ) {
+							foreach( $terms as $term ) {
+								$this->render_item( 'post-type-terms', [
+									'current' 	=> false,
+									'separator'	=> true,
+									'key' 		=> 'terms-' . $term->term_id,
+									'ids' 		=> [ $term->term_id, $term->slug ],
+									'content' 	=> $term->name,
+									'link'		=> get_term_link( $term ),
+								] );
+							}
+						}
+
+					} else {
+
+						$this->render_item( 'post-type-archive', [
+							'current' 	=> false,
+							'separator'	=> true,
+							'key' 		=> 'post-type-archive',
+							'ids' 		=> [ $post_type ],
+							'content' 	=> $item_content,
+							'link'		=> get_post_type_archive_link( $post_type ),
+						] );
+					}
 					
-					$this->render_separator();
+				} else {
+
+					$posts_page_id = get_option( 'page_for_posts' );
+
+					if ( $posts_page_id ) {
+
+						$posts_page = get_post( $posts_page_id );
+
+						$this->render_item( 'blog', [
+							'current' 	=> false,
+							'separator'	=> true,
+							'key' 		=> 'blog',
+							'ids' 		=> [ $posts_page->ID ],
+							'content' 	=> $posts_page->post_title,
+							'link'		=> get_permalink( $posts_page->ID ),
+						] );
+					}
 				}
 
 				$category = get_the_category();
+				$last_category = null;
 
 				if( ! empty( $category ) ) {
 
-					$values = array_values($category);
-					
-					$last_category = end( $values );
-						
-					$get_cat_parents = rtrim(get_category_parents($last_category->term_id, true, ','),',');
-					$cat_parents = explode(',',$get_cat_parents);
-						
 					$cat_display = '';
 
-					foreach( $cat_parents as $parents ) {
-						$cat_display .= '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--cat">' . $parents . '</li>';
-						$cat_display .= $this->render_separator( false );
-					}
+					$values = array_values($category);
 
+					$last_category = get_term( Utils::get_most_parents_category( $category ) );
+						
+					$cat_parents = array_reverse( get_ancestors( $last_category->term_id, 'category' ) );
 				}
 
 				$taxonomy_exists = taxonomy_exists( $custom_taxonomy );
@@ -684,51 +762,132 @@ class Breadcrumbs extends Extras_Widget {
 						$cat_name = $taxonomy_terms[0]->name;
 					}
 				}
+
 				if( ! empty( $last_category ) ) {
 
-					echo $cat_display;
+					foreach ( $cat_parents as $parent ) {
+						$_parent = get_term( $parent );
 
-					echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--' . $post->ID . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--' . $post->ID . '" title="' . get_the_title() . '">' . get_the_title() . '</strong></li>';
+						if ( has_category( $_parent->term_id, $post ) ) {
+
+							$this->render_item( 'category', [
+								'current' 	=> false,
+								'separator'	=> true,
+								'key' 		=> 'category-' . $_parent->term_id,
+								'ids' 		=> [ $_parent->term_id, $_parent->slug ],
+								'content' 	=> $_parent->name,
+								'link'		=> get_term_link( $_parent ),
+							] );
+						}
+					}
+
+					$this->render_item( 'category', [
+						'current' 	=> false,
+						'separator'	=> true,
+						'key' 		=> 'category' . $last_category->term_id,
+						'ids' 		=> [ $last_category->term_id, $last_category->slug ],
+						'content' 	=> $last_category->name,
+						'link'		=> get_term_link( $last_category ),
+					] );
+
+					$this->render_item( 'single', [
+						'current' 	=> true,
+						'separator'	=> false,
+						'key' 		=> 'single',
+						'ids' 		=> [ $post->ID ],
+						'content' 	=> get_the_title(),
+					] );
 					
 				} else if ( ! empty( $cat_id ) ) {
-					echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--cat ee-breadcrumbs__item--cat-' . $cat_id . ' ee-breadcrumbs__item--cat-' . $cat_nicename . '"><a class="ee-breadcrumbs__crumb--cat ee-breadcrumbs__crumb--cat-' . $cat_id . ' ee-breadcrumbs__crumb--cat-' . $cat_nicename . '" href="' . $cat_link . '" title="' . $cat_name . '">' . $cat_name . '</a></li>';
-					
-					$this->render_separator();
 
-					echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--' . $post->ID . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--' . $post->ID . '" title="' . get_the_title() . '">' . get_the_title() . '</strong></li>';
+					$this->render_item( 'category', [
+						'current' 	=> false,
+						'separator'	=> true,
+						'key' 		=> 'category',
+						'ids' 		=> [ $cat_nicename, $cat_id ],
+						'content' 	=> $cat_name,
+						'link'		=> $cat_link,
+					] );
+
+					$this->render_item( 'single', [
+						'current' 	=> true,
+						'separator'	=> false,
+						'key' 		=> 'single',
+						'ids' 		=> [ $post->ID ],
+						'content' 	=> get_the_title(),
+					] );
+
 				} else {
-						echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--' . $post->ID . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--' . $post->ID . '" title="' . get_the_title() . '">' . get_the_title() . '</strong></li>';
-					}
+
+					$this->render_item( 'single', [
+						'current' 	=> true,
+						'separator'	=> false,
+						'key' 		=> 'single',
+						'ids' 		=> [ $post->ID ],
+						'content' 	=> get_the_title(),
+					] );
+
+				}
 				
 			} else if ( $query->is_category() ) {
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--cat"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--cat">' . single_cat_title('', false) . '</strong></li>';
+
+				$cat_id = get_query_var( 'cat' );
+				$cat = get_category( $cat_id );
+
+				$cat_parents = array_reverse( get_ancestors( $cat_id, 'category' ) );
+
+				foreach ( $cat_parents as $parent ) {
+					$_parent = get_term( $parent );
+
+					$this->render_item( 'category', [
+						'current' 	=> false,
+						'separator'	=> true,
+						'key' 		=> 'category-' . $_parent->term_id,
+						'ids' 		=> [ $_parent->term_id, $_parent->slug ],
+						'content' 	=> $_parent->name,
+						'link'		=> get_term_link( $_parent ),
+					] );
+				}
+
+				$this->render_item( 'category', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'category',
+					'ids' 		=> [ $cat_id, $cat->slug ],
+					'content' 	=> single_cat_title( '', false ),
+				] );
 				
 			} else if ( $query->is_page() ) {
 				
 				if ( $post->post_parent ) {
 						
 					$anc = get_post_ancestors( $post->ID );
-						
 					$anc = array_reverse($anc);
 						
 					if ( ! isset( $parents ) ) $parents = null;
 
 					foreach ( $anc as $ancestor ) {
 
-						$parents .= '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--parent ee-breadcrumbs__item--parent-' . $ancestor . '"><a class="ee-breadcrumbs__crumb--parent ee-breadcrumbs__crumb--parent-' . $ancestor . '" href="' . get_permalink( $ancestor ) . '" title="' . get_the_title( $ancestor ) . '">' . get_the_title( $ancestor ) . '</a></li>';
-
-						$parents .= $this->render_separator( false );
+						$this->render_item( 'ancestor', [
+							'current' 	=> false,
+							'separator'	=> true,
+							'key' 		=> 'ancestor-' . $ancestor,
+							'ids' 		=> [ $ancestor ],
+							'content' 	=> get_the_title( $ancestor ),
+							'link'		=> get_permalink( $ancestor ),
+						] );
 					}
-						
-					echo $parents;
-
 				}
 
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--' . $post->ID . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--' . $post->ID . '"> ' . get_the_title() . '</strong></li>';
+				$this->render_item( 'page', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'page',
+					'ids' 		=> [ $post->ID ],
+					'content' 	=> get_the_title(),
+				] );
 				
 			} else if ( $query->is_tag() ) {
-				
 				
 				$term_id 		= get_query_var('tag_id');
 				$taxonomy 		= 'post_tag';
@@ -737,59 +896,190 @@ class Breadcrumbs extends Extras_Widget {
 				$get_term_id 	= $terms[0]->term_id;
 				$get_term_slug 	= $terms[0]->slug;
 				$get_term_name 	= $terms[0]->name;
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--tag-' . $get_term_id . ' ee-breadcrumbs__item--tag-' . $get_term_slug . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--tag-' . $get_term_id . ' ee-breadcrumbs__crumb--tag-' . $get_term_slug . '">' . $get_term_name . '</strong></li>';
-			
-			} elseif ( $query->is_day() ) {
-				
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--year ee-breadcrumbs__item--year-' . get_the_time('Y') . '"><a class="ee-breadcrumbs__crumb--year ee-breadcrumbs__crumb--year-' . get_the_time('Y') . '" href="' . get_year_link( get_the_time('Y') ) . '" title="' . get_the_time('Y') . '">' . get_the_time('Y') . ' Archives</a></li>';
 
-				$this->render_separator();
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--month ee-breadcrumbs__item--month-' . get_the_time('m') . '"><a class="ee-breadcrumbs__crumb--month ee-breadcrumbs__crumb--month-' . get_the_time('m') . '" href="' . get_month_link( get_the_time('Y'), get_the_time('m') ) . '" title="' . get_the_time('M') . '">' . get_the_time('M') . ' Archives</a></li>';
-				
-				$this->render_separator();
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--' . get_the_time('j') . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--' . get_the_time('j') . '"> ' . get_the_time('jS') . ' ' . get_the_time('M') . ' Archives</strong></li>';
+				$this->render_item( 'tag', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'tag',
+					'ids' 		=> [ $get_term_id, $get_term_slug ],
+					'content' 	=> sprintf( __( 'Tag: %s', 'elementor-extras' ), $get_term_name ),
+				] );
+			
+			} else if ( $query->is_day() ) {
+
+				$this->render_item( 'year', [
+					'current' 	=> false,
+					'separator'	=> true,
+					'key' 		=> 'year',
+					'ids' 		=> [ get_the_time('Y') ],
+					'content' 	=> sprintf( __( '%s Archives', 'elementor-extras' ), get_the_time('Y') ),
+					'link'		=> get_year_link( get_the_time('Y') ),
+				] );
+
+				$this->render_item( 'month', [
+					'current' 	=> false,
+					'separator'	=> true,
+					'key' 		=> 'month',
+					'ids' 		=> [ get_the_time('m') ],
+					'content' 	=> sprintf( __( '%s Archives', 'elementor-extras' ), get_the_time('F') ),
+					'link'		=> get_month_link( get_the_time('Y'), get_the_time('m') ),
+				] );
+
+				$this->render_item( 'day', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'day',
+					'ids' 		=> [ get_the_time('j') ],
+					'content' 	=> sprintf( __( '%1$s %2$s Archives', 'elementor-extras' ), get_the_time('F'), get_the_time('jS') ),
+				] );
 				
 			} else if ( $query->is_month() ) {
-				
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--year ee-breadcrumbs__item--year-' . get_the_time('Y') . '"><a class="ee-breadcrumbs__crumb--year ee-breadcrumbs__crumb--year-' . get_the_time('Y') . '" href="' . get_year_link( get_the_time('Y') ) . '" title="' . get_the_time('Y') . '">' . get_the_time('Y') . ' Archives</a></li>';
-				
-				$this->render_separator();
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--month ee-breadcrumbs__item--month-' . get_the_time('m') . '"><strong class="ee-breadcrumbs__crumb--month ee-breadcrumbs__crumb--month-' . get_the_time('m') . '" title="' . get_the_time('M') . '">' . get_the_time('M') . ' Archives</strong></li>';
+
+				$this->render_item( 'year', [
+					'current' 	=> false,
+					'separator'	=> true,
+					'key' 		=> 'year',
+					'ids' 		=> [ get_the_time('Y') ],
+					'content' 	=> sprintf( __( '%s Archives', 'elementor-extras' ), get_the_time('Y') ),
+					'link'		=> get_year_link( get_the_time('Y') ),
+				] );
+
+				$this->render_item( 'month', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'month',
+					'ids' 		=> [ get_the_time('m') ],
+					'content' 	=> sprintf( __( '%s Archives', 'elementor-extras' ), get_the_time('F') ),
+				] );
 				
 			} else if ( $query->is_year() ) {
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--current-' . get_the_time('Y') . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--current-' . get_the_time('Y') . '" title="' . get_the_time('Y') . '">' . get_the_time('Y') . ' Archives</strong></li>';
+
+				$this->render_item( 'year', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'year',
+					'ids' 		=> [ get_the_time('Y') ],
+					'content' 	=> sprintf( __( '%s Archives', 'elementor-extras' ), get_the_time('Y') ),
+				] );
 				
 			} else if ( $query->is_author() ) {
 				
-				
 				global $author;
+
 				$userdata = get_userdata( $author );
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--current-' . $userdata->user_nicename . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--current-' . $userdata->user_nicename . '" title="' . $userdata->display_name . '">' . 'Author: ' . $userdata->display_name . '</strong></li>';
-			
-			} else if ( get_query_var('paged') ) {
-				
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--current-' . get_query_var('paged') . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--current-' . get_query_var('paged') . '" title="Page ' . get_query_var('paged') . '">'.__('Page') . ' ' . get_query_var('paged') . '</strong></li>';
+
+				$this->render_item( 'author', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'author',
+					'ids' 		=> [ $userdata->user_nicename ],
+					'content' 	=> sprintf( __( 'Author: %s', 'elementor-extras' ), $userdata->display_name ),
+				] );
 				
 			} else if ( $query->is_search() ) {
-			
-				echo '<li class="ee-breadcrumbs__item ee-breadcrumbs__item--current ee-breadcrumbs__item--current-' . get_search_query() . '"><strong class="ee-breadcrumbs__crumb--current ee-breadcrumbs__crumb--current-' . get_search_query() . '" title="Search results for: ' . get_search_query() . '">Search results for: ' . get_search_query() . '</strong></li>';
+
+				$this->render_item( 'search', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'search',
+					'content' 	=> sprintf( __( 'Search results for: %s', 'elementor-extras' ), get_search_query() ),
+				] );
 			
 			} elseif ( $query->is_404() ) {
-				
-				echo '<li>' . 'Error 404' . '</li>';
+
+				$this->render_item( '404', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> '404',
+					'content' 	=> __( 'Page not found', 'elementor-extras' ),
+				] );
 			}
 		
 			echo '</ul>';
 			
 		}
+	}
+
+	protected function render_item( $slug, $args ) {
+
+		$defaults = [
+			'current' 		=> false,
+			'separator'		=> false,
+			'key' 			=> false,
+			'ids'			=> [],
+			'content'		=> '',
+			'link'			=> false,
+		];
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$item_key 	= $args['key'] . '-item';
+		$text_key 	= $args['key'] . '-text';
+		$link_key 	= $args['key'] . ( ! $args['current'] ) ? '-link' : '-current';
+		$link_tag 	= ( ! $args['current'] ) ? 'a' : 'strong';
+		$link 		= ( ! $args['current'] ) ? ' href="' . $args['link'] .'" ' : ' ';
+		$classes 	= [];
+
+		if ( $args['current'] ) {
+			$classes[] = 'ee-breadcrumbs__item--current';
+		} else {
+			$classes[] = 'ee-breadcrumbs__item--parent';
+		}
+
+		if ( $slug )
+			$classes[] = 'ee-breadcrumbs__item--' . $slug;
+
+		if ( $args['ids'] ) {
+			foreach( $args['ids'] as $id ) {
+				if ( $slug ) {
+					$classes[] = 'ee-breadcrumbs__item--' . $slug . '-' . $id;
+				} else { $classes[] = 'ee-breadcrumbs__item--' . $id; }
+			}
+		}
+
+		$this->add_item_render_attribute( $item_key );
+		$this->add_render_attribute( $item_key, [
+			'class' => $classes,
+		] );
+
+		$this->add_link_render_attribute( $link_key );
+		$this->add_render_attribute( $text_key, [
+			'itemprop' 	=> 'name',
+			'class' 	=> 'ee-breadcrumbs__text',
+		] );
+
+		?><li <?php echo $this->get_render_attribute_string( $item_key ); ?>>
+			<<?php echo $link_tag; ?><?php echo $link; ?><?php echo $this->get_render_attribute_string( $link_key ); ?>>
+				<span <?php echo $this->get_render_attribute_string( $text_key ); ?>>
+					<?php echo $args['content']; ?>
+				</span>
+			</<?php echo $link_tag; ?>>
+		</li><?php
+
+		if ( $args['separator'] )
+			$this->render_separator();
+	}
+
+	protected function add_item_render_attribute( $key ) {
+		$this->add_render_attribute( $key, [
+			'class' => [
+				'ee-breadcrumbs__item',
+			],
+			'itemprop' 	=> 'itemListElement',
+			'itemscope' => '',
+			'itemtype' 	=> 'http://schema.org/ListItem',
+		] );
+	}
+
+	protected function add_link_render_attribute( $key ) {
+		$this->add_render_attribute( $key, [
+			'class' => [
+				'ee-breadcrumbs__crumb',
+			],
+			'itemprop' 	=> 'item',
+			'rel' 		=> 'v:url',
+			'property' 	=> 'v:title',
+		] );
 	}
 
 	protected function _content_template() {

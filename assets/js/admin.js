@@ -25,11 +25,11 @@
 	
 	if ( activetab != '' && $( activetab ).length ) {
 		
-		$(activetab).fadeIn();
+		$(activetab).show();
 	
 	} else {
 	
-		$('.ee-settings__group:first').fadeIn();
+		$('.ee-settings__group:first').show();
 	
 	}
 
@@ -80,7 +80,7 @@
 		
 		$('.ee-settings__group').hide();
 		
-		$(clicked_group).fadeIn();
+		$(clicked_group).show();
 		
 		e.preventDefault();
 	});

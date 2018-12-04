@@ -627,13 +627,25 @@ class Settings_API {
 		foreach ( $this->settings_sections as $tab ) {
 
 			$link = '#' . $tab['id'];
+			$count = isset( $tab['count'] ) ? $tab['count'] : '';
+			$icon = isset( $tab['icon'] ) ? '<span class="' . $tab['icon'] . '"></span>' : '';
+
+			$count_class = '';
+
+			if ( ( ( is_numeric( $count ) && $count > 0 ) || '' !== $count ) ) {
+				if ( isset( $tab['label'] ) ) {
+					$count_class = 'ee-count--' . $tab['label'];
+				}
+
+				$count = '<span class="ee-count ' . $count_class . '">' . $count . '</span>';
+			}
 
 			if ( $this->is_tab_linked( $tab ) ) {
 				$classes .= ' ee-nav-tabs__link';
 				$link = $tab['link'];
 			}
 
-			$html .= sprintf( '<a href="%1$s" class="%2$s" id="%3$s-tab">%4$s</a>', $link, $classes, $tab['id'], $tab['title'] );
+			$html .= sprintf( '<a href="%1$s" target="%2$s" class="%3$s" id="%4$s-tab">%5$s%6$s%7$s</a>', $link, isset( $tab['target'] ) ? $tab['target'] : '', $classes, $tab['id'], $tab['title'], $count, $icon );
 		}
 
 		$html .= '</h2>';

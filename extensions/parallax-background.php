@@ -25,6 +25,7 @@ class Extension_Parallax_Background extends Extension_Base {
 		return [
 			'parallax-background',
 			'jquery-resize-ee',
+			'jquery-visible',
 		];
 	}
 

@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 abstract class Skin_Base extends Elementor_Skin_Base {
 
 	protected function _register_controls_actions() {
-		add_action( 'elementor/element/ee-content-switcher/section_items/before_section_end', [ $this, 'register_controls' ] );
+		add_action( 'elementor/element/ee-switcher/section_items/before_section_end', [ $this, 'register_controls' ] );
 	}
 
 	public function register_controls( Extras_Widget $widget ) {

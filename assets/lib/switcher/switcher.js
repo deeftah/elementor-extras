@@ -30,8 +30,10 @@
 				navSelector         : '.ee-switcher__nav',
 				navItemSelector     : '.ee-switcher__nav__item',
 				navLoaderSelector   : '.ee-loader__progress',
-				contentSelector     : '.ee-switcher__items',
-				contentItemSelector : '.ee-switcher__items__item',
+				contentSelector     : '.ee-switcher__titles',
+				contentItemSelector : '.ee-switcher__titles__title',
+				descSelector		: '.ee-switcher__descriptions',
+				descItemSelector 	: '.ee-switcher__descriptions__description',
 				arrowsSelector     	: '.ee-switcher__arrows',
 				arrowNextSelector 	: '.ee-arrow--next',
 				arrowPrevSelector 	: '.ee-arrow--prev',
@@ -53,9 +55,11 @@
 				latestKnownScrollY          = -1,
 				latestKnownWindowHeight     = -1,
 				latestKnownContentHeight    = -1,
+				latestKnownDescHeight 		= -1,
 				currentScrollY              = 0,
 				currentWindowHeight         = 0,
 				currentContentHeight        = 0,
+				currentDescHeight 			= 0,
 				ticking                     = false,
 				updateAF                    = null,
 				rafTimer                    = null,
@@ -71,6 +75,8 @@
 				$mediaItems         = null,
 				$content            = null,
 				$contentItems       = null,
+				$desc 				= null,
+				$descItems 			= null,
 				$imageItems			= null,
 				$titleItems 		= null,
 				$arrows 			= null,
@@ -84,12 +90,14 @@
 				$thisMediaItem      = null,
 				$thisImageItem		= null,
 				$thisContentItem    = null,
+				$thisDescItem 		= null,
 
 				$lastNavItem        = null,
 				$lastMediaItem      = null,
 				$lastImageItem		= null,
 				$lastNavLoader      = null,
 				$lastContentItem    = null,
+				$lastDescItem		= null,
 
 				$background 		= null,
 
@@ -453,6 +461,8 @@
 				$mediaItems         = $media.find( plugin.opts.mediaItemSelector );
 				$content            = $element.find( plugin.opts.contentSelector );
 				$contentItems       = $content.find( plugin.opts.contentItemSelector );
+				$desc 				= $element.find( plugin.opts.descSelector );
+				$descItems       	= $desc.find( plugin.opts.descItemSelector );
 				$arrows 			= $element.find( plugin.opts.arrowsSelector );
 				$arrowNext 			= $arrows.find( plugin.opts.arrowNextSelector );
 				$arrowPrev 			= $arrows.find( plugin.opts.arrowPrevSelector );
@@ -473,10 +483,12 @@
 				$thisMediaItem      = $mediaItems.eq( _current );
 				$thisImageItem 		= $imageItems.eq( _current );
 				$thisContentItem    = $contentItems.eq( _current );
+				$thisDescItem 		= $descItems.eq( _current );
 
 				$thisNavItem.addClass('is--active');
 				$thisMediaItem.addClass('is--active is--current').data('active', true);
 				$thisContentItem.addClass('is--active');
+				$thisDescItem.addClass('is--active');
 
 				plugin.setEffects( _direction );
 				plugin.setArrowsClasses();
@@ -485,6 +497,7 @@
 				TweenMax.set( $mediaItems, _effects.media[ plugin.opts.mediaEffect ].prepareItems );
 				TweenMax.set( $imageItems, _effects.media[ plugin.opts.mediaEffect ].prepareImages );
 				TweenMax.set( $contentItems, _effects.content[ plugin.opts.contentEffect ].prepareItems );
+				TweenMax.set( $descItems, { autoAlpha: 0 } );
 
 				// Prepare background
 				if ( ! plugin.opts.entranceAnimation ) {
@@ -496,6 +509,7 @@
 					TweenMax.set( $thisMediaItem, _effects.media[ plugin.opts.mediaEffect ].prepareFirst );
 					TweenMax.set( $thisImageItem, _effects.media[ plugin.opts.mediaEffect ].prepareFirstImage );
 					TweenMax.set( $thisContentItem, _effects.content[ plugin.opts.contentEffect ].prepareFirst );
+					TweenMax.set( $thisDescItem, { autoAlpha: 1 } );
 				} else {
 					TweenMax.set( [ $nav, $arrows ], { autoAlpha: 0 } );
 				}
@@ -511,9 +525,13 @@
 				});
 
 				currentContentHeight = $thisContentItem.outerHeight();
+				currentDescHeight = $thisDescItem.outerHeight();
 			};
 
 			plugin.events = function() {
+
+				$window.on( 'ee/toggle-element/toggle', plugin.onResize );
+				$window.on( 'ee/toggle-element/toggle', plugin.onAppear );
 
 				$element.on('switcher:goto', function( e, i ) {
 
@@ -526,6 +544,7 @@
 				$(window).on('resize', plugin.onResize );
 
 				$titleItems._resize( plugin.onResize );
+				$descItems._resize( plugin.onResize );
 
 				$navItems.each( function( i, e ) {
 
@@ -596,6 +615,7 @@
 			plugin.onResize = function() {
 				currentScrollY          = $window.scrollTop();
 				currentContentHeight    = $thisContentItem.outerHeight();
+				currentDescHeight    	= $thisDescItem.outerHeight();
 				currentWindowHeight     = $window.height();
 
 				plugin.requestTick();
@@ -647,12 +667,14 @@
 				$navItems.removeClass('is--active');
 				$mediaItems.removeClass('is--active is--current').data('active', false);
 				$contentItems.removeClass('is--active');
+				$descItems.removeClass('is--active');
 
 				$lastMediaItem.addClass('is--last');
 
 				$thisNavItem.addClass('is--active');
 				$thisMediaItem.addClass('is--animating is--current').data('active', true);
 				$thisContentItem.addClass('is--animating');
+				$thisDescItem.addClass('is--animating');
 
 				plugin.setArrowsClasses();
 			};
@@ -834,8 +856,10 @@
 				// Animate items
 				animation.to( $lastMediaItem, plugin.opts.speed, _mediaEffect.animateOut, 'animateAll' );
 				animation.to( $lastImageItem, plugin.opts.speed, _mediaEffect.animateImageOut, 'animateAll' );
+				animation.to( $lastDescItem, plugin.opts.speed, { autoAlpha: 0 }, 'animateAll' );
 				animation.to( $thisMediaItem, plugin.opts.speed, _mediaEffect.animateIn, 'animateAll+=' + waitMedia );
 				animation.to( $thisImageItem, plugin.opts.speed, _mediaEffect.animateImageIn, 'animateAll+=' + waitMedia );
+				animation.to( $thisDescItem, plugin.opts.speed, { autoAlpha: 1 }, 'animateAll+=' + waitMedia );
 
 				// Animate page background
 				if ( plugin.opts.changeBackground ) {
@@ -879,12 +903,14 @@
 				$thisMediaItem      = $mediaItems.eq( _current );
 				$thisImageItem 		= $imageItems.eq( _current );
 				$thisContentItem    = $contentItems.eq( _current );
+				$thisDescItem    	= $descItems.eq( _current );
 
 				$lastNavItem        = $navItems.eq( _last );
 				$lastNavLoader      = $lastNavItem.find( plugin.opts.navLoaderSelector );
 				$lastMediaItem      = $mediaItems.eq( _last );
 				$lastImageItem 		= $imageItems.eq( _last );
 				$lastContentItem    = $contentItems.eq( _last );
+				$lastDescItem    	= $descItems.eq( _last );
 
 				plugin.stop();
 				plugin.setupClasses();
@@ -896,15 +922,19 @@
 				$navItems.removeClass('is--last');
 				$mediaItems.removeClass('is--last');
 				$contentItems.removeClass('is--last');
+				$descItems.removeClass('is--last');
 
 				$thisMediaItem.removeClass('is--animating');
 				$thisContentItem.removeClass('is--animating');
+				$thisDescItem.removeClass('is--animating');
 
 				$thisMediaItem.addClass('is--active');
 				$thisContentItem.addClass('is--active');
+				$thisDescItem.addClass('is--active');
 
 				if ( _last !== _current ) {
 					TweenMax.set( $lastContentItem, { autoAlpha: 0 } );
+					TweenMax.set( $lastDescItem, { autoAlpha: 0 } );
 				} else if ( plugin.opts.entranceAnimation ) {
 					TweenMax.to( [ $nav, $arrows ], 0.3, { autoAlpha: 1, ease: _easing } );
 				}
@@ -924,23 +954,23 @@
 				}
 			};
 
-			plugin.getContentHeight = function() {
-				var contentHeight = 0;
+			plugin.getTallestElement = function( $items ) {
+				var tallest = 0;
 
-				$contentItems.each( function(){
+				$items.each( function(){
 					var itemHeight = $(this).outerHeight();
 
-					if ( itemHeight > contentHeight ) {
-						contentHeight = itemHeight;
+					if ( itemHeight > tallest ) {
+						tallest = itemHeight;
 					}
 				});
 
-				return contentHeight;
+				return tallest;
 			};
 
-			plugin.setContentHeight = function( _height ) {
+			plugin.setContentHeight = function( _height, $parent, $items ) {
 
-				var newHeight = plugin.getContentHeight();
+				var newHeight = plugin.getTallestElement( $items );
 
 				if ( ! _height ) {
 					_height = newHeight;
@@ -948,8 +978,9 @@
 					newHeight = _height;
 				}
 
-				$content.css({ height: _height });
-				latestKnownContentHeight = newHeight;
+				$parent.css({ height: _height });
+
+				return newHeight;
 			};
 
 			plugin.refresh = function() {
@@ -957,7 +988,11 @@
 				ticking = false;
 
 				if ( latestKnownContentHeight !== currentContentHeight ) {
-					plugin.setContentHeight();
+					latestKnownContentHeight = plugin.setContentHeight( false, $content, $contentItems );
+				}
+
+				if ( latestKnownDescHeight !== currentDescHeight ) {
+					latestKnownContentHeight = plugin.setContentHeight( false, $desc, $descItems );
 				}
 
 				if ( ( latestKnownScrollY !== currentScrollY ) || ( latestKnownWindowHeight !== currentWindowHeight ) ) {
@@ -966,7 +1001,7 @@
 					latestKnownWindowHeight = currentWindowHeight;
 
 					if ( plugin.opts.autoplay && _appeared ) {
-						if ( ! $element.visible( true, false, 'vertical' ) ) {
+						if ( ! $element.visible( true, false, 'vertical' ) || $element.is(':visible') ) {
 							if ( _timerRunning ) {
 								plugin.stop();
 							}

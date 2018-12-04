@@ -130,6 +130,12 @@
   display: block !important;
   clear: both !important;
 }
+.ee-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
 .o-flagsize-name > .o-flag__img {
   padding-right: 6px;
 }
@@ -179,22 +185,26 @@
   padding-right: 0;
   padding-left: 0;
 }
-.ee-wrap .about-headline-callout {
-  margin-top: 96px;
-  margin-bottom: 64px;
+.ee-count {
+  display: inline-block;
+  vertical-align: text-top;
+  margin: 1px 0 0 6px;
+  padding: 0 5px;
+  min-width: 7px;
+  height: 17px;
+  border-radius: 11px;
+  background-color: #8062D4;
+  color: #ffffff;
+  font-size: 9px;
+  line-height: 17px;
+  text-align: center;
+  z-index: 26;
 }
-.ee-wrap .notice {
-  display: block !important;
+.ee-count--success {
+  background-color: #5cb85c;
 }
-.ee-wrap .ee-info-header .about-text {
-  min-height: auto;
-  font-size: 22px;
-  margin: 6px 0;
-}
-.ee-wrap iframe {
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 1px 1px 11px rgba(0, 0, 0, 0.01), 2px 2px 12px rgba(0, 0, 0, 0.01), 3px 3px 13px rgba(0, 0, 0, 0.01), 4px 4px 14px rgba(0, 0, 0, 0.01), 5px 5px 15px rgba(0, 0, 0, 0.01), 6px 6px 16px rgba(0, 0, 0, 0.01), 7px 7px 17px rgba(0, 0, 0, 0.01), 8px 8px 18px rgba(0, 0, 0, 0.01), 9px 9px 19px rgba(0, 0, 0, 0.01);
+.ee-count--error {
+  background-color: #d9534f;
 }
 .ee-settings__group .form-table th {
   padding: 10px 10px 10px 0;
@@ -208,6 +218,15 @@
 .ee-nav-tabs__tab.nav-tab-active {
   background-color: #F9F9F9;
 }
+.ee-nav-tabs__tab .dashicons {
+  font-size: 16px;
+  vertical-align: middle;
+  margin-left: 6px;
+  width: auto;
+  height: auto;
+  line-height: 1;
+  text-rendering: auto;
+}
 .ee-nav-tabs + .ee-metabox-holder {
   background-color: #F9F9F9;
   border: 1px solid #DFDFDF;
@@ -216,23 +235,23 @@
 }
 .ee-nav-tabs__link {
   border-color: transparent;
+  margin-bottom: 2px;
+  padding-bottom: 3px;
 }
 .ee-nav-tabs__link,
 .ee-nav-tabs__link:hover,
 .ee-nav-tabs__link:focus {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.03);
+}
+.ee-nav-tabs #elementor_extras_support-tab,
+.ee-nav-tabs #elementor_extras_documentation-tab {
+  float: right;
 }
 .ee-note:first-child {
   margin-top: 0;
 }
 .ee-description:not(:last-child) {
   margin-bottom: 12px;
-}
-#adminmenu #toplevel_page_elementor-extras div.wp-menu-image:before {
-  content: "\E008";
-  font-family: nicons;
-  font-size: 14px;
-  margin-top: 3px;
 }
 @media (max-width: 1440px) {
   .ee-u-1\/1\@wide {

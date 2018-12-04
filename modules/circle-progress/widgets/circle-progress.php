@@ -20,7 +20,7 @@ use Elementor\Modules\DynamicTags\Module as TagsModule;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Circle_Progress
+ * Circle_Progress
  *
  * @since 0.1.0
  */
@@ -239,7 +239,7 @@ class Circle_Progress extends Extras_Widget {
 						'after' 	=> __( 'After', 'elementor-extras' ),
 						'before' 	=> __( 'Before', 'elementor-extras' ),
 					],
-					'prefix_class'	=> 'elementor-circle-progress-suffix-'
+					'prefix_class'	=> 'ee-circle-progress-suffix--'
 				]
 			);
 
@@ -267,7 +267,7 @@ class Circle_Progress extends Extras_Widget {
 							'icon' 		=> 'eicon-v-align-stretch',
 						],
 					],
-					'prefix_class'		=> 'elementor-circle-progress-suffix-'
+					'prefix_class'		=> 'ee-circle-progress-suffix--'
 				]
 			);
 
@@ -287,7 +287,7 @@ class Circle_Progress extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-circle-progress-value .suffix' => 'margin-top: {{SIZE}}em;',
+						'{{WRAPPER}} .ee-circle-progress__value .suffix' => 'margin-top: {{SIZE}}em;',
 					],
 					'condition'	=> [
 						'suffix_vertical_align' => 'top',
@@ -571,7 +571,7 @@ class Circle_Progress extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default' 	=> '',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-circle-progress-value' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .ee-circle-progress__value' => 'color: {{VALUE}};',
 					],
 					'scheme' 	=> [
 						'type' 	=> Scheme_Color::get_type(),
@@ -587,7 +587,7 @@ class Circle_Progress extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default' 	=> '',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-circle-progress-value .suffix' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .ee-circle-progress__value .suffix' => 'color: {{VALUE}};',
 					],
 					'scheme' 	=> [
 						'type' 	=> Scheme_Color::get_type(),
@@ -614,7 +614,7 @@ class Circle_Progress extends Extras_Widget {
 						'value_position!'	=> 'inside'
 					],
 					'selectors'	=> [
-						'{{WRAPPER}}.elementor-circle-progress-position-below .elementor-circle-progress-value' => 'margin-top: {{SIZE}}{{UNIT}}',
+						'{{WRAPPER}}.ee-circle-progress-position--below .ee-circle-progress__value' => 'margin-top: {{SIZE}}{{UNIT}}',
 					]
 				]
 			);
@@ -623,7 +623,7 @@ class Circle_Progress extends Extras_Widget {
 				Group_Control_Text_Shadow::get_type(),
 				[
 					'name' 		=> 'value_shadow',
-					'selector' 	=> '{{WRAPPER}} .elementor-circle-progress-value',
+					'selector' 	=> '{{WRAPPER}} .ee-circle-progress__value',
 				]
 			);
 
@@ -631,7 +631,7 @@ class Circle_Progress extends Extras_Widget {
 				Group_Control_Typography::get_type(),
 				[
 					'name' 		=> 'value_typography',
-					'selector' 	=> '{{WRAPPER}} .elementor-circle-progress-value',
+					'selector' 	=> '{{WRAPPER}} .ee-circle-progress__value',
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
 				]
 			);
@@ -657,7 +657,7 @@ class Circle_Progress extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default' 	=> '',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-circle-progress-icon' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .ee-circle-progress__icon' => 'color: {{VALUE}};',
 					],
 					'scheme' 	=> [
 						'type' 	=> Scheme_Color::get_type(),
@@ -704,7 +704,7 @@ class Circle_Progress extends Extras_Widget {
 						'icon!'				=> '',
 					],
 					'selectors'	=> [
-						'{{WRAPPER}} .elementor-circle-progress-icon' => 'font-size: {{SIZE}}{{UNIT}}',
+						'{{WRAPPER}} .ee-circle-progress__icon' => 'font-size: {{SIZE}}{{UNIT}}',
 					]
 				]
 			);
@@ -726,7 +726,7 @@ class Circle_Progress extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default' 	=> '',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-circle-progress-text' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .ee-circle-progress__text' => 'color: {{VALUE}};',
 					],
 					'scheme' 	=> [
 						'type' 	=> Scheme_Color::get_type(),
@@ -739,7 +739,7 @@ class Circle_Progress extends Extras_Widget {
 				Group_Control_Text_Shadow::get_type(),
 				[
 					'name' 		=> 'text_shadow',
-					'selector' 	=> '{{WRAPPER}} .elementor-circle-progress-text',
+					'selector' 	=> '{{WRAPPER}} .ee-circle-progress__text',
 				]
 			);
 
@@ -747,7 +747,7 @@ class Circle_Progress extends Extras_Widget {
 				Group_Control_Typography::get_type(),
 				[
 					'name' 		=> 'text_typography',
-					'selector' 	=> '{{WRAPPER}} .elementor-circle-progress-text',
+					'selector' 	=> '{{WRAPPER}} .ee-circle-progress__text',
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
 				]
 			);
@@ -766,9 +766,13 @@ class Circle_Progress extends Extras_Widget {
 		$settings = $this->get_settings_for_display();
 		$circle_progress_fill = array();
 
-		$this->add_render_attribute( 'wrapper', 'class', [
-			'elementor-circle-progress',
-			'elementor-circle-progress-position-' . $settings['value_position'],
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' => [
+					'ee-circle-progress',
+					'ee-circle-progress-position--' . $settings['value_position'],
+				],
+			],
 		] );
 
 		if( ! empty( $settings['suffix'] ) ) {
@@ -823,8 +827,19 @@ class Circle_Progress extends Extras_Widget {
 	 */
 	protected function render_icon( $settings ) {
 
-		$this->add_render_attribute( 'icon-wrapper', 'class', [ 'elementor-circle-progress-icon', 'ee-icon' ] );
-		$this->add_render_attribute( 'icon', 'class', esc_attr( $settings['icon'] ) );
+		$this->add_render_attribute( [
+			'icon-wrapper' => [
+				'class' => [
+					'ee-circle-progress__icon',
+					'ee-icon',
+				],
+			],
+			'icon' => [
+				'class' => [
+					esc_attr( $settings['icon'] ),
+				],
+			],
+		] );
 
 		?><span <?php echo $this->get_render_attribute_string( 'icon-wrapper' ); ?>>
 			<i <?php echo $this->get_render_attribute_string( 'icon' ); ?>></i>
@@ -839,16 +854,25 @@ class Circle_Progress extends Extras_Widget {
 	 */
 	protected function render_value( $settings ) {
 
-		$this->add_render_attribute( 'value-wrapper', 'class', 'elementor-circle-progress-value' );
+		$this->add_render_attribute( [
+			'value-wrapper' => [
+				'class' => [
+					'ee-circle-progress__value',
+				],
+			],
+			'value' => [
+				'class' => 'value',
+			],
+			'suffix' => [
+				'class' => 'suffix',
+			],
+		] );
+
+		$this->add_inline_editing_attributes( 'suffix', 'basic' );
 
 		if ( '' !== $settings['value'] ) {
 			$this->add_render_attribute( 'value-wrapper', 'data-cp-value', $settings['value'] );
 		}
-		
-		$this->add_render_attribute( 'value', 'class', 'value' );
-
-		$this->add_inline_editing_attributes( 'suffix', 'basic' );
-		$this->add_render_attribute( 'suffix', 'class', 'suffix' );
 
 		?><div <?php echo $this->get_render_attribute_string( 'value-wrapper' ); ?>>
 
@@ -872,7 +896,7 @@ class Circle_Progress extends Extras_Widget {
 	protected function render_text( $settings ) {
 
 		$this->add_inline_editing_attributes( 'text', 'advanced' );
-		$this->add_render_attribute( 'text', 'class', 'elementor-circle-progress-text' );
+		$this->add_render_attribute( 'text', 'class', 'ee-circle-progress__text' );
 
 		?><div <?php echo $this->get_render_attribute_string( 'text' ); ?>>
 			<?php echo $this->parse_text_editor( $settings['text'] ); ?>
@@ -900,10 +924,14 @@ class Circle_Progress extends Extras_Widget {
 				'=': '&#x3D;'
 			};
 
-		view.addRenderAttribute( 'wrapper', 'class', [
-			'elementor-circle-progress',
-			'elementor-circle-progress-position-' + settings.value_position
-		] );
+		view.addRenderAttribute( {
+			'wrapper' : {
+				'class' : [
+					'ee-circle-progress',
+					'ee-circle-progress-position--' + settings.value_position,
+				],
+			},
+		} );
 
 		if ( settings.suffix ) {
 			view.addRenderAttribute( 'wrapper', 'data-suffix', settings.suffix );
@@ -976,8 +1004,19 @@ class Circle_Progress extends Extras_Widget {
 	protected function _icon_template() {
 		?><#
 
-		view.addRenderAttribute( 'icon-wrapper', 'class', [ 'elementor-circle-progress-icon', 'ee-icon' ] );
-		view.addRenderAttribute( 'icon', 'class', settings.icon );
+		view.addRenderAttribute( {
+			'icon-wrapper' : {
+				'class' : [
+					'ee-circle-progress__icon',
+					'ee-icon',
+				],
+			},
+			'icon' : {
+				'class' : [
+					settings.icon
+				],
+			},
+		} );
 
 		#><div {{{ view.getRenderAttributeString( 'icon-wrapper' ) }}}>
 			<i {{{ view.getRenderAttributeString( 'icon' ) }}}></i>
@@ -993,16 +1032,25 @@ class Circle_Progress extends Extras_Widget {
 	protected function _value_template() {
 		?><#
 
-		view.addRenderAttribute( 'value-wrapper', 'class', 'elementor-circle-progress-value' );
+		view.addRenderAttribute( {
+			'value-wrapper' : {
+				'class' : [
+					'ee-circle-progress__value',
+				],
+			},
+			'value' : {
+				'class' : 'value',
+			},
+			'suffix' : {
+				'class' : 'suffix',
+			},
+		} );
 
 		if ( '' !== settings.value ) {
 			view.addRenderAttribute( 'value-wrapper', 'data-cp-value', settings.value );
 		}
 
-		view.addRenderAttribute( 'value', 'class', 'value' );
-
 		view.addInlineEditingAttributes( 'suffix', 'basic' );
-		view.addRenderAttribute( 'suffix', 'class', 'suffix' );
 
 		#><div {{{ view.getRenderAttributeString( 'value-wrapper' ) }}}>
 
@@ -1024,7 +1072,7 @@ class Circle_Progress extends Extras_Widget {
 	protected function _text_template() {
 		?><#
 
-		view.addRenderAttribute( 'text', 'class', 'elementor-circle-progress-text' );
+		view.addRenderAttribute( 'text', 'class', 'ee-circle-progress__text' );
 		view.addInlineEditingAttributes( 'text', 'advanced' );
 
 		#><div {{{ view.getRenderAttributeString( 'text' ) }}}>{{{ settings.text }}}</div><?php

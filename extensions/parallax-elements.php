@@ -36,6 +36,7 @@ class Extension_Parallax_Elements extends Extension_Base {
 	public function get_script_depends() {
 		return [
 			'parallax-element',
+			'jquery-visible',
 		];
 	}
 
@@ -68,6 +69,12 @@ class Extension_Parallax_Elements extends Extension_Base {
 
 		// Activate sections for columns
 		add_action( 'elementor/element/column/section_custom_css/after_section_end', function( $element, $args ) {
+
+			$this->add_common_sections( $element, $args );
+
+		}, 10, 2 );
+
+		add_action( 'elementor/element/column/section_custom_css_pro/after_section_end', function( $element, $args ) {
 
 			$this->add_common_sections( $element, $args );
 
@@ -227,7 +234,7 @@ class Extension_Parallax_Elements extends Extension_Base {
 			'parallax_element_speed', [
 				'label' 		=> __( 'Amount', 'elementor-extras' ),
 				'type' 			=> Controls_Manager::SLIDER,
-				'default'		=> [ 'size' => 0 ],
+				'default'		=> [ 'size' => 0.15 ],
 				'range' 		=> [
 					'px' 		=> [
 						'min'	=> 0.1,

@@ -27,7 +27,7 @@ class Skin_Carousel extends Skin_Base {
 	}
 
 	public function register_layout_content_controls() {
-		$slides_per_column = range( 1, 4 );
+		$slides_per_column = range( 1, 6 );
 		$slides_per_column = array_combine( $slides_per_column, $slides_per_column );
 
 		$this->add_responsive_control(
@@ -918,15 +918,23 @@ class Skin_Carousel extends Skin_Base {
 	}
 
 	protected function render_loop_start() {
-		$this->parent->add_render_attribute( 'swiper', 'class', 'ee-swiper' );
-		$this->parent->add_render_attribute( 'swiper-container', 'class', [
-			'ee-swiper__container',
-			'swiper-container',
-		] );
-		$this->parent->add_render_attribute( 'swiper-wrapper', 'class', [
-			'ee-grid',
-			'ee-swiper__wrapper',
-			'swiper-wrapper',
+		$this->parent->add_render_attribute( [
+			'swiper' => [
+				'class' => 'ee-swiper',
+			],
+			'swiper-container' => [
+				'class' => [
+					'ee-swiper__container',
+					'swiper-container',
+				],
+			],
+			'swiper-wrapper' => [
+				'class' => [
+					'ee-grid',
+					'ee-swiper__wrapper',
+					'swiper-wrapper',
+				],
+			],
 		] );
 
 		?>
@@ -938,9 +946,7 @@ class Skin_Carousel extends Skin_Base {
 
 	protected function render_loop_end() {
 				?></div><!-- .ee-swiper__wrapper -->
-
 				<?php echo $this->render_swiper_navigation(); ?>
-
 			</div><!-- .ee-swiper__container -->
 		</div><!-- .ee-swiper --><?php
 
@@ -981,24 +987,39 @@ class Skin_Carousel extends Skin_Base {
 		if ( '' === $this->parent->get_settings( $this->get_control_id( 'arrows' ) ) )
 			return;
 
-		$this->parent->add_render_attribute( 'button-prev', 'class', [
-			'ee-swiper__button',
-			'ee-swiper__button--prev',
-			'ee-arrow',
-			'ee-arrow--prev',
-			'ee-swiper__button--prev-' . $this->parent->get_id(),
+		$this->parent->add_render_attribute( [
+			'button-prev' => [
+				'class' => [
+					'ee-swiper__button',
+					'ee-swiper__button--prev',
+					'ee-arrow',
+					'ee-arrow--prev',
+					'ee-swiper__button--prev-' . $this->parent->get_id(),
+				],
+			],
+			'button-prev-icon' => [
+				'class' => 'eicon-chevron-left',
+			],
+			'button-next' => [
+				'class' => [
+					'ee-swiper__button',
+					'ee-swiper__button--next',
+					'ee-arrow',
+					'ee-arrow--next',
+					'ee-swiper__button--next-' . $this->parent->get_id(),
+				],
+			],
+			'button-next-icon' => [
+				'class' => 'eicon-chevron-right',
+			],
 		] );
 
-		$this->parent->add_render_attribute( 'button-next', 'class', [
-			'ee-swiper__button',
-			'ee-swiper__button--next',
-			'ee-arrow',
-			'ee-arrow--next',
-			'ee-swiper__button--next-' . $this->parent->get_id(),
-		] );
-
-		?><div <?php echo $this->parent->get_render_attribute_string( 'button-prev' ); ?>><i class="eicon-chevron-left"></i></div>
-		<div <?php echo $this->parent->get_render_attribute_string( 'button-next' ); ?>><i class="eicon-chevron-right"></i></div><?php
+		?><div <?php echo $this->parent->get_render_attribute_string( 'button-prev' ); ?>>
+			<i <?php echo $this->parent->get_render_attribute_string( 'button-prev-icon' ); ?>></i>
+		</div>
+		<div <?php echo $this->parent->get_render_attribute_string( 'button-next' ); ?>>
+			<i <?php echo $this->parent->get_render_attribute_string( 'button-next-icon' ); ?>></i>
+		</div><?php
 	}
 
 	protected function render_post_start() {

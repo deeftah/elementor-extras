@@ -2,14 +2,14 @@
 namespace ElementorExtras\Modules\Posts\Widgets;
 
 // Elementor Extras Classes
-use ElementorExtras\Base\Extras_Widget;
-use ElementorExtras\Modules\Posts\Skins;
+use ElementorExtras\Utils;
 use ElementorExtras\Group_Control_Button_Effect;
 use ElementorExtras\Group_Control_Transition;
+use ElementorExtras\Base\Extras_Widget;
+use ElementorExtras\Modules\Posts\Skins;
 
 // Elementor Classes
 use Elementor\Repeater;
-use Elementor\Utils;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
@@ -27,7 +27,7 @@ use ElementorPro\Modules\QueryControl\Module as Query_Control;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Posts
+ * Posts
  *
  * @since 1.6.0
  */
@@ -41,37 +41,50 @@ class Posts extends Extras_Widget {
 
 	protected $_has_template_content = false;
 
-	/**
-	 * @var array
-	 */
-	public $_content_parts = [
-		'terms',
-		'title',
-		'avatar',
-		'author',
-		'date',
-		'comments',
-		'excerpt',
-	];
+	public function get_content_parts() {
+		$content_parts = [
+			'terms',
+			'title',
+			'avatar',
+			'author',
+			'date',
+			'comments',
+			'excerpt',
+			'button',
+		];
 
-	/**
-	 * @var array
-	 */
-	public $_post_parts = [
-		'terms',
-		'title',
-		'excerpt',
-		'metas',
-	];
+		if ( is_woocommerce_active() ) {
+			$content_parts[] = 'price';
+		}
 
-	/**
-	 * @var array
-	 */
-	public $_meta_parts = [
-		'author',
-		'date',
-		'comments',
-	];
+		return $content_parts;
+	}
+
+	public function get_post_parts() {
+		$post_parts = [
+			'terms',
+			'title',	
+			'excerpt',
+			'button',
+			'metas',
+		];
+
+		return $post_parts;
+	}
+
+	public function get_meta_parts() {
+		$meta_parts = [
+			'author',
+			'date',
+			'comments',
+		];
+
+		if ( is_woocommerce_active() ) {
+			$meta_parts[] = 'price';
+		}
+
+		return $meta_parts;
+	}
 
 	public function get_name() {
 		return 'posts-extra';
@@ -111,26 +124,6 @@ class Posts extends Extras_Widget {
 		return $this->_query;
 	}
 
-	public function get_taxonomies_options() {
-
-		$options = [];
-
-		$taxonomies = get_taxonomies( array(
-			'show_in_nav_menus' => true
-		), 'objects' );
-
-		if ( empty( $taxonomies ) ) {
-			$options[ '' ] = __( 'No taxonomies found', 'elementor-extras' );
-			return $options;
-		}
-
-		foreach ( $taxonomies as $taxonomy ) {
-			$options[ $taxonomy->name ] = $taxonomy->label;
-		}
-
-		return $options;
-	}
-
 	public function get_terms_options( $taxonomy ) {
 
 		$options = [
@@ -156,15 +149,6 @@ class Posts extends Extras_Widget {
 	public function set_filters( $taxonomy = null ) {
 		if ( ! $taxonomy )
 			return;
-
-		// $is_infinite 	= 'yes' === $this->get_current_skin()->get_instance_value( 'infinite_scroll' );
-		// $is_lazy 		= 'lazy' === $this->get_current_skin()->get_instance_value( 'infinite_scroll_mode' );
-
-		// if ( $is_infinite && $is_lazy ) {
-		// 	$this->set_all_filters( $taxonomy );
-		// } else {
-		// 	$this->set_query_filters( $taxonomy );
-		// }
 
 		if ( 'yes' === $this->get_settings( 'classic_filters_show_all' ) && 'yes' === $this->get_settings( 'classic_infinite_scroll' ) ) {
 			$this->set_all_filters( $taxonomy );
@@ -255,17 +239,29 @@ class Posts extends Extras_Widget {
 	public function get_terms() {
 
 		$settings 	= $this->get_settings();
-		$taxonomy 	= $settings['post_terms_taxonomy'];
+		$taxonomies = $settings['post_terms_taxonomy'];
+		$_terms 	= [];
 
-		if ( empty( $taxonomy ) )
+		if ( empty( $taxonomies ) )
 			return false;
 
-		$terms = get_the_terms( get_the_ID(), $taxonomy );
+		if ( is_array( $taxonomies ) ) {
+			foreach( $taxonomies as $taxonomy ) {
+				$terms = get_the_terms( get_the_ID(), $taxonomy );
 
-		if ( empty( $terms ) )
+				if ( empty( $terms ) )
+					continue;
+
+				foreach( $terms as $term ) { $_terms[] = $term; }
+			}
+		} else {
+			$_terms = get_the_terms( get_the_ID(), $taxonomies );
+		}
+
+		if ( empty( $_terms ) || 0 === count( $_terms ) )
 			return false;
 
-		return $terms;
+		return $_terms;
 
 	}
 
@@ -287,6 +283,7 @@ class Posts extends Extras_Widget {
 		$this->register_title_content_controls();
 		$this->register_metas_content_controls();
 		$this->register_excerpt_content_controls();
+		$this->register_button_content_controls();
 		$this->register_order_content_controls();
 
 		$this->register_post_style_controls();
@@ -299,6 +296,7 @@ class Posts extends Extras_Widget {
 		$this->register_metas_style_controls();
 		$this->register_title_style_controls();
 		$this->register_excerpt_style_controls();
+		$this->register_button_style_controls();
 		$this->register_hover_animation_controls();
 	}
 
@@ -406,7 +404,10 @@ class Posts extends Extras_Widget {
 					'type' 			=> Controls_Manager::NUMBER,
 					'default' 		=> 0,
 					'condition' 	=> [
-						'posts_post_type!' => 'by_id',
+						'posts_post_type!' => [
+							'by_id',
+							'current_query',
+						],
 					],
 				]
 			);
@@ -512,6 +513,19 @@ class Posts extends Extras_Widget {
 			);
 
 			$this->add_control(
+				'post_button_order',
+				[
+					'label' 	=> __( 'Button', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::NUMBER,
+					'default' 	=> 1,
+					'min'     	=> 1,
+					'condition' => [
+						'post_button_position!' => '',
+					],
+				]
+			);
+
+			$this->add_control(
 				'post_metas_order',
 				[
 					'label' 	=> __( 'Metas', 'elementor-extras' ),
@@ -564,6 +578,22 @@ class Posts extends Extras_Widget {
 					],
 				]
 			);
+
+			if ( is_woocommerce_active() ) {
+				$this->add_control(
+					'post_price_order',
+					[
+						'label' 	=> __( 'Price', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::NUMBER,
+						'default' 	=> 1,
+						'min'     	=> 1,
+						'condition' => [
+							'post_price_position!' => '',
+							'posts_post_type' => 'product',
+						],
+					]
+				);
+			}
 
 			$this->add_control(
 				'post_comments_order',
@@ -805,11 +835,12 @@ class Posts extends Extras_Widget {
 			$this->add_control(
 				'post_terms_taxonomy',
 				[
-					'label' 		=> __( 'Taxonomy', 'elementor-extras' ),
+					'label' 		=> __( 'Taxonomies', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::SELECT2,
 					'label_block' 	=> true,
 					'default' 		=> 'category',
-					'options' 		=> $this->get_taxonomies_options(),
+					'multiple'		=> true,
+					'options' 		=> Utils::get_taxonomies_options(),
 					'condition' 	=> [
 						'post_terms_position!' => '',
 					],
@@ -820,7 +851,7 @@ class Posts extends Extras_Widget {
 				'post_terms_count',
 				[
 					'label'   		=> __( 'Count', 'elementor-extras' ),
-					'description' 	=> __( 'How many terms to show (enter 0 to show all terms)', 'elementor-extras' ),
+					'description' 	=> __( 'How many terms to show (enter -1 to show all terms)', 'elementor-extras' ),
 					'type'    		=> Controls_Manager::NUMBER,
 					'default' 		=> 1,
 					'condition' 	=> [
@@ -982,29 +1013,44 @@ class Posts extends Extras_Widget {
 				]
 			);
 
-			$this->add_control(
-				'post_read_more_heading',
-				[
-					'label' 	=> __( 'Read More', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::HEADING,
-					'separator' => 'before',
-					'condition' 	=> [
-						'post_excerpt_position!' => '',
-						'post_excerpt_position!' => 'media',
-					],
-				]
-			);
+		$this->end_controls_section();
+
+	}
+
+	protected function register_button_content_controls() {
+
+		$this->start_controls_section(
+			'section_button',
+			[
+				'label' => __( 'Button', 'elementor-extras' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
 
 			$this->add_control(
-				'post_read_more',
+				'post_button_position',
 				[
-					'label' 		=> __( 'Show Read More', 'elementor-extras' ),
-					'type' 			=> Controls_Manager::SWITCHER,
-					'default'		=> '',
-					'return_value' 	=> 'yes',
-					'condition' 	=> [
-						'post_excerpt_position!' => '',
-						'post_excerpt_position!' => 'media',
+					'label' 		=> __( 'Position', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::CHOOSE,
+					'default' 		=> '',
+					'label_block'	=> false,
+					'options' 		=> [
+						'media'    		=> [
+							'title' 	=> __( 'Media', 'elementor-extras' ),
+							'icon' 		=> 'nicon nicon-position-media',
+						],
+						'body'    		=> [
+							'title' 	=> __( 'Body', 'elementor-extras' ),
+							'icon' 		=> 'nicon nicon-position-body',
+						],
+						'footer'    		=> [
+							'title' 	=> __( 'Footer', 'elementor-extras' ),
+							'icon' 		=> 'nicon nicon-position-footer',
+						],
+						''				=> [
+							'title'		=> __( 'Hide', 'elementor-extras' ),
+							'icon'		=> 'fa fa-eye-slash',
+						],
 					],
 				]
 			);
@@ -1016,9 +1062,7 @@ class Posts extends Extras_Widget {
 					'type' 			=> Controls_Manager::TEXT,
 					'default' 		=> __( 'Read more', 'elementor-extras' ),
 					'condition' 	=> [
-						'post_read_more!' => '',
-						'post_excerpt_position!' => '',
-						'post_excerpt_position!' => 'media',
+						'post_button_position!' => '',
 					],
 				]
 			);
@@ -1048,6 +1092,10 @@ class Posts extends Extras_Widget {
 
 			$this->register_author_content_controls();
 			$this->register_date_content_controls();
+
+			if ( is_woocommerce_active() ) {
+			$this->register_price_content_controls(); }
+
 			$this->register_comments_content_controls();
 
 		$this->end_controls_section();
@@ -1174,6 +1222,57 @@ class Posts extends Extras_Widget {
 				'placeholder' 	=> __( 'Posted by', 'elementor-extras' ),
 				'condition' => [
 					'post_author_position!' => ''
+				],
+			]
+		);
+
+	}
+
+	protected function register_price_content_controls() {
+
+		$this->add_control(
+			'post_price_heading',
+			[
+				'label' => __( 'Price', 'elementor-extras' ),
+				'type' 	=> Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [
+					'posts_post_type' => 'product',
+				],
+			]
+		);
+
+		$this->add_control(
+			'post_price_position',
+			[
+				'label' 		=> __( 'Position', 'elementor-extras' ),
+				'type' 			=> Controls_Manager::CHOOSE,
+				'default' 		=> 'footer',
+				'label_block'	=> false,
+				'options' 		=> [
+					'header'    		=> [
+						'title' 	=> __( 'Header', 'elementor-extras' ),
+						'icon' 		=> 'nicon nicon-position-header',
+					],
+					'media'    		=> [
+						'title' 	=> __( 'Media', 'elementor-extras' ),
+						'icon' 		=> 'nicon nicon-position-media',
+					],
+					'body'    		=> [
+						'title' 	=> __( 'Body', 'elementor-extras' ),
+						'icon' 		=> 'nicon nicon-position-body',
+					],
+					'footer'    		=> [
+						'title' 	=> __( 'Footer', 'elementor-extras' ),
+						'icon' 		=> 'nicon nicon-position-footer',
+					],
+					''				=> [
+						'title'		=> __( 'Hide', 'elementor-extras' ),
+						'icon'		=> 'fa fa-eye-slash',
+					],
+				],
+				'condition' => [
+					'posts_post_type' => 'product',
 				],
 			]
 		);
@@ -1865,6 +1964,7 @@ class Posts extends Extras_Widget {
 				[
 					'label' 		=> __( 'Align Text', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::CHOOSE,
+					'label_block' 	=> false,
 					'default' 		=> '',
 					'options' 		=> [
 						'left'    		=> [
@@ -2999,6 +3099,56 @@ class Posts extends Extras_Widget {
 				]
 			);
 
+			if ( is_woocommerce_active() ) {
+				$this->add_control(
+					'price_heading',
+					[
+						'separator' => 'before',
+						'label' 	=> __( 'Price', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::HEADING,
+						'condition' 	=> [
+							'post_price_position!' => '',
+							'posts_post_type' => 'product',
+						],
+					]
+				);
+
+				$this->add_control(
+					'price_color',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-post__meta--price' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							'post_price_position!' => '',
+							'posts_post_type' => 'product',
+						],
+					]
+				);
+
+				$this->add_group_control(
+					Group_Control_Typography::get_type(),
+					[
+						'name' 		=> 'price_typography',
+						'label' 	=> __( 'Typography', 'elementor-extras' ),
+						'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+						'selector' 	=> '{{WRAPPER}} .ee-post__meta--price',
+						'exclude'	=> [
+							'font_family',
+							'font_size',
+							'line_height',
+							'letter_spacing',
+						],
+						'condition' => [
+							'post_price_position!' => '',
+							'posts_post_type' => 'product',
+						],
+					]
+				);
+			}
+
 			$this->add_control(
 				'comments_heading',
 				[
@@ -3570,42 +3720,89 @@ class Posts extends Extras_Widget {
 				]
 			);
 
-			$this->add_control(
-				'read_more_heading',
+		$this->end_controls_section();
+
+	}
+
+	public function register_button_style_controls() {
+
+		$this->start_controls_section(
+			'section_style_button',
+			[
+				'label' => __( 'Button', 'elementor-extras' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'post_button_position!' => '',
+				]
+			]
+		);
+
+			$this->add_responsive_control(
+				'button_align',
 				[
-					'label' 	=> __( 'Read More', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::HEADING,
+					'label' 		=> __( 'Align', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::CHOOSE,
+					'default' 		=> '',
+					'options' 		=> [
+						'left'    		=> [
+							'title' 	=> __( 'Left', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-left',
+						],
+						'center' 		=> [
+							'title' 	=> __( 'Center', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-center',
+						],
+						'right' 		=> [
+							'title' 	=> __( 'Right', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-right',
+						],
+					],
+					'selectors'		=> [
+						'{{WRAPPER}} .ee-post__read-more' => 'text-align: {{VALUE}};',
+					],
 					'condition' => [
-						'post_excerpt_position!' => '',
-						'post_read_more!' => '',
+						'post_button_position!' => '',
 					]
 				]
 			);
 
-			$this->add_control(
-				'read_more_display',
+			$this->add_responsive_control(
+				'button_margin',
 				[
-					'label' 		=> __( 'Display', 'elementor-extras' ),
-					'type' 			=> Controls_Manager::CHOOSE,
-					'default' 		=> 'inline',
-					'options' 		=> [
-						'inline'    	=> [
-							'title' 	=> __( 'Inline', 'elementor-extras' ),
-							'icon' 		=> 'nicon nicon-inline',
-						],
-						'block' 		=> [
-							'title' 	=> __( 'Block', 'elementor-extras' ),
-							'icon' 		=> 'nicon nicon-block',
-						],
+					'label' 		=> __( 'Margin', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::DIMENSIONS,
+					'size_units' 	=> [ 'px', 'em', '%' ],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-post__button' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
 					'condition' => [
-						'post_excerpt_position!' => '',
-						'post_read_more!' => '',
-					],
+						'post_button_position!' => '',
+					]
+				]
+			);
+
+			$this->add_responsive_control(
+				'button_padding',
+				[
+					'label' 		=> __( 'Padding', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::DIMENSIONS,
+					'size_units' 	=> [ 'px', 'em', '%' ],
 					'selectors' 	=> [
-						'{{WRAPPER}} .ee-post__read-more' => 'display: {{VALUE}};',
+						'{{WRAPPER}} .ee-post__button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
-					'label_block'	=> false,
+					'condition' => [
+						'post_button_position!' => '',
+					]
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' 		=> 'button_typography',
+					'label' 	=> __( 'Typography', 'elementor-extras' ),
+					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+					'selector' 	=> '{{WRAPPER}} .ee-post__button',
 				]
 			);
 
@@ -3624,42 +3821,85 @@ class Posts extends Extras_Widget {
 						'{{WRAPPER}} .ee-post__read-more' => 'margin-top: {{SIZE}}px;',
 					],
 					'condition' => [
-						'post_excerpt_position!' 	=> '',
-						'post_read_more!' 			=> '',
-						'read_more_display' 		=> 'block',
+						'post_button_position!' => '',
 					]
 				]
 			);
 
 			$this->add_group_control(
-				Group_Control_Typography::get_type(),
+				Group_Control_Transition::get_type(),
 				[
-					'name' 		=> 'read_more_typography',
-					'label' 	=> __( 'Typography', 'elementor-extras' ),
-					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
-					'selector' 	=> '{{WRAPPER}} .ee-post__read-more',
-					'condition' => [
-						'post_excerpt_position!' => '',
-						'post_read_more!' => '',
-					]
+					'name' 			=> 'button',
+					'selector' 		=> '{{WRAPPER}} .ee-post__button',
 				]
 			);
 
+			$this->start_controls_tabs( 'button_tabs' );
 
-			$this->add_control(
-				'read_more_color',
-				[
-					'label' 	=> __( 'Color', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::COLOR,
-					'selectors' => [
-						'{{WRAPPER}} .ee-post__read-more' => 'color: {{VALUE}};',
-					],
-					'condition' => [
-						'post_excerpt_position!' => '',
-						'post_read_more!' => '',
+			$this->start_controls_tab( 'button_tab_default', [ 'label' => __( 'Default', 'elementor-extras' ) ] );
+
+				$this->add_control(
+					'read_more_color',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-post__button' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							'post_button_position!' => '',
+						]
 					]
-				]
-			);
+				);
+
+				$this->add_control(
+					'read_more_background_color',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-post__button' => 'background-color: {{VALUE}};',
+						],
+						'condition' => [
+							'post_button_position!' => '',
+						]
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab( 'button_tab_hover', [ 'label' => __( 'Hover', 'elementor-extras' ) ] );
+
+				$this->add_control(
+					'read_more_color_hover',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-post__button:hover' => 'color: {{VALUE}};',
+						],
+						'condition' => [
+							'post_button_position!' => '',
+						]
+					]
+				);
+
+				$this->add_control(
+					'read_more_background_color_hover',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} .ee-post__button:hover' => 'background-color: {{VALUE}};',
+						],
+						'condition' => [
+							'post_button_position!' => '',
+						]
+					]
+				);
+
+			$this->end_controls_tab();
+			$this->end_controls_tabs();
 
 		$this->end_controls_section();
 
@@ -4104,7 +4344,7 @@ class Posts extends Extras_Widget {
 			'terms'		=> [],
 		];
 
-		$metas = $this->_meta_parts;
+		$metas = $this->get_meta_parts();
 
 		foreach ( $metas as $meta ) {
 			$conditions['terms'][] = [
@@ -4166,7 +4406,7 @@ class Posts extends Extras_Widget {
 
 		$settings = $this->get_settings();
 
-		foreach ( $this->_content_parts as $_part ) {
+		foreach ( $this->get_content_parts() as $_part ) {
 			if ( $settings['post_' . $_part . '_position'] === $area ) {
 
 				// Additional check to see if we have any terms in this area
@@ -4190,7 +4430,7 @@ class Posts extends Extras_Widget {
 	 */
 	public function metas_in_area( $area ) {
 
-		foreach ( $this->_meta_parts as $_part ) {
+		foreach ( $this->get_meta_parts() as $_part ) {
 			if ( $this->is_in_area( 'post_' . $_part . '_position', $area ) ) {
 				return true;
 			}

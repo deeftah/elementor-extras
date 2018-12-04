@@ -1,30 +1,29 @@
-// -- videPlayer
-// @license videPlayer v1.0.0 | MIT | Namogo 2017 | https://www.namogo.com
+// -- videoPlayer
+// @license videoPlayer v1.0.0 | MIT | Namogo 2018 | https://www.namogo.com
 // --------------------------------
 (function($) {
 
 	$.videoPlayer = function(element, options) {
 
 		var defaults = {
-			cover				: '.cover',
-			coverImage 			: 'img',
+			cover				: '.ee-player__cover',
 			
 			volume 				: 0.5,
-			controls			: '.controls',
-			bar 				: '.controls__bar-wrapper',
-			buttons				: '.controls__overlay',
-			controlPlay			: '.controls__play',
-			controlRewind		: '.controls__rewind',
-			controlFullScreen 	: '.controls__fs',
-			controlTime 		: '.controls__time',
-			controlDuration 	: '.controls__duration',
-			controlProgressBar 	: '.controls__progress',
-			controlProgress		: '.controls__progress-time',
-			controlVolumeBar 	: '.controls__volume-bar',
-			controlVolume 		: '.controls__volume-bar__amount',
-			controlVolumeIcon 	: '.controls__volume-icon',
+			speed 				: 1,
+			controls			: '.ee-player__controls',
+			bar 				: '.ee-player__controls__bar-wrapper',
+			controlPlay			: '.ee-player__controls__play',
+			controlRewind		: '.ee-player__controls__rewind',
+			controlFullScreen 	: '.ee-player__controls__fs',
+			controlTime 		: '.ee-player__controls__time',
+			controlDuration 	: '.ee-player__controls__duration',
+			controlProgressBar 	: '.ee-player__controls__progress',
+			controlProgress		: '.ee-player__controls__progress-time',
+			controlVolumeBar 	: '.ee-player__controls__volume-bar',
+			controlVolume 		: '.ee-player__controls__volume-bar__amount',
+			controlVolumeIcon 	: '.ee-player__controls__volume-icon',
 
-			overlays 			: '.overlay',
+			overlays 			: '.ee-player__controls__overlay',
 
 			restartOnPause		: false,
 			stopOthersOnPlay 	: false,
@@ -43,15 +42,13 @@
 			video 				= $video.get(0),
 			cover 				= null,
 			$cover				= null,
-			$coverImage			= null,
 
 			$controls			= null,
 			$bar 				= null,
-			$buttons			= null,
 			$controlPlay		= null,
 			$controlRewind		= null,
 			$controlFullScreen 	= null,
-			$controlTimer 		= null,
+			$controlTime 		= null,
 			$controlDuration 	= null,
 			$controlProgressBar = null,
 			$controlProgress	= null,
@@ -87,7 +84,6 @@
 			$cover				= $wrapper.find( plugin.opts.cover );
 			$controls			= $wrapper.find( plugin.opts.controls );
 			$bar 				= $wrapper.find( plugin.opts.bar );
-			$buttons			= $wrapper.find( plugin.opts.buttons );
 
 			$controlRewind		= $controls.find( plugin.opts.controlRewind );
 			$controlPlay		= $controls.find( plugin.opts.controlPlay );
@@ -101,8 +97,8 @@
 			$controlVolumeIcon 	= $controls.find( plugin.opts.controlVolumeIcon);
 
 			volume 				= plugin.opts.volume;
+			playbackRate 		= plugin.opts.speed
 
-			$coverImage			= $cover.find( plugin.opts.coverImage );
 			cover 				= $cover.get(0);
 
 			if ( $controls.length ) {
@@ -114,9 +110,6 @@
 
 			// Make sure video is loaded on iOS
 			video.load();
-
-			// Disable fullscreen video on iOS devices
-			// enableInlineVideo(video);
 
 			// Bind events
 			plugin.events();
@@ -148,20 +141,19 @@
 					plugin.fullscreen();
 				});
 
-			$video.on( "loadedmetadata", plugin.initVideo );
+			video.addEventListener( "loadedmetadata", plugin.initVideo );
 
 			// Update time controls
-			$video.on( 'timeupdate', plugin.updateTime );
+			video.addEventListener( 'timeupdate', plugin.updateTime );
 
 			// Check if video completed laoded
-			$video.on( 'canplaythrough', function() {
-				_is_loaded = true;
-			});
+			video.addEventListener( 'canplaythrough', plugin.canPlayThrough );
 
 			// Stop if video ended
-			$video.on( 'ended', function() {
-				plugin.stop( false );
-			});
+			video.addEventListener( 'ended', plugin.ended );
+
+			// Set default playback rate
+			video.defaultPlaybackRate = playbackRate;
 
 			if( _is_ios ) {
 				$video.on( 'webkitExitFullscreen', plugin.stop );
@@ -169,14 +161,28 @@
 
 		};
 
+		plugin.canPlayThrough = function() {
+			_is_loaded = true;
+		};
+
+		plugin.ended = function() {
+			plugin.stop( false );
+
+			$wrapper.trigger( 'ee:video-player:ended', [ plugin ] );
+		};
+
 		plugin.initVideo = function() {
 			var initialVolume = 'true' === $video.attr( 'muted' ) ? 0 : volume;
 
-			plugin.updateVolume( 0, initialVolume );
-			plugin.updateDuration()
+			video.playbackRate = playbackRate;
 
-			// Fade out cover for autplay
-			if ( _is_autoplay ) plugin.maybePlay();
+			plugin.updateVolume( 0, initialVolume );
+			plugin.updateDuration();
+
+			if ( _is_autoplay ) {
+				plugin.beforePlay();
+				plugin.afterPlay();
+			}
 		};
 
 		plugin.initProgressBar = function() {
@@ -281,25 +287,27 @@
 			}
 		};
 
+		plugin.beforePlay = function() {
+			// Adjust button classes
+			$controlPlay.removeClass('nicon-play').addClass('nicon-pause');
+		};
+
 		plugin.play = function() {
 
 			if ( _is_playing )
 				return;
 
-			// Adjust button classes
-			$controlPlay.removeClass('nicon-play').addClass('nicon-pause');
+			plugin.beforePlay();
 
-			// Fadeout cover
-			TweenMax.to( plugin.opts.overlays, 0.2, {
-				opacity 	: 0,
-				onComplete 	: function() {}
-			});
+			$wrapper.trigger( 'ee:video-player:beforePlay', [ plugin ] );
 
 			// Play it
 			video.play();
 
 			// Everything else
 			plugin.afterPlay();
+
+			$wrapper.trigger( 'ee:video-player:afterPlay', [ plugin ] );
 		};
 
 		plugin.afterPlay = function() {
@@ -312,7 +320,7 @@
 
 			// Stop all other videos conditionally
 			if ( plugin.opts.stopOthersOnPlay ) {
-				var $players = $('.elementor-extras-html5-video').not(element);
+				var $players = $('.ee-video-player').not(element);
 
 				$players.each( function() {
 					var instance = $(this).data('videoPlayer');
@@ -340,17 +348,8 @@
 
 			if ( pausing ) { // Pausing
 
-				// Hide cover image when we're pausing
-				if ( ! plugin.opts.restartOnPause ) {
-					$coverImage.hide();
-				}
-
 				// Add paused classes
 				$wrapper.addClass('paused');
-
-				TweenMax.to( plugin.opts.overlays, 0.2, { opacity: 1, onComplete : function() {
-					setTimeout( function() {}, 300);
-				}});
 
 				// Pause the video
 				video.pause();
@@ -360,25 +359,25 @@
 
 			} else { // Ending
 
-				// Show cover image when video ended
-				$coverImage.show();
-
-				TweenMax.to( plugin.opts.overlays, 0.2, { opacity: 1, onComplete : function() {}});
-
 				if ( ! plugin.opts.endAtLastFrame ) {
 					video.currentTime = 0;
 				}
 			}
 
 			_is_playing = false;
+
+			$wrapper.trigger( 'ee:video-player:stop', [ plugin ] );
 		};
 
 		plugin.maybeRewind = function() {
 			video.currentTime = 0;
 			plugin.play();
+
+			$wrapper.trigger( 'ee:video-player:rewind', [ plugin ] );
 		};
 
-		plugin.maybePlay = function() {
+		plugin.maybePlay = function( event ) {
+
 			if ( ! _is_playing ) {
 				plugin.play();
 			} else {

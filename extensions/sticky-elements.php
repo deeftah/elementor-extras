@@ -22,7 +22,7 @@ class Extension_Sticky_Elements extends Extension_Base {
 	 * Defines if the current extension is common for all element types or not
 	 *
 	 * @since 1.8.0
-	 * @access private
+	 * @access protected
 	 *
 	 * @var bool
 	 */
@@ -35,7 +35,8 @@ class Extension_Sticky_Elements extends Extension_Base {
 	 **/
 	public function get_script_depends() {
 		return [
-			'sticky-element',
+			'hc-sticky',
+			'jquery-resize-ee',
 		];
 	}
 
@@ -82,6 +83,13 @@ class Extension_Sticky_Elements extends Extension_Base {
 
 		}, 10, 2 );
 
+		// Activate sections for sections
+		add_action( 'elementor/element/section/section_custom_css_pro/after_section_end', function( $element, $args ) {
+
+			$this->add_common_sections( $element, $args );
+
+		}, 10, 2 );
+
 	}
 
 	/**
@@ -95,7 +103,7 @@ class Extension_Sticky_Elements extends Extension_Base {
 
 		$sticky_control_args = [ 'name' => 'sticky', 'render_type' ];
 
-		if ( $element->get_name() === 'section' ) {
+		if ( $element->get_type() === 'section' ) {
 			
 			$element->add_control(
 				'sticky_warning',
@@ -113,42 +121,48 @@ class Extension_Sticky_Elements extends Extension_Base {
 
 		$element->add_control( 'sticky_enable', [
 			'label'			=> _x( 'Sticky', 'Sticky Control', 'elementor-extras' ),
-			'description'	=> __( 'Make sure "Content Position" is set to "Default" for any parent sections of this element.', 'elementor-extras' ),
+			'description'	=> __( 'Make sure "Content Position" is set to "Default" and "Column Position" is set to "Stretch" for any parent sections of this element.', 'elementor-extras' ),
 			'type' 			=> Controls_Manager::SWITCHER,
 			'default' 		=> '',
+			'separator'		=> 'before',
 			'label_on' 		=> __( 'Yes', 'elementor-extras' ),
 			'label_off' 	=> __( 'No', 'elementor-extras' ),
 			'return_value' 	=> 'yes',
 			'frontend_available'	=> true,
 		]);
+
+		$parent_options = [
+			'' 			=> __( 'Parent', 'elementor-extras' ),
+			'body' 		=> __( 'Page Body', 'elementor-extras' ),
+			'custom' 	=> __( 'Custom Parent', 'elementor-extras' ),
+		];
+
+		if ( 'widget' === $element->get_type() ) {
+			$parent_options[''] = __( 'Parent Column', 'elementor-extras' );
+			$parent_options['section'] = __( 'Parent Section', 'elementor-extras' );
+		}
 
 		$element->add_control( 'sticky_parent', [
-			'label'			=> _x( 'Stick in', 'Sticky Control', 'elementor-extras' ),
+			'label'			=> _x( 'Stay in', 'Sticky Control', 'elementor-extras' ),
 			'type' 			=> Controls_Manager::SELECT,
-			'options'		=> [
-				'' 	=> __( 'Parent', 'elementor-extras' ),
-				'body' 		=> __( 'Body', 'elementor-extras' ),
-				'custom' 	=> __( 'Custom', 'elementor-extras' ),
-			],
+			'default' 		=> '',
+			'options'		=> $parent_options,
 			'condition' => [
 				'sticky_enable!' => '',
 			],
-			'default' 		=> '',
 			'frontend_available'	=> true,
 		]);
 
-		$element->add_control( 'sticky_bottoming', [
-			'label'			=> _x( 'Bottoming', 'Sticky Control', 'elementor-extras' ),
-			'description'	=> __( 'Disable this if you don\'t want the element to stop sticking to the viewport when it hits the bottom of the parent.', 'elementor-extras' ),
-			'type' 			=> Controls_Manager::SWITCHER,
-			'default' 		=> 'yes',
-			'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-			'label_off' 	=> __( 'No', 'elementor-extras' ),
-			'return_value' 	=> 'yes',
-			'condition' => [
-				'sticky_enable!' => '',
-			],
+		$element->add_control( 'sticky_parent_selector', [
+			'label'			=> _x( 'Parent Selector', 'Sticky Control', 'elementor-extras' ),
+			'title' 		=> __( 'Add your custom id or class WITH the Pound or Dot key. e.g: #my-id or .my-class', 'elementor-extras' ),
+			'description'	=> sprintf( __( 'Set a class or ID to a column, section or any element that is a parent of this %s, then add that class here.', 'elementor-extras' ), $element->get_type() ),
+			'type' 			=> Controls_Manager::TEXT,
+			'default' 		=> '',
 			'frontend_available'	=> true,
+			'condition' 	=> [
+				'sticky_parent' 	=> 'custom'
+			]
 		]);
 
 		$element->add_control( 'sticky_unstick_on', [
@@ -166,19 +180,39 @@ class Extension_Sticky_Elements extends Extension_Base {
 			'frontend_available' => true,
 		]);
 
-		$element->add_control( 'sticky_parent_selector', [
-			'label'			=> _x( 'Parent Selector', 'Sticky Control', 'elementor-extras' ),
-			'description'	=> __( 'CSS selector for the parent', 'elementor-extras' ),
-			'type' 			=> Controls_Manager::TEXT,
-			'default' 		=> '',
+		$element->add_control( 'sticky_follow_scroll', [
+			'label'			=> _x( 'Follow Scroll', 'Sticky Control', 'elementor-extras' ),
+			'description'	=> __( 'When disabled, the sticky element will not move with the page if it is bigger than the browser window.', 'elementor-extras' ),
+			'type' 			=> Controls_Manager::SWITCHER,
+			'default' 		=> 'yes',
+			'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+			'label_off' 	=> __( 'No', 'elementor-extras' ),
+			'return_value' 	=> 'yes',
+			'condition' => [
+				'sticky_enable!' => '',
+			],
 			'frontend_available'	=> true,
-			'condition' 	=> [
-				'sticky_parent' 	=> 'custom'
-			]
 		]);
 
 		$element->add_control( 'sticky_offset', [
 			'label' 	=> _x( 'Offset Top', 'Sticky Control', 'elementor-extras' ),
+			'type' 		=> Controls_Manager::SLIDER,
+			'range' 	=> [
+				'px' 	=> [
+					'max' => 100,
+				],
+			],
+			'default' 	=> [
+				'size' 	=> 0,
+			],
+			'condition'		=> [
+	        	'sticky_enable!' => '',
+	        ],
+	        'frontend_available' => true,
+		]);
+
+		$element->add_control( 'sticky_offset_bottom', [
+			'label' 	=> _x( 'Offset Bottom', 'Sticky Control', 'elementor-extras' ),
 			'type' 		=> Controls_Manager::SLIDER,
 			'range' 	=> [
 				'px' 	=> [
@@ -211,7 +245,6 @@ class Extension_Sticky_Elements extends Extension_Base {
 			'sticky_on',
 			'sticky_offset',
 			'sticky_parent',
-			// 'section_scrolling_effect',
 		] );
 	}
 
@@ -234,7 +267,7 @@ class Extension_Sticky_Elements extends Extension_Base {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @access private
+	 * @access protected
 	 */
 	protected function add_actions() {
 

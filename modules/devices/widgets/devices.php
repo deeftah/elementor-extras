@@ -19,7 +19,7 @@ use DomDocument;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Devices
+ * Devices
  *
  * @since 0.1.0
  */
@@ -122,7 +122,7 @@ class Devices extends Extras_Widget {
 							'icon' 	=> 'nicon nicon-mobile-landscape',
 						],
 					],
-					'prefix_class'	=> 'elementor-device-orientation-',
+					'prefix_class'	=> 'ee-device-orientation-',
 					'condition'		=> [
 						'device_type'					=> [ 'phone', 'tablet' ],
 						'device_media_type'				=> [ 'image' ],
@@ -195,8 +195,8 @@ class Devices extends Extras_Widget {
 					],
 					'size_units' 	=> [ 'px', '%' ],
 					'selectors' 	=> [
-						'{{WRAPPER}} .elementor-device-wrapper' => 'max-width: {{SIZE}}{{UNIT}}; width: 100%;',
-						'{{WRAPPER}} .elementor-device' => 'width: 100%;',
+						'{{WRAPPER}} .ee-device-wrapper' => 'max-width: {{SIZE}}{{UNIT}}; width: 100%;',
+						'{{WRAPPER}} .ee-device' => 'width: 100%;',
 					],
 				]
 			);
@@ -259,7 +259,7 @@ class Devices extends Extras_Widget {
 						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
 						'label_off' 	=> __( 'No', 'elementor-extras' ),
 						'return_value' 	=> 'scrollable',
-						'prefix_class'	=> 'elementor-device-portrait-',
+						'prefix_class'	=> 'ee-device-portrait-',
 						'condition'		=> [
 							'media_portrait_screenshot[url]!'	=> '',
 							'device_media_type'					=> [ 'image' ],
@@ -293,8 +293,8 @@ class Devices extends Extras_Widget {
 							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .elementor-device-media-screen-image' => 'align-items: {{VALUE}};',
-							'{{WRAPPER}} .elementor-device-media-screen-image .elementor-device-media-screen-inner' => 'top: auto;',
+							'{{WRAPPER}} .ee-device__media__screen--image' => 'align-items: {{VALUE}};',
+							'{{WRAPPER}} .ee-device__media__screen--image .ee-device__media__screen__inner' => 'top: auto;',
 						],
 						'condition'		=> [
 							'media_portrait_screenshot_scrollable!' => 'scrollable',
@@ -321,7 +321,7 @@ class Devices extends Extras_Widget {
 							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .elementor-device-media-screen-image .elementor-device-media-screen-inner' => 'transform: translateY(-{{SIZE}}%);',
+							'{{WRAPPER}} .ee-device__media__screen--image .ee-device__media__screen__inner figure' => 'transform: translateY(-{{SIZE}}%);',
 						],
 						'condition'		=> [
 							'media_portrait_screenshot_scrollable!' => 'scrollable',
@@ -385,7 +385,7 @@ class Devices extends Extras_Widget {
 						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
 						'label_off' 	=> __( 'No', 'elementor-extras' ),
 						'return_value' 	=> 'scrollable',
-						'prefix_class'	=> 'elementor-device-landscape-',
+						'prefix_class'	=> 'ee-device-landscape-',
 						'condition'	=> [
 							'device_orientation_control' 		=> 'yes',
 							'device_type'						=> [ 'phone', 'tablet' ],
@@ -418,14 +418,10 @@ class Devices extends Extras_Widget {
 								'title' => __( 'Custom', 'elementor-extras' ),
 								'icon' 	=> 'nicon nicon-mobile-screen-custom',
 							],
-							'parallax' 	=> [
-								'title' => __( 'Parallax', 'elementor-extras' ),
-								'icon' 	=> 'eicon-parallax',
-							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .elementor-device-media-screen.elementor-device-media-screen-landscape' => 'align-items: {{VALUE}};',
-							'{{WRAPPER}} .elementor-device-media-screen-landscape .elementor-device-media-screen-inner' => 'top: auto;',
+							'{{WRAPPER}} .ee-device__media__screen.ee-device__media__screen__landscape' => 'align-items: {{VALUE}};',
+							'{{WRAPPER}} .ee-device__media__screen__landscape .ee-device__media__screen__inner' => 'top: auto;',
 						],
 						'condition'	=> [
 							'media_landscape_screenshot_scrollable!' 	=> 'scrollable',
@@ -453,7 +449,7 @@ class Devices extends Extras_Widget {
 							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .elementor-device-media-screen-landscape .elementor-device-media-screen-inner' => 'transform: translateY(-{{SIZE}}%);',
+							'{{WRAPPER}} .ee-device__media__screen__landscape .ee-device__media__screen__inner' => 'transform: translateY(-{{SIZE}}%);',
 						],
 						'condition'		=> [
 							'media_landscape_screenshot_scrollable!' 	=> 'scrollable',
@@ -482,30 +478,87 @@ class Devices extends Extras_Widget {
 			]
 		);
 
-			$this->start_controls_tabs( 'tabs_video' );
+			$this->start_controls_tabs( 'tabs_sources' );
 
 			$this->start_controls_tab(
-				'tab_video',
+				'tab_source_mp4',
 				[
-					'label' => __( 'Video', 'elementor-extras' ),
+					'label' => __( 'MP4', 'elementor-extras' ),
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
 				]
 			);
 
 				$this->add_control(
+					'video_source',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'url',
+						'options'		=> [
+							'url'		=> __( 'URL', 'elementor-extras' ),
+							'file'		=> __( 'File', 'elementor-extras' ),
+						],
+					]
+				);
+
+				$this->add_control(
 					'video_url',
 					[
-						'label' 		=> __( 'MP4 Source', 'elementor-extras' ),
+						'label' 		=> __( 'URL', 'elementor-extras' ),
 						'type' 			=> Controls_Manager::TEXT,
-						'placeholder' 	=> esc_url( home_url( '/' ) ) . 'path/to/video',
-						'description' 	=> __( 'Insert URL to local .mp4 video file', 'elementor-extras' ),
 						'dynamic' 		=> [
-							'active' => true,
-							'categories' => [ TagsModule::POST_META_CATEGORY ],
+							'active' 	=> true,
 						],
-						'label_block' 	=> true,
-						'default' 		=> '',
-						'condition'		=> [
+						'condition' 	=> [
+							'video_source' => 'url',
 							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+				$this->add_control(
+					'video_file',
+					[
+						'label' 		=> __( 'File', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::MEDIA,
+						'dynamic' 		=> [
+							'active' 	=> true,
+							'categories' => [
+								TagsModule::POST_META_CATEGORY,
+								TagsModule::MEDIA_CATEGORY,
+							],
+						],
+						'media_type' => 'video',
+						'condition' 	=> [
+							'video_source' => 'file',
+							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab(
+				'tab_source_m4v',
+				[
+					'label' => __( 'M4V', 'elementor-extras' ),
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+				$this->add_control(
+					'video_source_m4v',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'url',
+						'options'		=> [
+							'url'		=> __( 'URL', 'elementor-extras' ),
+							'file'		=> __( 'File', 'elementor-extras' ),
 						],
 					]
 				);
@@ -513,18 +566,59 @@ class Devices extends Extras_Widget {
 				$this->add_control(
 					'video_url_m4v',
 					[
-						'label' 		=> __( 'M4V Source', 'elementor-extras' ),
+						'label' 		=> __( 'URL', 'elementor-extras' ),
 						'type' 			=> Controls_Manager::TEXT,
-						'placeholder' 	=> esc_url( home_url( '/' ) ) . 'path/to/video',
-						'description' 	=> __( 'Insert URL to local .m4v video file', 'elementor-extras' ),
-						'label_block' 	=> true,
 						'dynamic' 		=> [
-							'active' => true,
-							'categories' => [ TagsModule::POST_META_CATEGORY ],
+							'active' 	=> true,
 						],
-						'default' 		=> '',
-						'condition'		=> [
-							'device_media_type' => [ 'video' ],
+						'condition' 	=> [
+							'video_source_m4v' => 'url',
+							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+				$this->add_control(
+					'video_file_m4v',
+					[
+						'label' 		=> __( 'File', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::MEDIA,
+						'dynamic' 		=> [
+							'active' 	=> true,
+							'categories' => [
+								TagsModule::POST_META_CATEGORY,
+								TagsModule::MEDIA_CATEGORY,
+							],
+						],
+						'media_type' => 'video',
+						'condition' 	=> [
+							'video_source_m4v' => 'file',
+							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab(
+				'tab_source_ogg',
+				[
+					'label' => __( 'OGG', 'elementor-extras' ),
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+				$this->add_control(
+					'video_source_ogg',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'url',
+						'options'		=> [
+							'url'		=> __( 'URL', 'elementor-extras' ),
+							'file'		=> __( 'File', 'elementor-extras' ),
 						],
 					]
 				);
@@ -532,18 +626,59 @@ class Devices extends Extras_Widget {
 				$this->add_control(
 					'video_url_ogg',
 					[
-						'label' 		=> __( 'OGG Source', 'elementor-extras' ),
+						'label' 		=> __( 'URL', 'elementor-extras' ),
 						'type' 			=> Controls_Manager::TEXT,
-						'placeholder' 	=> esc_url( home_url( '/' ) ) . 'path/to/video',
-						'description' 	=> __( 'Insert URL to local .ogg video file', 'elementor-extras' ),
-						'label_block' 	=> true,
 						'dynamic' 		=> [
-							'active' => true,
-							'categories' => [ TagsModule::POST_META_CATEGORY ],
+							'active' 	=> true,
 						],
-						'default' 		=> '',
-						'condition'		=> [
-							'device_media_type' => [ 'video' ],
+						'condition' 	=> [
+							'video_source_ogg' => 'url',
+							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+				$this->add_control(
+					'video_file_ogg',
+					[
+						'label' 		=> __( 'File', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::MEDIA,
+						'dynamic' 		=> [
+							'active' 	=> true,
+							'categories' => [
+								TagsModule::POST_META_CATEGORY,
+								TagsModule::MEDIA_CATEGORY,
+							],
+						],
+						'media_type' => 'video',
+						'condition' 	=> [
+							'video_source_ogg' => 'file',
+							'device_media_type'	=> [ 'video' ],
+						],
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab(
+				'tab_source_webm',
+				[
+					'label' => __( 'WEBM', 'elementor-extras' ),
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+				$this->add_control(
+					'video_source_webm',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'url',
+						'options'		=> [
+							'url'		=> __( 'URL', 'elementor-extras' ),
+							'file'		=> __( 'File', 'elementor-extras' ),
 						],
 					]
 				);
@@ -551,289 +686,454 @@ class Devices extends Extras_Widget {
 				$this->add_control(
 					'video_url_webm',
 					[
-						'label' 		=> __( 'WebM Source', 'elementor-extras' ),
+						'label' 		=> __( 'URL', 'elementor-extras' ),
 						'type' 			=> Controls_Manager::TEXT,
-						'placeholder' 	=> esc_url( home_url( '/' ) ) . 'path/to/video',
-						'description' 	=> __( 'Insert URL to local .webm video file', 'elementor-extras' ),
-						'label_block' 	=> true,
 						'dynamic' 		=> [
-							'active' => true,
-							'categories' => [ TagsModule::POST_META_CATEGORY ],
+							'active' 	=> true,
 						],
-						'default' 		=> '',
-						'condition'		=> [
-							'device_media_type' => [ 'video' ],
+						'condition' 	=> [
+							'video_source_webm' => 'url',
+							'device_media_type'	=> [ 'video' ],
 						],
 					]
 				);
 
 				$this->add_control(
-					'video_show_buttons',
+					'video_file_webm',
 					[
-						'label' 		=> __( 'Show Buttons', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> 'show',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_show_bar',
-					[
-						'label' 		=> __( 'Show Bar', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_show_time',
-					[
-						'label' 		=> __( 'Show Time', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> 'show',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_show_bar!'		=> '',
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_show_duration',
-					[
-						'label' 		=> __( 'Show Duration', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_show_bar!'		=> '',
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_show_volume',
-					[
-						'label' 		=> __( 'Show Volume', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_show_bar!'		=> '',
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_responsive_control(
-					'video_volume',
-					[
-						'label' 	=> __( 'Initial Volume', 'elementor-extras' ),
-						'type' 		=> Controls_Manager::SLIDER,
-						'default' 	=> [
-							'size' 	=> 0.8,
-						],
-						'range' 	=> [
-							'px' 	=> [
-								'max' 	=> 1,
-								'min' 	=> 0,
-								'step' 	=> 0.01,
+						'label' 		=> __( 'File', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::MEDIA,
+						'dynamic' 		=> [
+							'active' 	=> true,
+							'categories' => [
+								TagsModule::POST_META_CATEGORY,
+								TagsModule::MEDIA_CATEGORY,
 							],
 						],
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> '',
-						],
-						'frontend_available' => true,
-					]
-				);
-
-				$this->add_control(
-					'video_show_fs',
-					[
-						'label' 		=> __( 'Show Fullscreen', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> 'show',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_show_bar!'		=> '',
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_show_rewind',
-					[
-						'label' 		=> __( 'Show Rewind', 'elementor-extras' ),
-						'description' 	=> __( 'Shown only when video is paused.', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'show',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> '',
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_autoplay',
-					[
-						'label' 		=> __( 'Auto Play', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'autoplay',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-				$this->add_control(
-					'video_play_viewport',
-					[
-						'label' 		=> __( 'Play in Viewport', 'elementor-extras' ),
-						'description' 	=> __( 'Auto Play video when the device is in viewport', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'yes',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> '',
-							'video_autoplay'		=> 'autoplay',
-						],
-						'frontend_available'		=> true,
-					]
-				);
-
-				$this->add_control(
-					'video_stop_viewport',
-					[
-						'label' 		=> __( 'Stop on leave', 'elementor-extras' ),
-						'description' 	=> __( 'Stop video when the player has left the viewport', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'yes',
-						'condition'	=> [
-							'video_url!'			=> '',
-							'video_autoplay'		=> 'autoplay',
-							'video_play_viewport'	=> 'yes',
-						],
-						'frontend_available'		=> true,
-					]
-				);
-
-				$this->add_control(
-					'video_restart_on_pause',
-					[
-						'label' 		=> __( 'Restart on pause', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'yes',
-						'condition'	=> [
+						'media_type' => 'video',
+						'condition' 	=> [
+							'video_source_webm' => 'file',
 							'device_media_type'	=> [ 'video' ],
-							'video_url!'		=> ''
 						],
-						'frontend_available'	=> true,
-					]
-				);
-
-				$this->add_control(
-					'video_loop',
-					[
-						'label' 		=> __( 'Loop', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::SWITCHER,
-						'default' 		=> '',
-						'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-						'label_off' 	=> __( 'No', 'elementor-extras' ),
-						'return_value' 	=> 'loop',
-						'condition'	=> [
-							'device_media_type'		=> [ 'video' ],
-							'video_url!'			=> ''
-						]
-					]
-				);
-
-			$this->end_controls_tab();
-
-			$this->start_controls_tab(
-				'tab_cover',
-				[
-					'label' => __( 'Cover', 'elementor-extras' ),
-					'condition'	=> [
-						'device_media_type'		=> [ 'video' ],
-					]
-				]
-			);
-
-				$this->add_control(
-					'video_cover',
-					[
-						'label' 		=> __( 'Choose Cover', 'elementor-extras' ),
-						'type' 			=> Controls_Manager::MEDIA,
-						'dynamic' 		=> [ 'active' => true ],
-						'condition'		=> [
-							'device_media_type'				=> [ 'video' ],
-						]
-					]
-				);
-
-				$this->add_group_control(
-					Group_Control_Image_Size::get_type(),
-					[
-						'name' 		=> 'video_cover',
-						'label' 	=> __( 'Cover Size', 'elementor-extras' ),
-						'default' 	=> 'large',
-						'condition'	=> [
-							'device_media_type'	=> [ 'video' ],
-							'video_cover[url]!'		=> '',
-						]
 					]
 				);
 
 			$this->end_controls_tab();
 
 			$this->end_controls_tabs();
+
+			$this->add_control(
+				'video_cover',
+				[
+					'label' 		=> __( 'Choose Cover', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::MEDIA,
+					'dynamic' 		=> [ 'active' => true ],
+					'separator'		=> 'before',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Image_Size::get_type(),
+				[
+					'name' 		=> 'video_cover',
+					'label' 	=> __( 'Cover Size', 'elementor-extras' ),
+					'default' 	=> 'large',
+					'condition'	=> [
+						'video_cover[url]!'		=> '',
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_behaviour_heading',
+				[
+					'label' 	=> __( 'Behaviour', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+					'separator' => 'before',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_autoplay',
+				[
+					'label' 		=> __( 'Auto Play', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'autoplay',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_autoplay_notice',
+				[
+					'type' 				=> Controls_Manager::RAW_HTML,
+					'raw' 				=> __( 'Many browsers don\'t allow videos with sound to autoplay without user interaction. To avoid this, enable the "Start Muted" control to disable sound so that the video autoplays correctly.', 'elementor-extras' ),
+					'content_classes' 	=> 'ee-raw-html ee-raw-html__warning',
+					'condition' 		=> [
+						'video_autoplay!' => '',
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_stop_others',
+				[
+					'label' 		=> __( 'Stop Others', 'elementor-extras' ),
+					'description' 	=> __( 'Stop all other videos on page when this video is played.', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'frontend_available' => true,
+					'condition'		=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_play_viewport',
+				[
+					'label' 		=> __( 'Play in Viewport', 'elementor-extras' ),
+					'description' 	=> __( 'Autoplay video when the player is in viewport', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_autoplay'	=> 'autoplay',
+					],
+					'frontend_available'	=> true,
+				]
+			);
+
+			$this->add_control(
+				'video_stop_viewport',
+				[
+					'label' 		=> __( 'Stop on leave', 'elementor-extras' ),
+					'description' 	=> __( 'Stop video when the player has left the viewport', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'condition'	=> [
+						'device_media_type'		=> [ 'video' ],
+						'video_autoplay'		=> 'autoplay',
+						'video_play_viewport'	=> 'yes',
+					],
+					'frontend_available'		=> true,
+				]
+			);
+
+			$this->add_control(
+				'video_restart_on_pause',
+				[
+					'label' 		=> __( 'Restart on pause', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'frontend_available'	=> true,
+					'condition'		=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_loop',
+				[
+					'label' 		=> __( 'Loop', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'loop',
+					'condition'		=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_end_at_last_frame',
+				[
+					'label' 		=> __( 'End at last frame', 'elementor-extras' ),
+					'description' 	=> __( 'End the video at the last frame instead of showing the first one.', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_loop'	=> '',
+					],
+					'frontend_available'		=> true,
+				]
+			);
+
+			$this->add_responsive_control(
+				'video_speed',
+				[
+					'label' 	=> __( 'Playback Speed', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SLIDER,
+					'default' 	=> [
+						'size' 	=> 1,
+					],
+					'range' 	=> [
+						'px' 	=> [
+							'max' 	=> 5,
+							'min' 	=> 0.1,
+							'step' 	=> 0.01,
+						],
+					],
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'video_display_heading',
+				[
+					'label' 	=> __( 'Display', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+					'separator' => 'before',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_buttons',
+				[
+					'label' 		=> __( 'Show Buttons', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_bar',
+				[
+					'label' 		=> __( 'Show Bar', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_rewind',
+				[
+					'label' 		=> __( 'Show Rewind', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition' 	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_restart_on_pause!' => 'yes',
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_time',
+				[
+					'label' 		=> __( 'Show Time', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_show_bar!'	=> '',
+					]
+				]
+			);
+
+			$this->add_control(
+				'video_show_progress',
+				[
+					'label' 		=> __( 'Show Progress', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_show_bar!'	=> '',
+					]
+				]
+			);
+
+			$this->add_control(
+				'video_show_duration',
+				[
+					'label' 		=> __( 'Show Duration', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_show_bar!'	=> '',
+					]
+				]
+			);
+
+			$this->add_control(
+				'video_show_fs',
+				[
+					'label' 		=> __( 'Show Fullscreen', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_show_bar!'	=> '',
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_volume_heading',
+				[
+					'label' 	=> __( 'Volume', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+					'separator' => 'before',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_volume',
+				[
+					'label' 		=> __( 'Show Volume', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'device_media_type'	=> [ 'video' ],
+						'video_show_bar!'		=> '',
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_volume_icon',
+				[
+					'label' 		=> __( 'Show Volume Icon', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'video_show_bar!'		=> '',
+						'video_show_volume!'	=> '',
+						'device_media_type'		=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_show_volume_bar',
+				[
+					'label' 		=> __( 'Show Volume Bar', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'show',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'show',
+					'condition'	=> [
+						'video_show_bar!'		=> '',
+						'video_show_volume!'	=> '',
+						'device_media_type'		=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_control(
+				'video_start_muted',
+				[
+					'label' 		=> __( 'Start Muted', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'condition'	=> [
+						'video_autoplay!'	=> '',
+						'device_media_type'	=> [ 'video' ],
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'video_volume',
+				[
+					'label' 	=> __( 'Initial Volume', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SLIDER,
+					'default' 	=> [
+						'size' 	=> 0.8,
+					],
+					'range' 	=> [
+						'px' 	=> [
+							'max' 	=> 1,
+							'min' 	=> 0,
+							'step' 	=> 0.01,
+						],
+					],
+					'condition'	=> [
+						'device_media_type'		=> [ 'video' ],
+						'video_start_muted!' 	=> 'yes',
+					],
+					'frontend_available' => true,
+				]
+			);
 
 		$this->end_controls_section();
 
@@ -871,7 +1171,7 @@ class Devices extends Extras_Widget {
 						'gold'  	=> __( 'Gold', 'elementor-extras' ),
 						'rosegold'  => __( 'Rose Gold', 'elementor-extras' ),
 						],
-					'prefix_class'	=> 'elementor-device-skin-',
+					'prefix_class'	=> 'ee-device-skin-',
 					'condition'		=> [
 						'device_override_style!'	=> 'yes',
 						'device_type!'				=> [ 'laptop', 'desktop' ]
@@ -886,8 +1186,8 @@ class Devices extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default'	=> '',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-device-wrapper svg .back-shape' => 'fill: {{VALUE}}',
-						'{{WRAPPER}} .elementor-device-wrapper svg .side-shape' => 'fill: {{VALUE}}',
+						'{{WRAPPER}} .ee-device-wrapper svg .back-shape' => 'fill: {{VALUE}}',
+						'{{WRAPPER}} .ee-device-wrapper svg .side-shape' => 'fill: {{VALUE}}',
 					],
 					'condition'		=> [
 						'device_override_style'	=> 'yes'
@@ -905,7 +1205,7 @@ class Devices extends Extras_Widget {
 						'light'  	=> __( 'Light', 'elementor-extras' ),
 						'dark'  	=> __( 'Dark', 'elementor-extras' ),
 						],
-					'prefix_class'	=> 'elementor-device-controls-tone-',
+					'prefix_class'	=> 'ee-device-controls-tone-',
 					'condition'		=> [
 						'device_override_style'	=> 'yes',
 					],
@@ -928,7 +1228,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-device-wrapper svg .overlay-shape' => 'fill-opacity: {{SIZE}};',
+						'{{WRAPPER}} .ee-device-wrapper svg .overlay-shape' => 'fill-opacity: {{SIZE}};',
 					],
 					'condition'		=> [
 						'device_override_style'	=> 'yes'
@@ -955,7 +1255,7 @@ class Devices extends Extras_Widget {
 				[
 					'name' 		=> 'device_screen_border',
 					'label' 	=> __( 'Border', 'elementor-extras' ),
-					'selector' 	=> '{{WRAPPER}} .elementor-device-wrapper .elementor-device-media-screen figure',
+					'selector' 	=> '{{WRAPPER}} .ee-device-wrapper .ee-device__media__screen figure',
 					'condition'		=> [
 						'device_type'			=> [ 'window' ],
 						'device_media_type'		=> [ 'image' ],
@@ -971,46 +1271,12 @@ class Devices extends Extras_Widget {
 					'size_units' 			=> [ 'px', '%' ],
 					'allowed_dimensions'	=> [ 'bottom', 'left' ],
 					'selectors' 			=> [
-						'{{WRAPPER}} .elementor-device-wrapper .elementor-device-media-screen figure' => 'border-radius: 0 0 {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+						'{{WRAPPER}} .ee-device-wrapper .ee-device__media__screen figure' => 'border-radius: 0 0 {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
 					'condition'				=> [
 						'device_type'			=> [ 'window' ],
 						'device_media_type'		=> [ 'image' ],
 					],
-				]
-			);
-
-		$this->end_controls_section();
-
-		$this->start_controls_section(
-			'section_video_style',
-			[
-				'label' => __( 'Video', 'elementor-extras' ),
-				'tab' 	=> Controls_Manager::TAB_STYLE,
-				'condition'	=> [
-					'device_media_type'		=> [ 'video' ],
-					'video_url!'			=> '',
-				],
-			]
-		);
-
-			$this->add_control(
-				'video_cover_style',
-				[
-					'label' 		=> __( 'Cover', 'elementor-extras' ),
-					'description' 	=> __( 'Forces the video cover the whole screen', 'elementor-extras' ),
-					'type' 			=> Controls_Manager::SWITCHER,
-					'default' 		=> '',
-					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-					'label_off' 	=> __( 'No', 'elementor-extras' ),
-					'return_value' 	=> 'loop',
-					'selectors'		=> [
-						'{{WRAPPER}} .elementor-extras-html5-video__source' => 'object-fit: cover; height: 100%;',
-					],
-					'condition'	=> [
-						'device_media_type'		=> [ 'video' ],
-						'video_url!'			=> ''
-					]
 				]
 			);
 
@@ -1031,7 +1297,7 @@ class Devices extends Extras_Widget {
 					'type' 		=> Controls_Manager::COLOR,
 					'default'	=> '#000000',
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__cover::after' => 'background-color: {{VALUE}}',
+						'{{WRAPPER}} .ee-video-player__cover::after' => 'background-color: {{VALUE}}',
 					],
 				]
 			);
@@ -1052,7 +1318,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__cover::after' => 'opacity: {{SIZE}}',
+						'{{WRAPPER}} .ee-video-player__cover::after' => 'opacity: {{SIZE}}',
 					],
 				]
 			);
@@ -1065,6 +1331,7 @@ class Devices extends Extras_Widget {
 				'label' => __( 'Video Interface', 'elementor-extras' ),
 				'tab' 	=> Controls_Manager::TAB_STYLE,
 				'conditions' => [
+					'relation' 	=> 'or',
 					'terms' 	=> [
 						[
 							'name' 		=> 'video_show_buttons',
@@ -1075,7 +1342,6 @@ class Devices extends Extras_Widget {
 							'name' 		=> 'video_show_bar',
 							'operator' 	=> '==',
 							'value' 	=> 'show',
-							'relation' 	=> 'or',
 						],
 					],
 				],
@@ -1095,9 +1361,9 @@ class Devices extends Extras_Widget {
 						'unit' 		=> 'px'
 					],
 					'selectors' 	=> [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-						{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar .control--progress' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar .control--progress__inner' => 'border-radius: 0 {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} 0;'
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+						{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar .ee-player__control--progress' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar .ee-player__control--progress__inner' => 'border-radius: 0 {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} 0;'
 					],
 				]
 			);
@@ -1112,29 +1378,29 @@ class Devices extends Extras_Widget {
 			);
 
 				$this->add_control(
-					'video_controls_background',
-					[
-						'label' 	=> __( 'Controls Background', 'elementor-extras' ),
-						'type' 		=> Controls_Manager::COLOR,
-						'default'	=> '#FFFFFF',
-						'selectors' => [
-							'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'background-color: {{VALUE}}',
-						],
-					]
-				);
-
-				$this->add_control(
 					'video_controls_foreground',
 					[
 						'label' 	=> __( 'Controls Color', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::COLOR,
 						'default'	=> '#000000',
 						'selectors' => [
-							'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'color: {{VALUE}}',
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'color: {{VALUE}}',
 
-							'{{WRAPPER}} .elementor-extras-html5-video__controls .control--progress__inner' => 'background-color: {{VALUE}}',
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__control--progress__inner' => 'background-color: {{VALUE}}',
+						],
+					]
+				);
+
+				$this->add_control(
+					'video_controls_background',
+					[
+						'label' 	=> __( 'Controls Background', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '#FFFFFF',
+						'selectors' => [
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'background-color: {{VALUE}}',
 						],
 					]
 				);
@@ -1155,9 +1421,8 @@ class Devices extends Extras_Widget {
 							],
 						],
 						'selectors' => [
-							'
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'opacity: {{SIZE}}',
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'opacity: {{SIZE}}',
 						],
 					]
 				);
@@ -1168,8 +1433,8 @@ class Devices extends Extras_Widget {
 						'name' 		=> 'video_controls_border',
 						'label' 	=> __( 'Border', 'elementor-extras' ),
 						'selector' 	=>
-							'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar',
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar',
 					]
 				);
 
@@ -1178,8 +1443,8 @@ class Devices extends Extras_Widget {
 					[
 						'name' 		=> 'video_controls_shadow',
 						'selector' 	=>
-							'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar',
+							'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar',
 					]
 				);
 
@@ -1193,29 +1458,29 @@ class Devices extends Extras_Widget {
 			);
 
 				$this->add_control(
-					'video_controls_background_hover',
-					[
-						'label' 	=> __( 'Controls Background', 'elementor-extras' ),
-						'type' 		=> Controls_Manager::COLOR,
-						'default'	=> '',
-						'selectors' => [
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control:hover,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover' => 'background-color: {{VALUE}}',
-						],
-					]
-				);
-
-				$this->add_control(
 					'video_controls_foreground_hover',
 					[
 						'label' 	=> __( 'Controls Color', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::COLOR,
 						'default'	=> '',
 						'selectors' => [
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control:hover,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover' => 'color: {{VALUE}}',
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control:hover,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover' => 'color: {{VALUE}}',
 
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover .control--progress__inner' => 'background-color: {{VALUE}}',
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover .ee-player__control--progress__inner' => 'background-color: {{VALUE}}',
+						],
+					]
+				);
+
+				$this->add_control(
+					'video_controls_background_hover',
+					[
+						'label' 	=> __( 'Controls Background', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '',
+						'selectors' => [
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control:hover,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover' => 'background-color: {{VALUE}}',
 						],
 					]
 				);
@@ -1236,8 +1501,8 @@ class Devices extends Extras_Widget {
 							],
 						],
 						'selectors' => [
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control:hover,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover' => 'opacity: {{SIZE}}',
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control:hover,
+							 {{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover' => 'opacity: {{SIZE}}',
 						],
 					]
 				);
@@ -1248,8 +1513,8 @@ class Devices extends Extras_Widget {
 						'name' 		=> 'video_controls_border_hover',
 						'label' 	=> __( 'Border', 'elementor-extras' ),
 						'selector' 	=>
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control:hover,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover',
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control:hover,
+							{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover',
 					]
 				);
 
@@ -1258,8 +1523,8 @@ class Devices extends Extras_Widget {
 					[
 						'name' 		=> 'video_controls_shadow_hover',
 						'selector' 	=>
-							'(desktop+){{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control:hover,
-							{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar:hover',
+							'(desktop+){{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control:hover,
+							{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar:hover',
 					]
 				);
 
@@ -1295,7 +1560,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .control' => 'font-size: {{SIZE}}px; width: {{SIZE}}px; height: {{SIZE}}px;',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__control' => 'font-size: {{SIZE}}px; width: {{SIZE}}px; height: {{SIZE}}px;',
 					],
 					'condition'		=> [
 						'video_show_buttons!' => '',
@@ -1318,7 +1583,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__overlay .controls__rewind' => 'margin-right: {{SIZE}}px;',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__overlay .ee-player__controls__rewind' => 'margin-right: {{SIZE}}px;',
 					],
 					'condition'		=> [
 						'video_show_buttons!' => '',
@@ -1355,7 +1620,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'padding: {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'padding: {{SIZE}}px',
 					],
 					'condition'		=> [
 						'video_show_bar!' => '',
@@ -1379,7 +1644,7 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar-wrapper' => 'padding: 0 {{SIZE}}px {{SIZE}}px {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar-wrapper' => 'padding: 0 {{SIZE}}px {{SIZE}}px {{SIZE}}px',
 					],
 					'condition'		=> [
 						'video_show_bar!' => '',
@@ -1393,7 +1658,7 @@ class Devices extends Extras_Widget {
 					'label' 		=> __( 'Border Radius', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::DIMENSIONS,
 					'selectors' 	=> [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
 					'condition'		=> [
 						'video_show_bar!' => '',
@@ -1412,13 +1677,13 @@ class Devices extends Extras_Widget {
 					'range' 	=> [
 						'px' 	=> [
 							'max' 	=> 36,
-							'min' 	=> 12,
+							'min' 	=> 6,
 							'step' 	=> 1,
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar' => 'font-size: {{SIZE}}px',
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .controls__bar .control--progress' => 'height: {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar' => 'font-size: {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__controls__bar .ee-player__control--progress' => 'height: {{SIZE}}px',
 					],
 					'condition'		=> [
 						'video_show_bar!' => '',
@@ -1442,9 +1707,9 @@ class Devices extends Extras_Widget {
 						],
 					],
 					'selectors' => [
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .control--indicator,
-						{{WRAPPER}} .elementor-extras-html5-video__controls .control--icon' => 'padding: 0 {{SIZE}}px',
-						'{{WRAPPER}} .elementor-extras-html5-video__controls .control--progress' => 'margin: 0 {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__control--indicator,
+						 {{WRAPPER}} .ee-video-player__controls .ee-player__control--icon' => 'padding: 0 {{SIZE}}px',
+						'{{WRAPPER}} .ee-video-player__controls .ee-player__control--progress' => 'margin: 0 {{SIZE}}px',
 					],
 					'condition'		=> [
 						'video_show_bar!' => '',
@@ -1466,235 +1731,440 @@ class Devices extends Extras_Widget {
 			$device_type = $settings['device_type'];
 		}
 
-		$this->add_render_attribute('device-wrapper', 'class', [
-			'elementor-device-wrapper',
-			'elementor-device-type-' . $device_type
+		$this->add_render_attribute( [
+			'device-wrapper' => [
+				'class' => [
+					'ee-device-wrapper',
+					'ee-device-type-' . $device_type,
+				],
+			],
+			'device' => [
+				'class' => [
+					'ee-device',
+				],
+			],
+			'device-orientation' => [
+				'class' => [
+					'ee-device__orientation',
+					'nicon',
+					'nicon-mobile-landscape',
+				],
+			],
+			'device-shape' => [
+				'class' => [
+					'ee-device__shape',
+				],
+			],
+			'device-media' => [
+				'class' => [
+					'ee-device__media',
+				],
+			],
+			'device-media-inner' => [
+				'class' => [
+					'ee-device__media__inner',
+				],
+			],
+			'device-media-screen' => [
+				'class' => [
+					'ee-device__media__screen',
+					'ee-device__media__screen--' . $settings['device_media_type'],
+				],
+			],
+			'device-media-screen-landscape' => [
+				'class' => [
+					'ee-device__media__screen',
+					'ee-device__media__screen__landscape',
+				],
+			],
+			'device-media-screen-controls' => [
+				'class' => [
+					'ee-device__media__screen',
+					'ee-device__media__screen__controls',
+				],
+			],
+			'device-media-screen-inner' => [
+				'class' => [
+					'ee-device__media__screen__inner',
+				],
+			],
 		] );
-
-		$this->add_render_attribute('device', 'class', 'elementor-device');
 
 		if ( 'yes' === $settings['device_orientation_control'] && 'image' === $settings['device_media_type'] ) {
 			$this->add_render_attribute('device', 'class', 'has--orientation-control');
 		}
 
-		$this->add_render_attribute('device-orientation', 'class', 'elementor-device-orientation nicon nicon-mobile-landscape');
-
-		$this->add_render_attribute('device-shape', 'class', 'elementor-device-shape');
-
-		$this->add_render_attribute('device-media', 'class', 'elementor-device-media');
-		$this->add_render_attribute('device-media-inner', 'class', 'elementor-device-media-inner');
-
-		$this->add_render_attribute('device-media-screen', 'class', [
-			'elementor-device-media-screen',
-			'elementor-device-media-screen-' . $settings['device_media_type']
-		] );
-
-		$this->add_render_attribute('device-media-screen-landscape', 'class', [
-			'elementor-device-media-screen',
-			'elementor-device-media-screen-landscape'
-		]);
-
-		$this->add_render_attribute('device-media-screen-controls', 'class', [
-			'elementor-device-media-screen',
-			'elementor-device-media-screen-controls'
-		] );
-
-		$this->add_render_attribute('device-media-screen-inner', 'class', 'elementor-device-media-screen-inner');
-
-		$after_shape 	= '';
-		$before_shape 	= '';
-		$after_shape 	= '';
-
-		$before_shape .= '<div ' . $this->get_render_attribute_string('device-wrapper') . '>';
-		$before_shape .= '<div ' . $this->get_render_attribute_string('device') . '>';
-
-		if ( 'yes' === $settings['device_orientation_control'] && 'image' === $settings['device_media_type'] ) {
-			$before_shape .= '<div ' . $this->get_render_attribute_string('device-orientation') . '></div>';
-		}
-
-		$before_shape .= '<div ' . $this->get_render_attribute_string('device-shape') . '>';
-
-		echo $before_shape;
-
-		include ELEMENTOR_EXTRAS_PATH . 'assets/shapes/' . $device_type . '.svg';
-
-		$after_shape .= '</div><!-- .elementor-device-shape -->';
-
-		$after_shape .= '<div ' . $this->get_render_attribute_string('device-media') . '>';
-		$after_shape .= '<div ' . $this->get_render_attribute_string('device-media-inner') . '>';
-		$after_shape .= '<div ' . $this->get_render_attribute_string('device-media-screen') . '>';
-		$after_shape .= '<div ' . $this->get_render_attribute_string('device-media-screen-inner') . '>';
-
-		if ( $settings['device_media_type'] === 'image' ) {
-			if ( ! empty( $settings['media_portrait_screenshot']['url'] ) )
-				$after_shape .= '<figure>' . Group_Control_Image_Size::get_attachment_image_html( $settings, 'media_portrait_screenshot' ) . '</figure>';
-		} else {
-			if ( $settings['video_url'] || $settings['video_url_ogg'] || $settings['video_url_webm'] ) {
-
-				$video_settings = [];
-
-				if( $settings['video_autoplay'] === 'autoplay' && 'yes' !== $settings['video_play_viewport'] ) {
-					$video_settings[] = 'autoplay';
-				}
-
-				if( $settings['video_loop'] === 'loop' ) {
-					$video_settings[] = 'loop';
-				}
-
-				$video_settings = implode( ' ', $video_settings );
-
-				$this->add_render_attribute( 'video-wrapper', 'class', 'elementor-extras-html5-video' );
-				$this->add_render_attribute( 'video-cover', 'class', 'elementor-extras-html5-video__cover' );
-				$this->add_render_attribute( 'video-cover', 'class', 'video__overlay' );
-				$this->add_render_attribute( 'video-image', 'class', 'elementor-extras-html5-video__image' );
-				$this->add_render_attribute( 'video-controls', 'class', 'elementor-extras-html5-video__controls' );
-				$this->add_render_attribute( 'video-controls', 'class', 'controls' );
-
-				$this->add_render_attribute( 'video', 'class', 'elementor-extras-html5-video__source' );
-				// $this->add_render_attribute( 'video', 'preload', 'yes' );
-				$this->add_render_attribute( 'video', 'playsinline', 'true' );
-				$this->add_render_attribute( 'video', 'width', '100%' );
-				$this->add_render_attribute( 'video', 'height', '100%' );
-
-				// Video wrapper
-
-				$after_shape .= '<div ' . $this->get_render_attribute_string( 'video-wrapper' ) . '>';
-
-					// Video
-
-					$after_shape .= '<video ' . $this->get_render_attribute_string( 'video' ) . ' ' . $video_settings . '>';
-
-					if ( $settings['video_url'] ) {
-						$this->add_render_attribute( 'source', 'src', $settings['video_url'] );
-						$this->add_render_attribute( 'source', 'type', 'video/mp4' );
-
-						$after_shape .= '<source ' . $this->get_render_attribute_string( 'source' ) . '>';
-					}
-
-					if ( $settings['video_url_m4v'] ) {
-						$this->add_render_attribute( 'source_m4v', 'src', $settings['video_url_m4v'] );
-
-						$after_shape .= '<source ' . $this->get_render_attribute_string( 'source_m4v' ) . '>';
-					}
-
-					if ( $settings['video_url_ogg'] ) {
-						$this->add_render_attribute( 'source_ogg', 'src', $settings['video_url_ogg'] );
-						$this->add_render_attribute( 'source_ogg', 'type', 'video/ogg' );
-
-						$after_shape .= '<source ' . $this->get_render_attribute_string( 'source_ogg' ) . '>';
-					}
-
-					if ( $settings['video_url_webm'] ) {
-						$this->add_render_attribute( 'source_webm', 'src', $settings['video_url_webm'] );
-						$this->add_render_attribute( 'source_webm', 'type', 'video/webm' );
-
-						$after_shape .= '<source ' . $this->get_render_attribute_string( 'source_webm' ) . '>';
-					}
-
-					$after_shape .= '</video>';
-
-					// Video Cover
-
-					$after_shape .= '<div ' . $this->get_render_attribute_string( 'video-cover' ) . '>';
-
-					$after_shape .= '</div><!-- .elementor-extras-html5-video__cover -->';
-
-					$after_shape .= '<div ' . $this->get_render_attribute_string('video-controls') . '>';
-
-						if ( 'show' === $settings['video_show_buttons'] ) {
-							$after_shape .= '<ul class="controls__overlay video__overlay">';
-
-							if ( 'show' === $settings['video_show_rewind'] ) {
-								$after_shape .= '<li class="control controls__rewind nicon nicon-rewind"></li>';
-							}
-
-							$after_shape .= '<li class="control controls__play nicon nicon-play"></li>';
-							$after_shape .= '</ul>';
-						}
-
-						if ( 'show' === $settings['video_show_bar'] ) {
-
-							$after_shape .= '<div class="controls__bar-wrapper">';
-								$after_shape .= '<div class="controls__bar">';
-
-									if ( 'show' === $settings['video_show_rewind'] ) {
-										$after_shape .= '<div class="control controls__rewind control--icon nicon nicon-rewind"></div>';
-									}
-
-									$after_shape .= '<div class="control controls__play control--icon nicon nicon-play"></div>';
-
-									if ( 'show' === $settings['video_show_time'] ) {
-										$after_shape .= '<div class="control controls__time control--indicator">00:00</div>';
-									}
-
-									$after_shape .= '<div class="control controls__progress control--progress">';
-
-										$after_shape .= '<div class="control controls__progress-time control--progress__inner"></div>';
-										$after_shape .= '<div class="control controls__progress-track control--progress__inner control--progress__track"></div>';
-
-									$after_shape .= '</div>';
-
-									if ( 'show' === $settings['video_show_duration'] ) {
-										$after_shape .= '<div class="control controls__duration control--indicator">00:00</div>';
-									}
-
-									if ( 'show' === $settings['video_show_volume'] ) {
-										$after_shape .= '<div class="control controls__volume">';
-
-											$after_shape .= '<div class="control controls__volume-icon control--icon nicon nicon-volume"></div>';
-											$after_shape .= '<div class="control controls__volume-bar control--progress">';
-
-												$after_shape .= '<div class="control controls__volume-bar__amount control--progress__inner"></div>';
-												$after_shape .= '<div class="control controls__volume-bar__track control--progress__inner control--progress__track"></div>';
-
-											$after_shape .= '</div>';
-
-										$after_shape .= '</div>';
-									}
-
-									if ( 'show' === $settings['video_show_fs'] ) {
-										$after_shape .= '<div class="control controls__fs control--icon nicon nicon-expand"></div>';
-									}
-
-								$after_shape .= '</div><!-- .controls__bar -->';
-							$after_shape .= '</div><!-- .controls__bar-wrapper -->';
-
-						}
-
-					$after_shape .= '</div><!-- .elementor-extras-html5-video__controls -->';
-
-				$after_shape .= '</div>';
-			}
-		}
-
-		$after_shape .= '</div><!-- .elementor-device-media-screen-inner -->';
-		$after_shape .= '</div><!-- .elementor-device-media-screen -->';
-
-		if ( $settings['device_media_type'] === 'image' ) {
-
-			if ( ! empty( $settings['media_landscape_screenshot']['url'] ) ) {
-				$after_shape .= '<div ' . $this->get_render_attribute_string('device-media-screen-landscape') . '>';
-				$after_shape .= '<div ' . $this->get_render_attribute_string('device-media-screen-inner') . '>';
-
-				$after_shape .= '<figure>' . Group_Control_Image_Size::get_attachment_image_html( $settings, 'media_landscape_screenshot' ) . '</figure>';
-
-				$after_shape .= '</div><!-- .elementor-device-media-screen-inner -->';
-				$after_shape .= '</div><!-- .elementor-device-media-screen -->';
-			}
-
-		}
-
-		$after_shape .= '</div><!-- .elementor-device-media-inner -->';
-		$after_shape .= '</div><!-- .elementor-device-media -->';
-		$after_shape .= '</div><!-- .elementor-device -->';
-		$after_shape .= '</div><!-- .elementor-device-wrapper -->';
-
-		echo $after_shape;
+		?><div <?php echo $this->get_render_attribute_string('device-wrapper'); ?>>
+			<div <?php echo $this->get_render_attribute_string('device'); ?>>
+
+				<?php if ( 'yes' === $settings['device_orientation_control'] && 'image' === $settings['device_media_type'] ) { ?>
+					<div <?php echo $this->get_render_attribute_string('device-orientation'); ?>></div>
+				<?php } ?>
+
+				<div <?php echo $this->get_render_attribute_string('device-shape'); ?>>
+					<?php include ELEMENTOR_EXTRAS_PATH . 'assets/shapes/' . $device_type . '.svg'; ?>
+				</div><!-- .ee-device__shape -->
+
+				<div <?php echo $this->get_render_attribute_string('device-media'); ?>>
+					<div <?php echo $this->get_render_attribute_string('device-media-inner'); ?>>
+						<div <?php echo $this->get_render_attribute_string('device-media-screen'); ?>>
+							<div <?php echo $this->get_render_attribute_string('device-media-screen-inner'); ?>>
+								<?php if ( 'image' === $settings['device_media_type'] ) { ?>
+									<?php $this->render_type_image( 'media_portrait_screenshot' ); ?>
+								<?php } elseif ( 'video' === $settings['device_media_type'] ) { ?>
+									<?php $this->render_type_video(); ?>
+								<?php } ?>
+							</div><!-- .ee-device__media__screen__inner -->
+						</div><!-- .ee-device__media__screen -->
+
+					<?php if ( 'image' === $settings['device_media_type'] && '' !== $settings['media_landscape_screenshot']['url'] ) { ?>
+						<div <?php echo $this->get_render_attribute_string('device-media-screen-landscape'); ?>>
+							<div <?php echo $this->get_render_attribute_string('device-media-screen-inner'); ?>>
+								<figure>
+									<?php $this->render_type_image( 'media_landscape_screenshot' ); ?>
+								</figure>
+							</div><!-- .ee-device__media__screen__inner -->
+						</div><!-- .ee-device__media__screen__landscape -->
+					<?php } ?>
+
+					</div><!-- .ee-device__media__inner -->
+				</div><!-- .ee-device__media -->
+			</div><!-- .ee-device -->
+		</div><!-- .ee-device-wrapper --><?php
 	}
 
-	protected function _content_template() {
+	protected function render_type_image( $control ) {
+		$settings = $this->get_settings_for_display();
+
+		if ( '' !== $settings['media_portrait_screenshot']['url'] ) { ?>
+			<figure><?php echo Group_Control_Image_Size::get_attachment_image_html( $settings, $control ); ?></figure>
+		<?php }
+	}
+
+	protected function render_type_video() {
+		$settings = $this->get_settings_for_display();
+
+		if (
+			empty( $settings['video_file']['url'] ) &&
+			empty( $settings['video_file_ogg']['url'] ) &&
+			empty( $settings['video_file_webm']['url'] ) &&
+			empty( $settings['video_file_m4v']['url'] ) &&
+			empty( $settings['video_url'] ) &&
+			empty( $settings['video_url_ogg'] ) &&
+			empty( $settings['video_url_webm'] ) &&
+			empty( $settings['video_url_m4v'] )
+		) return;
+
+		$this->add_render_attribute( [
+			'video-wrapper' => [
+				'class' => [
+					'ee-video-player',
+					'ee-player'
+				],
+			],
+		] );
+
+		?><div <?php echo $this->get_render_attribute_string( 'video-wrapper' ); ?>>
+			<?php $this->render_video(); ?>
+			<?php $this->render_cover(); ?>
+			<?php $this->render_controls(); ?>
+		</div><!-- .ee-video-player -->
+		<?php
+	}
+
+	protected function render_video() {
+
+		$settings = $this->get_settings_for_display();
+
+		$this->add_render_attribute( 'video', [
+			'class' => [
+				'ee-video-player__source',
+				'ee-player__source'
+			],
+			'playsinline' => 'true',
+			'webkit-playsinline' => 'true',
+			'width' => '100%',
+			'height' => '100%',
+		] );
+
+		if ( 'autoplay' === $settings['video_autoplay'] && 'yes' !== $settings['video_play_viewport'] ) {
+			$this->add_render_attribute( 'video', 'autoplay', 'true' );
+		}
+
+		if ( 'yes' === $settings['video_start_muted'] ) {
+			$this->add_render_attribute( 'video', 'muted', 'true' );
+		}
+
+		if ( 'loop' === $settings['video_loop'] ) {
+			$this->add_render_attribute( 'video', 'loop', 'true' );
+		}
+
+		if ( ! empty( $settings['video_cover']['url'] ) ) {
+			$url = Group_Control_Image_Size::get_attachment_image_src( $settings['video_cover']['id'], 'video_cover', $settings );
+			$this->add_render_attribute( 'video', 'poster', $url );
+		}
+
+		?><video <?php echo $this->get_render_attribute_string( 'video' ); ?>><?php
+			
+			$video_url = ( 'file' === $settings['video_source'] ) ? $settings['video_file']['url'] : $settings['video_url'];
+			$video_url_m4v = ( 'file' === $settings['video_source_m4v'] ) ? $settings['video_file_m4v']['url'] : $settings['video_url_m4v'];
+			$video_url_ogg = ( 'file' === $settings['video_source_ogg'] ) ? $settings['video_file_ogg']['url'] : $settings['video_url_ogg'];
+			$video_url_webm = ( 'file' === $settings['video_source_webm'] ) ? $settings['video_file_webm']['url'] : $settings['video_url_webm'];
+			
+			if ( $video_url ) {
+				$this->add_render_attribute( 'source-mp4', [
+					'src' => $video_url,
+					'type' => 'video/mp4',
+				] );
+			?><source <?php echo $this->get_render_attribute_string( 'source-mp4' ); ?>><?php } ?>
+
+			<?php if ( $video_url_m4v ) {
+				$this->add_render_attribute( 'source-m4v', [
+					'src' => $video_url_m4v,
+					'type' => 'video/m4v',
+				] );
+			?><source <?php echo $this->get_render_attribute_string( 'source-m4v' ); ?>><?php } ?>
+
+			<?php if ( $video_url_ogg ) {
+				$this->add_render_attribute( 'source-ogg', [
+					'src' => $video_url_ogg,
+					'type' => 'video/ogg',
+				] );
+			?><source <?php echo $this->get_render_attribute_string( 'source-wav' ); ?>><?php } ?>
+
+			<?php if ( $video_url_webm ) {
+				$this->add_render_attribute( 'source-webm', [
+					'src' => $video_url_webm,
+					'type' => 'video/webm',
+				] );
+			?><source <?php echo $this->get_render_attribute_string( 'source-webm' ); ?>><?php } ?>
+
+		</video><?php
+	}
+
+	protected function render_cover() {
+		$this->add_render_attribute( 'video-cover', [
+			'class' => [
+				'ee-video-player__cover',
+				'ee-player__cover',
+			],
+		] );
+		?><div <?php echo $this->get_render_attribute_string( 'video-cover' ); ?>></div><?php
+	}
+
+	protected function render_controls() {
+
+		$settings = $this->get_settings_for_display();
+
+		$this->add_render_attribute( [
+			'controls' => [
+				'class' => [
+					'ee-video-player__controls',
+					'ee-player__controls',
+				],
+			],
+			'bar-wrapper' => [
+				'class' => [
+					'ee-player__controls__bar-wrapper',
+					'ee-video-player__controls__bar-wrapper',
+				],
+			],
+			'bar' => [
+				'class' => [
+					'ee-player__controls__bar',
+				],
+			],
+			'control-play' => [
+				'class' => [
+					'ee-player__control',
+					'ee-player__controls__play',
+					'ee-player__control--icon',
+					'nicon',
+					'nicon-play',
+				],
+			],
+		] );
+
 		?>
-		<#
+		<div <?php echo $this->get_render_attribute_string( 'controls' ); ?>><?php
+
+			$this->render_overlay();
+
+			if ( 'show' === $settings['video_show_bar'] ) {
+
+				?><div <?php echo $this->get_render_attribute_string( 'bar-wrapper' ); ?>>
+					<div <?php echo $this->get_render_attribute_string( 'bar' ); ?>>
+
+						<?php if ( 'yes' !== $settings['video_restart_on_pause'] && 'show' === $settings['video_show_rewind'] ) {
+							$this->add_render_attribute( 'control-rewind', [
+								'class' => [
+									'ee-player__control',
+									'ee-player__controls__rewind',
+									'ee-player__control--icon',
+									'nicon',
+									'nicon-rewind',
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-rewind' ); ?>></div><?php } ?>
+						
+						<div <?php echo $this->get_render_attribute_string( 'control-play' ); ?>></div>
+
+						<?php if ( $settings['video_show_time'] ) {
+							$this->add_render_attribute( 'control-time', [
+								'class' => [
+									'ee-player__control',
+									'ee-player__control--indicator',
+									'ee-player__controls__time',
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-time' ); ?>>00:00</div><?php } ?>
+
+						<?php if ( $settings['video_show_progress'] ) {
+							$this->add_render_attribute( [
+								'control-progress' => [
+									'class' => [
+										'ee-player__control',
+										'ee-player__controls__progress',
+										'ee-player__control--progress',
+									],
+								],
+								'control-progress-time' => [
+									'class' => [
+										'ee-player__controls__progress-time',
+										'ee-player__control--progress__inner',
+									],
+								],
+								'control-progress-track' => [
+									'class' => [
+										'ee-player__control--progress__inner',
+										'ee-player__control--progress__track',
+									],
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-progress' ); ?>>
+							<div <?php echo $this->get_render_attribute_string( 'control-progress-time' ); ?>></div>
+							<div <?php echo $this->get_render_attribute_string( 'control-progress-track' ); ?>></div>
+						</div><?php } ?>
+
+						<?php if ( $settings['video_show_duration'] ) {
+							$this->add_render_attribute( 'control-duration', [
+								'class' => [
+									'ee-player__control',
+									'ee-player__controls__duration',
+									'ee-player__control--indicator',
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-duration' ); ?>>00:00</div><?php } ?>
+
+						<?php if ( $settings['video_show_volume'] ) {
+							$this->add_render_attribute( 'control-volume', [
+								'class' => [
+									'ee-player__control',
+									'ee-player__controls__volume',
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-volume' ); ?>>
+
+							<?php if ( $settings['video_show_volume_icon'] ) {
+								$this->add_render_attribute( 'control-volume-icon', [
+									'class' => [
+										'ee-player__controls__volume-icon',
+										'ee-player__control--icon',
+										'nicon',
+										'nicon-volume',
+									],
+								] );
+							?><div <?php echo $this->get_render_attribute_string( 'control-volume-icon' ); ?>></div><?php } ?>
+
+							<?php if ( $settings['video_show_volume_bar'] ) {
+								$this->add_render_attribute( [
+									'control-volume-bar' => [
+										'class' => [
+											'ee-player__control',
+											'ee-player__controls__volume-bar',
+											'ee-player__control--progress',
+										],
+									],
+									'control-volume-bar-amount' => [
+										'class' => [
+											'ee-player__controls__volume-bar__amount',
+											'ee-player__control--progress__inner',
+										],
+									],
+									'control-volume-bar-track' => [
+										'class' => [
+											'ee-player__controls__volume-bar__track',
+											'ee-player__control--progress__inner',
+											'ee-player__control--progress__track',
+										],
+									],
+								] );
+							?><div <?php echo $this->get_render_attribute_string( 'control-volume-bar' ); ?>>
+								<div <?php echo $this->get_render_attribute_string( 'control-volume-bar-amount' ); ?>></div>
+								<div <?php echo $this->get_render_attribute_string( 'control-volume-bar-track' ); ?>></div>
+							</div><?php } ?>
+
+						</div><?php } ?>
+
+						<?php if ( $settings['video_show_fs'] ) {
+							$this->add_render_attribute( 'control-fullscreen', [
+								'class' => [
+									'ee-player__control',
+									'ee-player__controls__fs',
+									'ee-player__control--icon',
+									'nicon',
+									'nicon-expand'
+								],
+							] );
+						?><div <?php echo $this->get_render_attribute_string( 'control-fullscreen' ); ?>></div><?php } ?>
+
+					</div><!-- .ee-player__controls__bar -->
+				</div><!-- .ee-player__controls__bar-wrapper -->
+			<?php } ?>
+		</div><!-- .ee-video-player__controls -->
+		<?php
+	}
+
+	protected function render_overlay() {
+		$settings = $this->get_settings_for_display();
+
+		if ( 'show' === $settings['video_show_buttons'] ) {
+			$this->add_render_attribute( [
+				'overlay' => [
+					'class' => [
+						'ee-player__controls__overlay',
+						'ee-video-player__overlay',
+					],
+				],
+				'overlay-play' => [
+					'class' => [
+						'ee-player__control',
+						'ee-player__controls__play',
+						'nicon',
+						'nicon-play',
+					],
+				],
+			] );
+
+			?><ul <?php echo $this->get_render_attribute_string( 'overlay' ); ?>><?php
+
+				if ( 'yes' !== $settings['video_restart_on_pause'] && 'show' === $settings['video_show_rewind'] ) {
+					$this->add_render_attribute( 'overlay-rewind', [
+						'class' => [
+							'ee-player__control',
+							'ee-player__controls__rewind',
+							'nicon',
+							'nicon-rewind',
+						],
+					] )
+					?><li <?php echo $this->get_render_attribute_string( 'overlay-rewind' ); ?>></li><?php }
+
+				?><li <?php echo $this->get_render_attribute_string( 'overlay-play' ); ?>></li>
+			</ul>
+		<?php }
+	}
+
+	protected function _content_template() { ?><#
 
 		var device_type = 'phone';
 
@@ -1702,210 +2172,432 @@ class Devices extends Extras_Widget {
 			device_type = settings.device_type;
 		}
 
-		var device_classes = 'elementor-device';
+		view.addRenderAttribute( {
+			'device-wrapper' : {
+				'class' : [
+					'ee-device-wrapper',
+					'ee-device-type-' + device_type,
+				],
+			},
+			'device' : {
+				'class' : [
+					'ee-device',
+				],
+			},
+			'device-orientation' : {
+				'class' : [
+					'ee-device__orientation',
+					'nicon',
+					'nicon-mobile-landscape',
+				],
+			},
+			'device-shape' : {
+				'class' : [
+					'ee-device__shape',
+				],
+			},
+			'device-media' : {
+				'class' : [
+					'ee-device__media',
+				],
+			},
+			'device-media-inner' : {
+				'class' : [
+					'ee-device__media__inner',
+				],
+			},
+			'device-media-screen' : {
+				'class' : [
+					'ee-device__media__screen',
+					'ee-device__media__screen--' + settings.device_media_type,
+				],
+			},
+			'device-media-screen-landscape' : {
+				'class' : [
+					'ee-device__media__screen',
+					'ee-device__media__screen__landscape',
+				],
+			},
+			'device-media-screen-controls' : {
+				'class' : [
+					'ee-device__media__screen',
+					'ee-device__media__screen__controls',
+				],
+			},
+			'device-media-screen-inner' : {
+				'class' : [
+					'ee-device__media__screen__inner',
+				],
+			},
+		} );
 
-		if ( settings.device_orientation_control === 'yes' && settings.device_media_type === 'image' ) {
-			device_classes += ' has--orientation-control';
+		if ( 'yes' === settings.device_orientation_control && 'image' === settings.device_media_type ) {
+			view.addRenderAttribute('device', 'class', 'has--orientation-control');
 		}
 
-		var device_wrapper_classes = 'elementor-device-wrapper elementor-device-type-' + device_type;
+		function getScreenshotURL( orientation ) {
+			var screen = {
+				id 			: settings['media_' + orientation + '_screenshot'].id,
+				url 		: settings['media_' + orientation + '_screenshot'].url,
+				size 		: settings['media_' + orientation + '_screenshot_size'],
+				dimension 	: settings['media_' + orientation + '_screenshot_custom_dimension'],
+				model 		: view.getEditModel(),
+			};
 
-		var device_orientation_classes = 'elementor-device-orientation nicon nicon-mobile-landscape';
-		var device_shape_classes = 'elementor-device-shape';
-		var device_media_classes = 'elementor-device-media';
-		var device_media_inner_classes = 'elementor-device-media-inner';
+			var screen_url = elementor.imagesManager.getImageUrl( screen );
 
-		var device_media_screen_classes = 'elementor-device-media-screen elementor-device-media-screen-' + settings.device_media_type;
-		var device_media_screen_inner_classes = 'elementor-device-media-screen-inner';
+			if ( screen_url )
+				return screen_url;
 
-		var output = '';
-
-		output += '<div class="' + device_wrapper_classes + '">';
-		output += '<div class="' + device_classes + '">';
-
-		if ( settings.device_orientation_control === 'yes' && settings.device_media_type === 'image' ) {
-			output += '<div class="' + device_orientation_classes + '"></div>';
+			return false;
 		}
 
-		output += '<div class="' + device_shape_classes + '"></div>';
+		#><div {{{ view.getRenderAttributeString( 'device-wrapper') }}}>
+			<div {{{ view.getRenderAttributeString( 'device' ) }}}>
 
-		output += '<div class="' + device_media_classes + '">';
-		output += '<div class="' + device_media_inner_classes + '">';
-		output += '<div class="' + device_media_screen_classes + '">';
-		output += '<div class="' + device_media_screen_inner_classes + '">';
+				<# if ( 'yes' === settings.device_orientation_control && 'image' === settings.device_media_type ) { #>
+					<div {{{ view.getRenderAttributeString( 'device-orientation') }}}></div>
+				<# } #>
 
-		if ( settings.device_media_type === 'image' ) {
-			if ( '' !== settings.media_portrait_screenshot.url ) {
+				<div {{{ view.getRenderAttributeString( 'device-shape') }}}></div><!-- .ee-device__shape -->
 
-				var portrait_screenshot = {
-					id 			: settings.media_portrait_screenshot.id,
-					url 		: settings.media_portrait_screenshot.url,
-					size 		: settings.media_portrait_screenshot_size,
-					dimension 	: settings.media_portrait_screenshot_custom_dimension,
-				};
+				<div {{{ view.getRenderAttributeString( 'device-media') }}}>
+					<div {{{ view.getRenderAttributeString( 'device-media-inner') }}}>
+						<div {{{ view.getRenderAttributeString( 'device-media-screen') }}}>
+							<div {{{ view.getRenderAttributeString( 'device-media-screen-inner') }}}>
+								<# if ( 'image' === settings.device_media_type ) { #>
+									<figure><img src="{{{ getScreenshotURL( 'portrait' ) }}}" /></figure>
+								<# } else if ( 'video' === settings.device_media_type ) { #>
+									<?php $this->_video_type_template(); ?>
+								<# } #>
+							</div><!-- .ee-device__media__screen__inner -->
+						</div><!-- .ee-device__media__screen -->
 
-				var portrait_screenshot_url = elementor.imagesManager.getImageUrl( portrait_screenshot );
+					<# if ( 'image' === settings.device_media_type && '' !== settings.media_landscape_screenshot.url ) { #>
+						<div {{{ view.getRenderAttributeString( 'device-media-screen-landscape') }}}>
+							<div {{{ view.getRenderAttributeString( 'device-media-screen-inner') }}}>
+								<figure>
+									<figure><img src="{{{ getScreenshotURL( 'landscape' ) }}}" /></figure>
+								</figure>
+							</div><!-- .ee-device__media__screen__inner -->
+						</div><!-- .ee-device__media__screen__landscape -->
+					<# } #>
 
-				if ( ! portrait_screenshot_url ) {
-					return;
-				}
+					</div><!-- .ee-device__media__inner -->
+				</div><!-- .ee-device__media -->
+			</div><!-- .ee-device -->
+		</div><!-- .ee-device-wrapper --><?php
+	}
 
-				output += '<figure><img src="' + portrait_screenshot_url + '" /></figure>';
-			}
+	protected function _video_type_template() { ?><#
 
-		} else {
+		if (
+			'' !== settings.video_file.url ||
+			'' !== settings.video_file_ogg.url ||
+			'' !== settings.video_file_webm.url ||
+			'' !== settings.video_file_m4v.url ||
+			'' !== settings.video_url ||
+			'' !== settings.video_url_ogg ||
+			'' !== settings.video_url_webm ||
+			'' !== settings.video_url_m4v
+		) {
+		
+			view.addRenderAttribute( {
+				'video-wrapper' : {
+					'class' : [
+						'ee-video-player',
+						'ee-player',
+					],
+				},
+			} );
 
-			if ( '' !== settings.video_url || '' !== settings.video_url_ogg || '' !== settings.video_url_webm ) {
+			#><div {{{ view.getRenderAttributeString( 'video-wrapper' ) }}}>
+				<?php echo $this->_video_template(); ?>
+				<?php echo $this->_cover_template(); ?>
+				<?php echo $this->_controls_template(); ?>
+			</div><!-- .ee-player -->
+		<# } #><?php
+	}
 
-				var video_settings 	= '';
+	protected function _video_template() { ?><#
 
-				if ( settings.video_autoplay === 'autoplay' && 'yes' !== settings.video_play_viewport ) {
-					video_settings += ' autoplay';
-				}
+		view.addRenderAttribute( 'video', {
+			'class' : [
+				'ee-video-player__source',
+				'ee-player__source'
+			],
+			'playsinline' : 'true',
+			'width' : '100%',
+			'height' : '100%',
+		} );
 
-				if ( settings.video_loop === 'loop' ) {
-					video_settings += ' loop';
-				}
-
-				if ( '' !== settings.video_cover.url ) {
-
-					var video_cover = {
-						id: settings.video_cover.id,
-						url: settings.video_cover.url,
-						size: settings.video_cover_size,
-						dimension: settings.video_cover_custom_dimension,
-					};
-					
-					video_settings += ' poster="' + settings.video_cover.url + '"';
-				}
-
-				output += '<div class="elementor-extras-html5-video">';
-
-					output += '<video preload="yes" class="elementor-extras-html5-video__source" src="' + settings.video_url + '" ' + video_settings + '>';
-
-					if ( '' !== settings.video_url ) {
-						output += '<source src="' + settings.video_url + '" type="video/mp4">';
-					}
-
-					if ( '' !== settings.video_url_m4v ) {
-						output += '<source src="' + settings.video_url_m4v + '">';
-					}
-
-					if ( '' !== settings.video_url_ogg ) {
-						output += '<source src="' + settings.video_url_ogg + '" type="video/ogg">';
-					}
-
-					if ( '' !== settings.video_url_webm ) {
-						output += '<source src="' + settings.video_url_webm + '" type="video/webm">';
-					}
-					
-					output += '</video>';
-
-					output += '<div class="elementor-extras-html5-video__cover video__overlay">';
-
-					output += '</div><!-- .elementor-extras-html5-video__cover -->';
-
-					output += '<div class="elementor-extras-html5-video__controls video__overlay controls">';
-
-						if ( 'show' === settings.video_show_buttons ) {
-							output += '<ul class="controls__overlay">';
-
-							if ( 'show' === settings.video_show_rewind ) {
-								output += '<li class="control controls__rewind nicon nicon-rewind"></li>'; }
-								output += '<li class="control controls__play nicon nicon-play"></li>';
-
-							output += '</ul><!-- .controls__overlay -->';
-						}
-
-						if ( 'show' === settings.video_show_bar ) {
-
-							output += '<div class="controls__bar-wrapper">';
-								output += '<div class="controls__bar">';
-
-									if ( 'show' === settings.video_show_rewind ) {
-										output += '<div class="control controls__rewind control--icon nicon nicon-rewind"></div>';
-									}
-
-									output += '<div class="control controls__play control--icon nicon nicon-play"></div>';
-
-									if ( 'show' === settings.video_show_time ) {
-										output += '<div class="control controls__time control--indicator">00:00</div>';
-									}
-
-									output += '<div class="control controls__progress control--progress">';
-
-										output += '<div class="control controls__progress-time control--progress__inner"></div>';
-										output += '<div class="control controls__progress-track control--progress__inner control--progress__track"></div>';
-
-									output += '</div>';
-
-									if ( 'show' === settings.video_show_duration ) {
-										output += '<div class="control controls__duration control--indicator">00:00</div>';
-									}
-
-									if ( 'show' === settings.video_show_volume ) {
-										output += '<div class="control controls__volume">';
-
-											output += '<div class="control controls__volume-icon control--icon nicon nicon-volume"></div>';
-											output += '<div class="control controls__volume-bar control--progress">';
-
-												output += '<div class="control controls__volume-bar__amount control--progress__inner"></div>';
-												output += '<div class="control controls__volume-bar__track control--progress__inner control--progress__track"></div>';
-
-											output += '</div>';
-
-										output += '</div>';
-									}
-
-									if ( 'show' === settings.video_show_fs ) {
-										output += '<div class="control controls__fs control--icon nicon nicon-expand"></div>';
-									}
-
-								output += '</div><!-- .controls__bar -->';
-							output += '</div><!-- .controls__bar-wrapper -->';
-
-						}
-
-					output += '</div><!-- .elementor-extras-html5-video__controls -->';
-
-				output += '</div><!-- .elementor-extras-html5-video-wrapper -->';
-			}
+		if( 'autoplay' === settings.video_autoplay && 'yes' !== settings.video_play_viewport ) {
+			view.addRenderAttribute( 'video', 'autoplay', 'true' );
 		}
 
-		output += '</div><!-- .elementor-device-media-screen-inner -->';
-		output += '</div><!-- .elementor-device-media-screen -->';
-
-		if ( settings.device_media_type === 'image' ) {
-
-			if ( '' !== settings.media_landscape_screenshot.url ) {
-
-				var landscape_screenshot = {
-					id 			: settings.media_landscape_screenshot.id,
-					url 		: settings.media_landscape_screenshot.url,
-					size 		: settings.media_landscape_screenshot_size,
-					dimension 	: settings.media_landscape_screenshot_custom_dimension,
-				};
-
-				var landscape_screenshot_url = elementor.imagesManager.getImageUrl( landscape_screenshot );
-
-				output += '<div class="' + device_media_screen_classes + ' elementor-device-media-screen-landscape">';
-				output += '<div class="' + device_media_screen_inner_classes + '">';
-
-				output += '<figure><img src="' + landscape_screenshot_url + '" /></figure>';
-
-				output += '</div><!-- .elementor-device-media-screen-inner -->';
-				output += '</div><!-- .elementor-device-media-screen-landscape -->';
-			}
-
+		if( 'yes' === settings.video_start_muted ) {
+			view.addRenderAttribute( 'video', 'muted', 'true' );
 		}
 
-		output += '</div><!-- .elementor-device-media-inner -->';
-		output += '</div><!-- .elementor-device-media -->';
-		output += '</div><!-- .elementor-device -->';
-		output += '</div><!-- .elementor-device-wrapper -->';
+		if ( 'loop' === settings.video_loop ) {
+			view.addRenderAttribute( 'video', 'loop', 'true' );
+		}
 
-		print( output );
+		if ( settings.video_cover.id ) {
 
-		#><?php
+			var image = {
+				id 			: settings.video_cover.id,
+				url 		: settings.video_cover.url,
+				size 		: settings.image_size,
+				dimension 	: settings.image_custom_dimension,
+				model 		: view.getEditModel(),
+			};
+
+			view.addRenderAttribute( 'video', 'poster', elementor.imagesManager.getImageUrl( image ) );
+		}
+
+		#><video {{{ view.getRenderAttributeString( 'video' ) }}}><#
+			
+			var video_url = ( 'file' === settings.video_source ) ? settings.video_file.url : settings.video_url,
+				video_url_m4v = ( 'file' === settings.video_source_m4v ) ? settings.video_file_m4v.url : settings.video_url_m4v,
+				video_url_ogg = ( 'file' === settings.video_source_ogg ) ? settings.video_file_ogg.url : settings.video_url_ogg,
+				video_url_webm = ( 'file' === settings.video_source_webm ) ? settings.video_file_webm.url : settings.video_url_webm;
+
+			if ( video_url ) {
+				view.addRenderAttribute( 'source-mp4', {
+					'src' : video_url,
+					'type' : 'video/mp4',
+				} );
+			#><source {{{ view.getRenderAttributeString( 'source-mp4' ) }}}><# } #>
+
+			<# if ( video_url_m4v ) {
+				view.addRenderAttribute( 'source-m4v', {
+					'src' : video_url_m4v,
+					'type' : 'video/m4v',
+				} );
+			#><source {{{ view.getRenderAttributeString( 'source-m4v' ) }}}><# } #>
+
+			<# if ( video_url_ogg ) {
+				view.addRenderAttribute( 'source-ogg', {
+					'src' : video_url_ogg,
+					'type' : 'video/ogg',
+				} );
+			#><source {{{ view.getRenderAttributeString( 'source-ogg' ) }}}><# } #>
+
+			<# if ( video_url_webm ) {
+				view.addRenderAttribute( 'source-webm', {
+					'src' : video_url_webm,
+					'type' : 'video/webm',
+				} );
+			#><source {{{ view.getRenderAttributeString( 'source-webm' ) }}}><# } #>
+
+		</video>
+		<?php
+	}
+
+	protected function _controls_template() { ?><#
+
+		view.addRenderAttribute({
+			'controls' : {
+				'class' : [
+					'ee-video-player__controls',
+					'ee-player__controls',
+				],
+			},
+			'bar-wrapper' : {
+				'class' : [
+					'ee-player__controls__bar-wrapper',
+					'ee-video-player__controls__bar-wrapper',
+				],
+			},
+			'bar' : {
+				'class' : [
+					'ee-player__controls__bar',
+				],
+			},
+			'control-play' : {
+				'class' : [
+					'ee-player__control',
+					'ee-player__controls__play',
+					'ee-player__control--icon',
+					'nicon',
+					'nicon-play',
+				],
+			},
+		});
+
+		#><div {{{ view.getRenderAttributeString( 'controls' ) }}}>
+
+			<?php $this->_overlay_template(); ?>
+
+			<# if ( 'show' === settings.video_show_bar ) { #>
+
+				<div {{{ view.getRenderAttributeString( 'bar-wrapper' ) }}}>
+					<div {{{ view.getRenderAttributeString( 'bar' ) }}}>
+
+						<# if ( 'yes' !== settings.video_restart_on_pause && 'show' === settings.video_show_rewind ) {
+							view.addRenderAttribute( 'control-rewind', {
+								'class' : [
+									'ee-player__control',
+									'ee-player__controls__rewind',
+									'ee-player__control--icon',
+									'nicon',
+									'nicon-rewind',
+								],
+							} );
+						#><div {{{ view.getRenderAttributeString( 'control-rewind' ) }}}></div><# } #>
+						
+						<div {{{ view.getRenderAttributeString( 'control-play' ) }}}></div>
+
+						<# if ( settings.video_show_time ) {
+							view.addRenderAttribute( 'control-time', {
+								'class' : [
+									'ee-player__control',
+									'ee-player__control--indicator',
+									'ee-player__controls__time',
+								],
+							} );
+						#><div {{{ view.getRenderAttributeString( 'control-time' ) }}}>00:00</div><# } #>
+
+						<# if ( settings.video_show_progress ) {
+							view.addRenderAttribute( {
+								'control-progress' : {
+									'class' : [
+										'ee-player__control',
+										'ee-player__controls__progress',
+										'ee-player__control--progress',
+									],
+								},
+								'control-progress-time' : {
+									'class' : [
+										'ee-player__controls__progress-time',
+										'ee-player__control--progress__inner',
+									],
+								},
+								'control-progress-track' : {
+									'class' : [
+										'ee-player__control--progress__inner',
+										'ee-player__control--progress__track',
+									],
+								},
+							} );
+						#><div {{{ view.getRenderAttributeString( 'control-progress' ) }}}>
+							<div {{{ view.getRenderAttributeString( 'control-progress-time' ) }}}></div>
+							<div {{{ view.getRenderAttributeString( 'control-progress-track' ) }}}></div>
+						</div><# } #>
+
+						<# if ( settings.video_show_duration ) {
+							view.addRenderAttribute( 'control-duration', {
+								'class' : [
+									'ee-player__control',
+									'ee-player__controls__duration',
+									'ee-player__control--indicator',
+								],
+							} );
+						#><div {{{ view.getRenderAttributeString( 'control-duration' ) }}}>00:00</div><# } #>
+
+						<# if ( settings.video_show_volume ) {
+							view.addRenderAttribute( 'control-volume', {
+								'class' : [
+									'ee-player__control',
+									'ee-player__controls__volume',
+								],
+							} );
+						#><div {{{ view.getRenderAttributeString( 'control-volume' ) }}}>
+
+							<# if ( settings.video_show_volume_icon ) {
+								view.addRenderAttribute( 'control-volume-icon', {
+									'class' : [
+										'ee-player__controls__volume-icon',
+										'ee-player__control--icon',
+										'nicon',
+										'nicon-volume',
+									],
+								} );
+							#><div {{{ view.getRenderAttributeString( 'control-volume-icon' ) }}}></div><# } #>
+
+							<# if ( settings.video_show_volume_bar ) {
+								view.addRenderAttribute( {
+									'control-volume-bar' : {
+										'class' : [
+											'ee-player__control',
+											'ee-player__controls__volume-bar',
+											'ee-player__control--progress',
+										],
+									},
+									'control-volume-bar-amount' : {
+										'class' : [
+											'ee-player__controls__volume-bar__amount',
+											'ee-player__control--progress__inner',
+										],
+									},
+									'control-volume-bar-track' : {
+										'class' : [
+											'ee-player__controls__volume-bar__track',
+											'ee-player__control--progress__inner',
+											'ee-player__control--progress__track',
+										],
+									},
+								} );
+							#><div {{{ view.getRenderAttributeString( 'control-volume-bar' ) }}}>
+								<div {{{ view.getRenderAttributeString( 'control-volume-bar-amount' ) }}}></div>
+								<div {{{ view.getRenderAttributeString( 'control-volume-bar-track' ) }}}></div>
+							</div><# } #>
+
+						</div><# } #>
+
+					</div><!-- .ee-player__controls__bar -->
+				</div><!-- .ee-player__controls__bar-wrapper -->
+			<# } #>
+		</div><!-- .ee-player__controls -->
+		<?php
+	}
+
+	protected function _cover_template() { ?><#
+		view.addRenderAttribute( 'video-cover', {
+			'class' : [
+				'ee-video-player__cover',
+				'ee-player__cover',
+			],
+		} );
+		#><div {{{ view.getRenderAttributeString( 'video-cover' ) }}}></div><?php
+	}
+
+	protected function _overlay_template() { ?><#
+
+		if ( 'show' === settings.video_show_buttons ) {
+			view.addRenderAttribute( {
+				'overlay' : {
+					'class' : [
+						'ee-player__controls__overlay',
+						'ee-video-player__overlay',
+					],
+				},
+				'overlay-play' : {
+					'class' : [
+						'ee-player__control',
+						'ee-player__controls__play',
+						'nicon',
+						'nicon-play',
+					],
+				},
+			} );
+
+			#><ul {{{ view.getRenderAttributeString( 'overlay' ) }}}><#
+
+				if ( 'yes' !== settings.video_restart_on_pause && 'show' === settings.video_show_rewind ) {
+					view.addRenderAttribute( 'overlay-rewind', {
+						'class' : [
+							'ee-player__control',
+							'ee-player__controls__rewind',
+							'nicon',
+							'nicon-rewind',
+						],
+					} )
+					#><li {{{ view.getRenderAttributeString( 'overlay-rewind' ) }}}></li><# }
+
+				#><li {{{ view.getRenderAttributeString( 'overlay-play' ) }}}></li>
+			</ul>
+		<# } #><?php
 	}
 }

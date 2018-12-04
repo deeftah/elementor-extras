@@ -16,7 +16,7 @@ use Elementor\Modules\DynamicTags\Module as TagsModule;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Heading
+ * Heading
  *
  * @since 0.1.0
  */
@@ -265,13 +265,14 @@ class Heading extends Extras_Widget {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		if ( empty( $settings['title'] ) ) {
+		if ( empty( $settings['title'] ) )
 			return;
-		}
 
-		$this->add_render_attribute( 'heading', [
-			'class' 		=> 'ee-heading',
-			'data-title' 	=> $settings['title'],
+		$this->add_render_attribute( [
+			'heading' => [
+				'class' => 'ee-heading',
+				'data-title' => $settings['title'],
+			],
 		] );
 
 		if ( ! empty( $settings['size'] ) ) {
@@ -335,16 +336,33 @@ class Heading extends Extras_Widget {
 
 	protected function _content_template() { ?><#
 
-		view.addRenderAttribute( 'heading', 'class', 'ee-heading' );
-		view.addRenderAttribute( 'heading', 'data-title', settings.title );
+		view.addRenderAttribute( {
+			'heading' : {
+				'class' : [
+					'ee-heading'
+				],
+				'data-title' : settings.title,
+			},
+			'heading-text' : {
+				'class' : [
+					'ee-heading__text',
+				],
+			},
+			'heading-text-shadow' : {
+				'class' : [
+					'ee-heading__text-shadow',
+				],
+			},
+			'heading-long-shadow' : {
+				'class' : [
+					'ee-heading__long-shadow',
+				],
+			},
+		} );
 
 		if ( '' !== settings.size ) {
 			view.addRenderAttribute( 'heading', 'class', 'elementor-size-' + settings.size );
 		}
-
-		view.addRenderAttribute( 'heading-text', 'class', 'ee-heading__text' );
-		view.addRenderAttribute( 'heading-text-shadow', 'class', 'ee-heading__text-shadow' );
-		view.addRenderAttribute( 'heading-long-shadow', 'class', 'ee-heading__long-shadow' );
 
 		if ( '' !== settings.link.url ) {
 			#><a href="{{ settings.link.url }}"><#

@@ -3,14 +3,14 @@ namespace ElementorExtras\Core\Settings\General;
 
 use Elementor\Controls_Manager;
 use ElementorExtras\Group_Control_Tooltip;
-use Elementor\Core\Settings\Base\Model as BaseModel;
+use Elementor\Core\Settings\General\Model as GeneralModel;
 use Elementor\Scheme_Color;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class Model extends BaseModel {
+class Model extends GeneralModel {
 
 	/**
 	 * @since 1.6.0
@@ -116,6 +116,17 @@ class Model extends BaseModel {
 							],
 							'frontend_available' => true
 						],
+						'ee_tooltips_disable' => [
+							'label'		=> __( 'Disable On', 'elementor-extras' ),
+							'type' 		=> Controls_Manager::SELECT,
+							'default' 	=> '',
+							'options' 	=> [
+								'' 			=> __( 'None', 'elementor-extras' ),
+								'tablet' 	=> __( 'Tablet & Mobile', 'elementor-extras' ),
+								'mobile' 	=> __( 'Mobile', 'elementor-extras' ),
+							],
+							'frontend_available' => true
+						]
 					],
 				],
 			],

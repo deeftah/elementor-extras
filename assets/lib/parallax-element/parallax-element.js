@@ -193,7 +193,6 @@
 						pToItemBottom 		= pToItemTop + elementHeight,
 						pxSinceVisible 		= currentScrollY - toItemTop + winHeight,
 						pPxSinceVisible 	= currentScrollY - pToItemTop + winHeight;
-
 						
 					elementY = ( 'middle' === plugin.opts.scroll.relative ) ? middleToMiddle : currentScrollY;
 					

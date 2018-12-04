@@ -59,10 +59,14 @@ class WPML {
 	 * @return void
 	 */
 	public function includes() {
+		elementor_extras_include( 'includes/compatibility/wpml/modules/calendar.php' );
 		elementor_extras_include( 'includes/compatibility/wpml/modules/buttons.php' );
+		elementor_extras_include( 'includes/compatibility/wpml/modules/google-map.php' );
 		elementor_extras_include( 'includes/compatibility/wpml/modules/hotspots.php' );
+		elementor_extras_include( 'includes/compatibility/wpml/modules/offcanvas.php' );
 		elementor_extras_include( 'includes/compatibility/wpml/modules/timeline.php' );
 		elementor_extras_include( 'includes/compatibility/wpml/modules/table.php' );
+		elementor_extras_include( 'includes/compatibility/wpml/modules/toggle-element.php' );
 		elementor_extras_include( 'includes/compatibility/wpml/modules/switcher.php' );
 	}
 
@@ -80,6 +84,17 @@ class WPML {
 			'conditions' 		=> [ 'widgetType' => 'ee-breadcrumbs' ],
 			'fields'     		=> [
 				[
+					'field'       => 'back_text',
+					'type'        => esc_html__( 'Slide Menu: Back Text', 'elementor-extras' ),
+					'editor_type' => 'LINE',
+				],
+			],
+		];
+
+		$nodes_to_translate[ 'ee-slide-menu' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-slide-menu' ],
+			'fields'     		=> [
+				[
 					'field'       => 'home_text',
 					'type'        => esc_html__( 'Breadcrumbs: Home Text', 'elementor-extras' ),
 					'editor_type' => 'LINE',
@@ -91,6 +106,23 @@ class WPML {
 			'conditions' 		=> [ 'widgetType' => 'button-group' ],
 			'fields'     		=> [],
 			'integration-class' => '\ElementorExtras\Compatibility\WPML\Buttons',
+		];
+
+		$nodes_to_translate[ 'ee-calendar' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-calendar' ],
+			'fields'     		=> [],
+			'integration-class' => '\ElementorExtras\Compatibility\WPML\Calendar',
+		];
+
+		$nodes_to_translate[ 'ee-calendar' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-calendar' ],
+			'fields'     		=> [
+				[
+					'field'       => 'event_list_heading',
+					'type'        => esc_html__( 'Calendar: Events List Heading', 'elementor-extras' ),
+					'editor_type' => 'LINE',
+				],
+			],
 		];
 
 		$nodes_to_translate[ 'circle-progress' ] = [
@@ -131,10 +163,91 @@ class WPML {
 			],
 		];
 
+		$nodes_to_translate[ 'ee-google-map' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-google-map' ],
+			'fields'     		=> [
+				[
+					'field'       => 'all_text',
+					'type'        => __( 'Google Map: All Locations Text', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+			],
+			'integration-class' => '\ElementorExtras\Compatibility\WPML\Google_Map',
+		];
+
 		$nodes_to_translate[ 'hotspots' ] = [
 			'conditions' 		=> [ 'widgetType' => 'hotspots' ],
 			'fields'     		=> [],
 			'integration-class' => '\ElementorExtras\Compatibility\WPML\Hotspots',
+		];
+
+		$nodes_to_translate[ 'ee-offcanvas' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-offcanvas' ],
+			'fields'     		=> [
+				[
+					'field'       => 'trigger_text',
+					'type'        => __( 'Offcanvas: Trigger Text', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'header_title_text',
+					'type'        => __( 'Offcanvas: Header Title', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+			],
+			'integration-class' => '\ElementorExtras\Compatibility\WPML\Offcanvas',
+		];
+
+		$nodes_to_translate[ 'ee-age-gate' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-age-gate' ],
+			'fields'     		=> [
+				[
+					'field'       => 'denied',
+					'type'        => __( 'Age Gate: Denied Message', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'title',
+					'type'        => __( 'Age Gate: Title', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'description',
+					'type'        => __( 'Age Gate: Description', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'button_text',
+					'type'        => __( 'Age Gate: Button Label', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+			],
+		];
+
+		$nodes_to_translate[ 'ee-popup' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-popup' ],
+			'fields'     		=> [
+				[
+					'field'       => 'popup_trigger_text',
+					'type'        => __( 'Popup: Trigger Label', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'popup_title',
+					'type'        => __( 'Popup: Title', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'popup_close_button_text',
+					'type'        => __( 'Popup: Close Button Label', 'elementor-extras' ),
+					'editor_type' => 'LINE'
+				],
+				[
+					'field'       => 'popup_content',
+					'type'        => __( 'Popup: Content', 'elementor-extras' ),
+					'editor_type' => 'VISUAL'
+				],
+			],
 		];
 
 		$nodes_to_translate[ 'image-comparison' ] = [
@@ -159,7 +272,12 @@ class WPML {
 				[
 					'field'       => 'classic_filters_all_text',
 					'type'        => __( 'Posts Extra: Filter All Text', 'elementor-extras' ),
-					'editor_type' => 'LINE'
+					'editor_type' => 'LINE',
+				],
+				[
+					'field'       => 'post_read_more_text',
+					'type'        => __( 'Posts Extra: Read More Text', 'elementor-extras' ),
+					'editor_type' => 'LINE',
 				],
 			],
 		];
@@ -180,6 +298,12 @@ class WPML {
 			'conditions' 		=> [ 'widgetType' => 'table' ],
 			'fields'     		=> [],
 			'integration-class' => '\ElementorExtras\Compatibility\WPML\Table',
+		];
+
+		$nodes_to_translate[ 'ee-toggle-element' ] = [
+			'conditions' 		=> [ 'widgetType' => 'ee-toggle-element' ],
+			'fields'     		=> [],
+			'integration-class' => '\ElementorExtras\Compatibility\WPML\Toggle_Element',
 		];
 
 		$nodes_to_translate[ 'unfold' ] = [

@@ -60,6 +60,47 @@ abstract class Extras_Widget extends Widget_Base {
 	}
 
 	/**
+	 * Method for adding a placeholder for the widget in the preview area
+	 *
+	 * @access public
+	 * @since 2.0.0
+	 * @return void
+	 */
+	public function render_placeholder( $args ) {
+
+		if ( ! $this->_is_edit_mode )
+			return;
+
+		$defaults = [
+			'title' => $this->get_title(),
+			'body' 	=> __( 'This is a placeholder for this widget and will not shown on the page.', 'elementor-extras' ),
+		];
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$this->add_render_attribute([
+			'ee-placeholder' => [
+				'class' => 'ee-editor-placeholder',
+			],
+			'ee-placeholder-title' => [
+				'class' => 'ee-editor-placeholder__title',
+			],
+			'ee-placeholder-body' => [
+				'class' => 'ee-editor-placeholder__body',
+			],
+		]);
+
+		?><div <?php echo $this->get_render_attribute_string( 'ee-placeholder' ); ?>>
+			<h4 <?php echo $this->get_render_attribute_string( 'ee-placeholder-title' ); ?>>
+				<?php echo $args['title']; ?>
+			</h4>
+			<div <?php echo $this->get_render_attribute_string( 'ee-placeholder-body' ); ?>>
+				<?php echo $args['body']; ?>
+			</div>
+		</div><?php
+	}
+
+	/**
 	 * Method for setting widget dependancy on Elementor Pro plugin
 	 *
 	 * When returning true it doesn't allow the widget to be registered

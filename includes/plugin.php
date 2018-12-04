@@ -83,14 +83,14 @@ class ElementorExtrasPlugin {
 		// Include custom controls
 		$this->controls_includes();
 
+		// Panel
+		$this->register_settings_managers();
+
 		// Components
 		$this->init_components();
 
-		// Panel
-		$this->init_panel_settings();
-
 		// Register controls
-		$this->init_controls();
+		$this->init_group_controls();
 
 		/* LICENSING & TRACKING */
 
@@ -123,10 +123,14 @@ class ElementorExtrasPlugin {
 	 */
 	private function add_actions() {
 
+		// Register widgets hook
+
+		add_action( 'elementor/controls/controls_registered', [ $this, 'register_controls' ], 0 );
+
 		// ——— SCRIPTS ——— //
 
 			// Editor Scripts
-			// add_action( 'elementor/editor/before_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
+			add_action( 'elementor/editor/before_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
 
 			// Front-end Scripts
 			add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
@@ -253,10 +257,17 @@ class ElementorExtrasPlugin {
 
 		// Non-widget scripts
 		wp_register_script(
-			'sticky-element',
-			plugins_url( '/assets/lib/sticky-element/sticky-element' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			'audio-player',
+			plugins_url( '/assets/lib/audio-player/audio-player' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[ 'jquery', ],
-			'1.1.3',
+			'1.0.0',
+			true );
+
+		wp_register_script(
+			'hc-sticky',
+			plugins_url( '/assets/lib/hc-sticky/hc-sticky' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'2.2.3',
 			true );
 
 		wp_register_script(
@@ -303,10 +314,43 @@ class ElementorExtrasPlugin {
 			true );
 
 		wp_register_script(
+			'clndr',
+			plugins_url( '/assets/lib/clndr/clndr' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery' ],
+			'1.0.0',
+			true );
+
+		wp_register_script(
+			'moment',
+			plugins_url( '/assets/lib/moment/moment' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery' ],
+			'1.0.0',
+			true );
+
+		wp_register_script(
 			'circle-progress',
 			plugins_url( '/assets/lib/circle-progress/circle-progress' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[ 'jquery' ],
 			'1.2.2',
+			true );
+
+		if ( 'no' !== $this->settings->get_option( 'load_google_maps_api', 'elementor_extras_apis', false ) ) {
+			wp_register_script(
+				'google-maps-api',
+				add_query_arg(
+					array( 'key' => $this->settings->get_option( 'google_maps_api_key', 'elementor_extras_apis', false ), ),
+					'https://maps.googleapis.com/maps/api/js'
+				),
+				false,
+				null,
+				true );
+		}
+
+		wp_register_script(
+			'gmap3',
+			plugins_url( '/assets/lib/gmap3/gmap3' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery' ],
+			'7.2',
 			true );
 
 		wp_register_script(
@@ -324,6 +368,27 @@ class ElementorExtrasPlugin {
 			true );
 
 		wp_register_script(
+			'toggle-element',
+			plugins_url( '/assets/lib/toggle-element/toggle-element' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'1.0.0',
+			true );
+
+		wp_register_script(
+			'slidebars',
+			plugins_url( '/assets/lib/slidebars/js/slidebars' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'1.2.7',
+			true );
+
+		wp_register_script(
+			'slide-menu',
+			plugins_url( '/assets/lib/slide-menu/slide-menu' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'1.0.1',
+			true );
+
+		wp_register_script(
 			'splittext',
 			plugins_url( '/assets/lib/splittext/splittext' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[],
@@ -335,6 +400,13 @@ class ElementorExtrasPlugin {
 			plugins_url( '/assets/lib/jquery-appear/jquery.appear' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[ 'jquery', ],
 			'0.3.6',
+			true );
+
+		wp_register_script(
+			'jquery-visible',
+			plugins_url( '/assets/lib/jquery-visible/jquery.visible' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'1.0.0',
 			true );
 
 		wp_register_script(
@@ -394,6 +466,13 @@ class ElementorExtrasPlugin {
 			true );
 
 		wp_register_script(
+			'magnific-popup',
+			plugins_url( '/assets/lib/magnific-popup/js/magnific-popup' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
+			[ 'jquery', ],
+			'1.1.0',
+			true );
+
+		wp_register_script(
 			'tilt',
 			plugins_url( '/assets/lib/tilt/tilt.jquery' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[ 'jquery', ],
@@ -449,7 +528,13 @@ class ElementorExtrasPlugin {
 
 		// GSAP TweenMax
 		if ( 'no' !== $this->settings->get_option( 'load_tweenmax', 'elementor_extras_advanced', false ) ) {
-			wp_enqueue_script( 'gsap-js', '//cdnjs.cloudflare.com/ajax/libs/gsap/' . $this->gsap_version . '/TweenMax.min.js', array(), false, true );
+			wp_enqueue_script( 
+				'gsap-js',
+				'//cdnjs.cloudflare.com/ajax/libs/gsap/' . $this->gsap_version . '/TweenMax.min.js',
+				array(),
+				null,
+				true
+			);
 		}
 
 		wp_localize_script( 'elementor-extras-frontend', 'elementorExtrasFrontendConfig', $elementor_extras_frontend_config );
@@ -498,6 +583,7 @@ class ElementorExtrasPlugin {
 		);
 
 		// Enqueue style
+		wp_enqueue_style( 'magnific-popup' );
 		wp_enqueue_style( 'elementor-extras-editor-preview' );
 	}
 
@@ -515,6 +601,13 @@ class ElementorExtrasPlugin {
 		$direction_suffix = is_rtl() ? '-rtl' : '';
 
 		// Register styles
+		wp_register_style(
+			'magnific-popup',
+			plugins_url( '/assets/lib/magnific-popup/css/magnific-popup' . $direction_suffix . $suffix . '.css', ELEMENTOR_EXTRAS__FILE__ ),
+			[],
+			ELEMENTOR_EXTRAS_VERSION
+		);
+
 		wp_register_style(
 			'elementor-extras-frontend',
 			plugins_url( '/assets/css/frontend' . $direction_suffix . $suffix . '.css', ELEMENTOR_EXTRAS__FILE__ ),
@@ -575,6 +668,9 @@ class ElementorExtrasPlugin {
 	 */
 	private function includes() {
 
+		// Utils
+		elementor_extras_include( 'includes/utils.php' );
+
 		// Widget integrations
 		elementor_extras_include( 'includes/compatibility/wpml/compatibility.php' );
 
@@ -602,6 +698,9 @@ class ElementorExtrasPlugin {
 		elementor_extras_include( 'includes/controls/groups/button-effect.php' );
 		elementor_extras_include( 'includes/controls/groups/transition.php' );
 		elementor_extras_include( 'includes/controls/groups/tooltip.php' );
+
+		// Controls
+		elementor_extras_include( 'includes/controls/snazzy.php' );
 	}
 
 	/**
@@ -626,8 +725,8 @@ class ElementorExtrasPlugin {
 	 *
 	 * @access private
 	 */
-	private function init_panel_settings() {
-		SettingsManager::add_settings_manager( new \ElementorExtras\Core\Settings\General\Manager() );
+	private function register_settings_managers() {
+		SettingsManager::add_settings_manager( new \ElementorExtras\Core\Settings\General\Manager );
 	}
 
 	/**
@@ -667,18 +766,29 @@ class ElementorExtrasPlugin {
 	}
 
 	/**
-	 * Register Controls
+	 * Register Group Controls
 	 *
 	 * @since 1.1.4
 	 *
 	 * @access private
 	 */
-	private function init_controls() {
+	private function init_group_controls() {
 
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'long-shadow', new Group_Control_Long_Shadow() );
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'effect', new Group_Control_Button_Effect() );
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'ee-transition', new Group_Control_Transition() );
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'ee-tooltip', new Group_Control_Tooltip() );
+	}
+
+	/**
+	 * Register Controls
+	 *
+	 * @since 2.0.0
+	 *
+	 * @access private
+	 */
+	public function register_controls() {
+		\Elementor\Plugin::instance()->controls_manager->register_control( 'ee-snazzy', new Control_Snazzy() );
 	}
 
 	/**

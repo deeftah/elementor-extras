@@ -13,7 +13,7 @@ use Elementor\Utils;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Inline SVG
+ * Inline_SVG
  *
  * @since 1.7.0
  */
@@ -284,12 +284,24 @@ class Inline_Svg extends Extras_Widget {
 	}
 
 	protected function render() {
-		$settings = $this->get_settings_for_display();
-		$tag 			= 'div';
+		$settings 	= $this->get_settings_for_display();
+		$tag 		= 'div';
+
+		if ( empty( $settings['svg']['url'] ) ) {
+			echo $this->render_placeholder( ['body' => __( 'Select your SVG file.', 'elementor-extras' ) ] );
+			return;
+		}
 
 		// Add main class to wrapper
-		$this->add_render_attribute( 'wrapper', 'class', 'ee-inline-svg-wrapper' );
-		$this->add_render_attribute( 'svg', 'class', 'ee-inline-svg' );
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' 	=> 'ee-inline-svg-wrapper',
+			],
+			'svg' => [
+				'class' 	=> 'ee-inline-svg',
+				'data-url' 	=> $settings['svg']['url'],
+			],
+		] );
 
 		if ( ! empty( $settings['link']['url'] ) ) {
 
@@ -306,18 +318,9 @@ class Inline_Svg extends Extras_Widget {
 			}
 		}
 
-		// Print opening tag
-		printf( '<div %1$s>', $this->get_render_attribute_string( 'wrapper' ) );
-
-		?>
-
-			<?php if ( ! empty( $settings['svg']['url'] ) ) { ?>
+		?><div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 			<<?php echo $tag ?> <?php echo $this->get_render_attribute_string( 'svg' ); ?>></<?php echo $tag; ?>>
-			<?php } ?>
-
-		</div>
-
-		<?php
+		</div><?php
 	}
 
 	protected function _content_template() {}

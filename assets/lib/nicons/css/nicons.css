@@ -27,250 +27,330 @@
 }
 
 
-.nicon-block:before {
+.nicon-age-gate:before {
 	content: "\E001";
 }
 
-.nicon-breadcrumbs:before {
+.nicon-audio:before {
 	content: "\E002";
 }
 
-.nicon-button-group:before {
+.nicon-block:before {
 	content: "\E003";
 }
 
-.nicon-circle-progress:before {
+.nicon-breadcrumbs:before {
 	content: "\E004";
 }
 
-.nicon-desktop:before {
+.nicon-button-group:before {
 	content: "\E005";
 }
 
-.nicon-divider-text:before {
+.nicon-circle-progress:before {
 	content: "\E006";
 }
 
-.nicon-expand:before {
+.nicon-desktop:before {
 	content: "\E007";
 }
 
-.nicon-extras:before {
+.nicon-divider-text:before {
 	content: "\E008";
 }
 
-.nicon-heading-extended:before {
+.nicon-expand:before {
 	content: "\E009";
 }
 
-.nicon-hotspots:before {
+.nicon-extras:before {
 	content: "\E00A";
 }
 
-.nicon-image-comparison:before {
+.nicon-gear:before {
 	content: "\E00B";
 }
 
-.nicon-image-gallery:before {
+.nicon-heading-extended:before {
 	content: "\E00C";
 }
 
-.nicon-inline:before {
+.nicon-hotspots:before {
 	content: "\E00D";
 }
 
-.nicon-laptop:before {
+.nicon-image-comparison:before {
 	content: "\E00E";
 }
 
-.nicon-loader-bars-equal:before {
+.nicon-image-gallery:before {
 	content: "\E00F";
 }
 
-.nicon-loader-bars-flex:before {
+.nicon-inline:before {
 	content: "\E010";
 }
 
-.nicon-loader-circle:before {
+.nicon-laptop:before {
 	content: "\E011";
 }
 
-.nicon-loader-track:before {
+.nicon-loader-bars-equal:before {
 	content: "\E012";
 }
 
-.nicon-masonry-columns:before {
+.nicon-loader-bars-flex:before {
 	content: "\E013";
 }
 
-.nicon-masonry-mixed:before {
+.nicon-loader-circle:before {
 	content: "\E014";
 }
 
-.nicon-mobile-landscape:before {
+.nicon-loader-track:before {
 	content: "\E015";
 }
 
-.nicon-mobile-portrait:before {
+.nicon-map:before {
 	content: "\E016";
 }
 
-.nicon-mobile-screen-bottom:before {
+.nicon-masonry-columns:before {
 	content: "\E017";
 }
 
-.nicon-mobile-screen-center:before {
+.nicon-masonry-mixed:before {
 	content: "\E018";
 }
 
-.nicon-mobile-screen-custom:before {
+.nicon-mobile-landscape:before {
 	content: "\E019";
 }
 
-.nicon-mobile-screen-top:before {
+.nicon-mobile-portrait:before {
 	content: "\E01A";
 }
 
-.nicon-mobile:before {
+.nicon-mobile-screen-bottom:before {
 	content: "\E01B";
 }
 
-.nicon-parallax-background:before {
+.nicon-mobile-screen-center:before {
 	content: "\E01C";
 }
 
-.nicon-parallax-elements:before {
+.nicon-mobile-screen-custom:before {
 	content: "\E01D";
 }
 
-.nicon-parallax-gallery:before {
+.nicon-mobile-screen-top:before {
 	content: "\E01E";
 }
 
-.nicon-pause:before {
+.nicon-mobile:before {
 	content: "\E01F";
 }
 
-.nicon-phone:before {
+.nicon-offcanvas-bottom:before {
 	content: "\E020";
 }
 
-.nicon-play:before {
+.nicon-offcanvas-left:before {
 	content: "\E021";
 }
 
-.nicon-position-body:before {
+.nicon-offcanvas-overlay:before {
 	content: "\E022";
 }
 
-.nicon-position-footer:before {
+.nicon-offcanvas-push:before {
 	content: "\E023";
 }
 
-.nicon-position-header:before {
+.nicon-offcanvas-reveal:before {
 	content: "\E024";
 }
 
-.nicon-position-media:before {
+.nicon-offcanvas-right:before {
 	content: "\E025";
 }
 
-.nicon-posts:before {
+.nicon-offcanvas-shift:before {
 	content: "\E026";
 }
 
-.nicon-resize-horizontal-filled:before {
+.nicon-offcanvas-top:before {
 	content: "\E027";
 }
 
-.nicon-resize-horizontal:before {
+.nicon-offcanvas:before {
 	content: "\E028";
 }
 
-.nicon-rewind:before {
+.nicon-parallax-background:before {
 	content: "\E029";
 }
 
-.nicon-shape-round:before {
+.nicon-parallax-elements:before {
 	content: "\E02A";
 }
 
-.nicon-shape-skewed:before {
+.nicon-parallax-gallery:before {
 	content: "\E02B";
 }
 
-.nicon-shape-square:before {
+.nicon-pause:before {
 	content: "\E02C";
 }
 
-.nicon-slider-gallery:before {
+.nicon-phone:before {
 	content: "\E02D";
 }
 
-.nicon-sort-down:before {
+.nicon-play-next:before {
 	content: "\E02E";
 }
 
-.nicon-sort-up-down:before {
+.nicon-play-previous:before {
 	content: "\E02F";
 }
 
-.nicon-sort-up:before {
+.nicon-play:before {
 	content: "\E030";
 }
 
-.nicon-sticky-elements:before {
+.nicon-popup:before {
 	content: "\E031";
 }
 
-.nicon-sticky:before {
+.nicon-position-body:before {
 	content: "\E032";
 }
 
-.nicon-svg:before {
+.nicon-position-footer:before {
 	content: "\E033";
 }
 
-.nicon-switcher:before {
+.nicon-position-header:before {
 	content: "\E034";
 }
 
-.nicon-table:before {
+.nicon-position-media:before {
 	content: "\E035";
 }
 
-.nicon-tablet:before {
+.nicon-post-calendar:before {
 	content: "\E036";
 }
 
-.nicon-timeline:before {
+.nicon-posts:before {
 	content: "\E037";
 }
 
-.nicon-tooltip:before {
+.nicon-random:before {
 	content: "\E038";
 }
 
-.nicon-unfold:before {
+.nicon-resize-horizontal-filled:before {
 	content: "\E039";
 }
 
-.nicon-v-align-baseline:before {
+.nicon-resize-horizontal:before {
 	content: "\E03A";
 }
 
-.nicon-video:before {
+.nicon-rewind:before {
 	content: "\E03B";
 }
 
-.nicon-volume-off:before {
+.nicon-shape-round:before {
 	content: "\E03C";
 }
 
-.nicon-volume:before {
+.nicon-shape-skewed:before {
 	content: "\E03D";
 }
 
-.nicon-window:before {
+.nicon-shape-square:before {
 	content: "\E03E";
+}
+
+.nicon-slide-menu:before {
+	content: "\E03F";
+}
+
+.nicon-slider-gallery:before {
+	content: "\E040";
+}
+
+.nicon-sort-down:before {
+	content: "\E041";
+}
+
+.nicon-sort-up-down:before {
+	content: "\E042";
+}
+
+.nicon-sort-up:before {
+	content: "\E043";
+}
+
+.nicon-sticky-elements:before {
+	content: "\E044";
+}
+
+.nicon-svg:before {
+	content: "\E045";
+}
+
+.nicon-switcher:before {
+	content: "\E046";
+}
+
+.nicon-table:before {
+	content: "\E047";
+}
+
+.nicon-tablet:before {
+	content: "\E048";
+}
+
+.nicon-timeline:before {
+	content: "\E049";
+}
+
+.nicon-toggle:before {
+	content: "\E04A";
+}
+
+.nicon-tooltip:before {
+	content: "\E04B";
+}
+
+.nicon-unfold:before {
+	content: "\E04C";
+}
+
+.nicon-v-align-baseline:before {
+	content: "\E04D";
+}
+
+.nicon-video:before {
+	content: "\E04E";
+}
+
+.nicon-visibility:before {
+	content: "\E04F";
+}
+
+.nicon-volume-off:before {
+	content: "\E050";
+}
+
+.nicon-volume:before {
+	content: "\E051";
+}
+
+.nicon-window:before {
+	content: "\E052";
 }

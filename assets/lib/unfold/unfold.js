@@ -215,8 +215,11 @@
 
 				var _t_unfold = new TimelineLite({
 						onComplete : function() {
+							
 							_is_open = true;
+							
 							$label.html( plugin.opts.text_open );
+							
 							if ( $icon_open.length ) {
 								$icon_closed.css( 'display', 'none' );
 								$icon_open.css( 'display', 'inline-block' );
@@ -247,7 +250,7 @@
 				.to( $separator, plugin.opts.duration_unfold / 3, {
 					autoAlpha 	: 0,
 					ease 		: Power1.easeIn,
-				}, "-=0.1");
+				}, '-=0.1' );
 
 			}
 

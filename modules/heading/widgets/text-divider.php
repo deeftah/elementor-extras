@@ -17,7 +17,7 @@ use Elementor\Group_Control_Box_Shadow;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Text_Divider
+ * Text_Divider
  *
  * @since 0.1.0
  */

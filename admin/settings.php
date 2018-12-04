@@ -13,12 +13,19 @@ class Settings extends Settings_Page {
 	const PAGE_ID = 'elementor-extras';
 
 	// Tabs
-	const TAB_GENERAL 		= 'general';
 	const TAB_WIDGETS 		= 'widgets';
 	const TAB_EXTENSIONS 	= 'extensions';
+	const TAB_ADVANCED 		= 'advanced';
 	const TAB_LICENSE 		= 'license';
+	const TAB_APIS 			= 'apis';
+	const TAB_DOCUMENTATION	= 'documentation';
+	const TAB_SUPPORT		= 'support';
 
 	private $_tabs;
+
+	private $_widgets_count;
+
+	private $_extensions_count;
 
 	/**
 	 * menu
@@ -92,25 +99,52 @@ class Settings extends Settings_Page {
 
 	public function get_settings_sections() {
 
+		$this->_widgets_count = $this->get_widgets_count( true );
+		$this->_extensions_count = $this->get_extensions_count( true );
+
 		$sections = array(
 			array(
-				'id'    => $this->settings_prefix . 'widgets',
+				'id'    => $this->settings_prefix . self::TAB_WIDGETS,
 				'title' => __( 'Widgets', 'elementor-extras' ),
-				'desc'	=> __( 'Disable widgets from Elementor Extras. If disabled, a widget will no longer be available in the Elementor editor panel.' ),
+				'count'	=> $this->_widgets_count,
+				'label' => $this->_widgets_count > 0 ? '' : 'error',
+				'desc'	=> __( 'Disable widgets from Elementor Extras. If disabled, a widget will no longer be available in the Elementor editor panel. We strongly recommend disabling the widgets you don\'t plan on using to improve the load time of the Elementor editor.', 'elementor-extras' ),
 			),
 			array(
-				'id'    => $this->settings_prefix . 'extensions',
+				'id'    => $this->settings_prefix . self::TAB_EXTENSIONS,
 				'title' => __( 'Extensions', 'elementor-extras' ),
-				'desc'	=> __( 'Elementor Extras extensions are features added to the default Elementor elements. They display additional controls that can be found usually under the Advanced tab of each element. Below you can disable any or all these extensions. If disabled, these additional controls will no longer be available in the Elementor editor panel.' ),
+				'count' => $this->_extensions_count,
+				'label' => $this->_extensions_count > 0 ? '' : 'error',
+				'desc'	=> __( 'Elementor Extras extensions are features added to the default Elementor elements. They display additional controls that can be found usually under the Advanced tab of each element. Below you can disable any or all these extensions. If disabled, these additional controls will no longer be available in the Elementor editor panel.', 'elementor-extras' ),
 			),
 			array(
-				'id'    => $this->settings_prefix . 'advanced',
+				'id'    => $this->settings_prefix . self::TAB_APIS,
+				'title' => __( 'APIs', 'elementor-extras' ),
+			),
+			array(
+				'id'    => $this->settings_prefix . self::TAB_ADVANCED,
 				'title' => __( 'Advanced', 'elementor-extras' ),
 			),
 			array(
-				'id'    => $this->settings_prefix . 'license',
+				'id'    => $this->settings_prefix . self::TAB_LICENSE,
 				'title' => __( 'License', 'elementor-extras' ),
+				'count' => 'valid' === get_option( 'elementor_extras_license_status' ) ? 'active' : 'inactive',
+				'label' => 'valid' === get_option( 'elementor_extras_license_status' ) ? 'success' : 'error',
 				'link'	=> admin_url( 'admin.php?page=elementor_extras_license' ),
+			),
+			array(
+				'id'    => $this->settings_prefix . self::TAB_SUPPORT,
+				'title' => __( 'Get Support', 'elementor-extras' ),
+				'target'=> '_blank',
+				'link'	=> 'https://shop.namogo.com/account/my-tickets/submit-ticket/',
+				'icon'	=> 'dashicons dashicons-external',
+			),
+			array(
+				'id'    => $this->settings_prefix . self::TAB_DOCUMENTATION,
+				'title' => __( 'Documentation', 'elementor-extras' ),
+				'target'=> '_blank',
+				'link'	=> 'https://shop.namogo.com/docs/',
+				'icon'	=> 'dashicons dashicons-external',
 			),
 		);
 
@@ -141,7 +175,34 @@ class Settings extends Settings_Page {
 	}
 
 	/**
-	* Returns current page title
+	* Returns the number of Extras widgets
+	*
+	* @since 2.0.0
+	*
+	* @access protected
+	*/
+	protected function get_widgets_count( $enabled_only = false ) {
+		$modules = ElementorExtrasPlugin::$instance->modules_manager->get_modules();
+		$count = 0;
+
+		foreach( $modules as $module ) {
+			$widgets = $module->get_widgets();
+			foreach( $widgets as $widget ) {
+				if ( ! $enabled_only ) {
+					$count ++;
+				} else {
+					if ( ! $module->is_widget_disabled( strtolower( $widget ) ) ) {
+						$count++;
+					}
+				}
+			}
+		}
+
+		return $count;
+	}
+
+	/**
+	* Returns the fields for the widgets section
 	*
 	* @since 1.8.0
 	*
@@ -162,12 +223,12 @@ class Settings extends Settings_Page {
 
 			$widgets = $module->get_widgets();
 
-			foreach( $widgets as $_widget ) {
+			foreach( $widgets as $widget ) {
 
-				$class_name = 'ElementorExtras\Modules\\' . $module_class_name . '\Widgets\\' . $_widget;
+				$class_name = 'ElementorExtras\Modules\\' . $module_class_name . '\Widgets\\' . $widget;
 
-				$widget_title 	= str_replace( '_', ' ', ucwords( $_widget ) );
-				$widget_slug 	= strtolower( $_widget );
+				$widget_title 	= str_replace( '_', ' ', ucwords( $widget ) );
+				$widget_slug 	= strtolower( $widget );
 
 				$field = [
 					'name'		=> 'enable_' . $widget_slug,
@@ -193,7 +254,32 @@ class Settings extends Settings_Page {
 	}
 
 	/**
-	* Returns current page title
+	* Returns the number of Extras extensions
+	*
+	* @since 2.0.0
+	*
+	* @access protected
+	*/
+	protected function get_extensions_count( $enabled_only = false ) {
+		$extensions = ElementorExtrasPlugin::$instance->extensions_manager->available_extensions;
+		$count = 0;
+
+		foreach( $extensions as $extension_id ) {
+			$extension_name = str_replace( '-', '_', $extension_id );
+			if ( ! $enabled_only ) {
+				$count ++;
+			} else {
+				if ( ! ElementorExtrasPlugin::$instance->extensions_manager->is_disabled( $extension_name ) ) {
+					$count++;
+				}
+			}
+		}
+
+		return $count;
+	}
+
+	/**
+	* Returns the fields for the extensions section
 	*
 	* @since 1.8.0
 	*
@@ -220,7 +306,7 @@ class Settings extends Settings_Page {
 				'label' 	=> $extension_title,
 				'desc' 		=> __( 'Enable', 'elementor-extras' ),
 				'type' 		=> 'checkbox',
-				'default' 	=> 'on',
+				'default' 	=> $class_name::is_default_disabled() ? 'off' : 'on',
 				'note'		=> $description,
 			];
 		}
@@ -228,6 +314,13 @@ class Settings extends Settings_Page {
 		return $fields;
 	}
 
+	/**
+	* Return the fields for the advanced section
+	*
+	* @since 2.0.0
+	*
+	* @access protected
+	*/
 	protected function get_advanced_fields() {
 
 		$gsap_version = sprintf( __( '%1$sCurrent TweenMax version: %2$s', 'elementor-extras' ), '<br>', '<strong>' . ElementorExtrasPlugin::$instance->gsap_version . '</strong>' );
@@ -258,6 +351,60 @@ class Settings extends Settings_Page {
 					'yes' 	=> __( 'Yes', 'elementor-extras' ),
 					'no' 	=> __( 'No', 'elementor-extras' ),
 				]
+			],
+			[
+				'name'		=> 'load_google_maps_api',
+				'label'		=> __( 'Load Google Maps API', 'elementor-extras' ),
+				'desc' 		=> __( 'You can disable loading the Google Maps API script if it\'s already added from a theme or plugin.', 'elementor-extras' ),
+				'type'		=> 'radio',
+				'default'	=> 'yes',
+				'options'	=> [
+					'yes' 	=> __( 'Yes', 'elementor-extras' ),
+					'no' 	=> __( 'No', 'elementor-extras' ),
+				]
+			],
+		];
+
+		return $fields;
+
+	}
+
+	/**
+	* Returns the fields for the API section
+	*
+	* @since 2.0.0
+	*
+	* @access protected
+	*/
+	protected function get_apis_fields() {
+
+		$gmap_description = sprintf( __( 'You can get your API key %1$shere%2$s', 'elementor-extras' ), '<a target="_blank" href="https://developers.google.com/maps/documentation/javascript/get-api-key">', '</a>' );
+
+		$snazzy_description = sprintf( __( 'You can get your API key %1$shere%2$s after you create an account on Snazzy Maps.', 'elementor-extras' ), '<a target="_blank" href="https://snazzymaps.com/account/developer">', '</a>' );
+
+		$fields = [
+			[
+				'name'		=> 'google_maps_api_key',
+				'label'		=> __( 'Google Maps API Key', 'elementor-extras' ),
+				'desc' 		=> $gmap_description,
+				'type'		=> 'text',
+			],
+			[
+				'name'		=> 'snazzy_maps_api_key',
+				'label'		=> __( 'Snazzy Maps API Key', 'elementor-extras' ),
+				'desc' 		=> $snazzy_description,
+				'type'		=> 'text',
+			],
+			[
+				'name'		=> 'snazzy_maps_endpoint',
+				'label'		=> __( 'Snazzy Maps Endpoint', 'elementor-extras' ),
+				'desc' 		=> __( 'Select where to search for map styles. "Explore" searches all public map styles, "My Styles" search the styles you created on Snazzy Maps and "Favorites" fetches styles from the ones you added to your favorites.', 'elementor-extras' ),
+				'type'		=> 'select',
+				'options'	=> [
+					'explore' 	=> __( 'Explore', 'elementor-extras' ),
+					'my-styles' => __( 'My Styles', 'elementor-extras' ),
+					'favorites' => __( 'Favorites', 'elementor-extras' ),
+				],
 			]
 		];
 

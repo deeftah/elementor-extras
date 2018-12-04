@@ -10,6 +10,7 @@
 				wrapper : null,
 				filterables : '.filterable',
 				activeFilterClass : 'active',
+				notFound : null,
 			};
 
 			var plugin = this;
@@ -20,6 +21,7 @@
 				$document		= $(document),
 				$element 		= $(element),
 				$filters 		= null,
+				$notFound 		= null,
 				$wrapper 		= null,
 				$filterables 	= null,
 				activeFilter 	= null;
@@ -41,6 +43,7 @@
 
 				$filters = $element.find('[data-filter]');
 				$filterables = $wrapper.find( plugin.opts.filterables );
+				$notFound = ( null === plugin.opts.notFound ) ? $( '.not-found' ) : plugin.opts.notFound,
 
 				plugin.setup();
 				plugin.events();
@@ -51,6 +54,7 @@
 
 				activeFilter = $filters.filter( '.' + plugin.opts.activeFilterClass ).data('filter');
 				plugin.applyFilter( activeFilter );
+				plugin.updateCount();
 
 			};
 
@@ -60,8 +64,19 @@
 
 			};
 
+			plugin.updateCount = function() {
+				$filters.each( function() {
+					var	$filter 	= $(this),
+						$count 		= $filter.find('.ee-filters__item__count'),
+						filter 		= $filter.data('filter'),
+						$filtered 	= $filterables.filter( filter );
+
+					$count.html( $filtered.length );
+				});
+			}
+
 			plugin.onClick = function( event ) {
-				var $filter 	= $(event.target),
+				var $filter 	= $( event.target ),
 					filter 		= $filter.data('filter');
 
 				if ( activeFilter === filter )
@@ -88,6 +103,16 @@
 
 				$filtered.show();
 				$filter.addClass( plugin.opts.activeFilterClass );
+
+				if ( $notFound.length ) {
+					if ( $filtered.length ) {
+						$notFound.hide();
+					} else {
+						$notFound.show();
+					}
+				}
+
+				plugin.updateCount();
 			}
 
 			plugin.update = function() {

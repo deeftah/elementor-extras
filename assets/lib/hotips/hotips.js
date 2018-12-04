@@ -16,6 +16,13 @@
 				speed 			: 0.2,
 				content 		: false,
 				source			: false,
+				responsive 		: {
+					disable 		: false,
+					breakpoints		: {
+						'mobile'	: 768,
+						'tablet' 	: 1024,
+					},
+				},
 
 				class 			: null,
 			};
@@ -33,6 +40,7 @@
 				$content 		= null,
 
 				is_open			= false,
+				is_destroyed 	= false,
 
 				_tWidth			= 0,
 				_tLeft			= 0,
@@ -65,6 +73,9 @@
 					$window		= plugin.opts.scope;
 					$document 	= plugin.opts.scope;
 				}
+
+				if ( ! plugin.canShow() )
+					return;
 
 				// Override position?
 				if ( $target.data( 'hotips-position' ) ) {
@@ -162,6 +173,8 @@
 						}
 					});
 
+				} else if ( plugin.opts.trigger === 'load' ) {
+					$document.on( 'ready', plugin.show );
 				}
 			};
 
@@ -284,9 +297,26 @@
 					$target.unbind( 'click', plugin.show );
 				}
 
+				// Rememvber the "soft" destroy
+				is_destroyed = true;
+
 			};
 
-			plugin.show = function() {
+			plugin.canShow = function() {
+				if ( 'tablet' === plugin.opts.responsive.disable && ( plugin.isTablet() || plugin.isMobile() ) ) {
+					return false;
+				} else if ( 'mobile' === plugin.opts.responsive.disable && plugin.isMobile() ) {
+					return false;
+				}
+
+				return true;
+			};
+
+			plugin.show = function( event ) {
+
+				event.preventDefault();
+				event.stopPropagation();
+
 
 				// Exit to prevent opening when already open
 				if ( is_open === true )
@@ -345,7 +375,7 @@
 					});
 
 				}
-			}
+			};
 
 			plugin.hide = function() {
 
@@ -390,7 +420,19 @@
 
 				}
 
-			}
+			};
+
+			plugin.isTablet = function() {
+				return $window.width() < plugin.opts.responsive.breakpoints['tablet'] && $window.width() >= plugin.opts.responsive.breakpoints['mobile'];
+			};
+
+			plugin.isMobile = function() {
+				return $window.width() < plugin.opts.responsive.breakpoints['tablet'] && $window.width() < plugin.opts.responsive.breakpoints['mobile'];
+			};
+
+			plugin.isDesktop = function() {
+				return $window.width() > plugin.opts.responsive.breakpoints['tablet'];
+			};
 
 			plugin.init();
 

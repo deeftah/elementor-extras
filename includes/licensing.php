@@ -404,7 +404,6 @@ class Namogo_Licensing {
 			// retrieve the license from the database
 			$license = $this->get_license_key();
 
-
 			// data to send in our API request
 			$api_params = array(
 				'edd_action' => 'deactivate_license',
@@ -442,7 +441,7 @@ class Namogo_Licensing {
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
 			// $license_data->license will be either "deactivated" or "failed"
-			if( $license_data->license == 'deactivated' ) {
+			if( $license_data->license == 'deactivated' || $license_data->license == 'failed' ) {
 				delete_option( $this->product_id . '_license_status' );
 				delete_option( $this->product_id . '_license_key' );
 			}

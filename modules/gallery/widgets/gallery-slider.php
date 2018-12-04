@@ -21,7 +21,7 @@ use Elementor\Scheme_Color;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Gallery_Slider
+ * Gallery_Slider
  *
  * @since 0.1.0
  */
@@ -256,20 +256,6 @@ class Gallery_Slider extends Extras_Widget {
 			);
 
 			$this->add_control(
-				'pause_on_hover',
-				[
-					'label' 	=> __( 'Pause on Hover', 'elementor-extras' ),
-					'type' 		=> Controls_Manager::SELECT,
-					'default' 	=> 'yes',
-					'options' 	=> [
-						'yes' 	=> __( 'Yes', 'elementor-extras' ),
-						'no' 	=> __( 'No', 'elementor-extras' ),
-					],
-					'frontend_available' => true,
-				]
-			);
-
-			$this->add_control(
 				'autoplay',
 				[
 					'label' 	=> __( 'Autoplay', 'elementor-extras' ),
@@ -290,6 +276,26 @@ class Gallery_Slider extends Extras_Widget {
 					'type' 		=> Controls_Manager::NUMBER,
 					'default' 	=> 5000,
 					'frontend_available' => true,
+					'condition'	=> [
+						'autoplay' => 'yes',
+					],
+				]
+			);
+
+			$this->add_control(
+				'pause_on_hover',
+				[
+					'label' 	=> __( 'Pause on Hover', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SELECT,
+					'default' 	=> 'yes',
+					'options' 	=> [
+						'yes' 	=> __( 'Yes', 'elementor-extras' ),
+						'no' 	=> __( 'No', 'elementor-extras' ),
+					],
+					'frontend_available' => true,
+					'condition'	=> [
+						'autoplay' => 'yes',
+					],
 				]
 			);
 
@@ -399,8 +405,8 @@ class Gallery_Slider extends Extras_Widget {
 							'tablet_default' 	=> 'top',
 							'mobile_default' 	=> 'top',
 							'options' 	=> [
-								'tablet' 	=> __( 'Tablet', 'elementor-extras' ),
-								'mobile' 	=> __( 'Mobile', 'elementor-extras' ),
+								'tablet' 	=> __( 'Tablet & Mobile', 'elementor-extras' ),
+								'mobile' 	=> __( 'Mobile Only', 'elementor-extras' ),
 							],
 							'prefix_class'	=> 'ee-gallery-slider--stack-',
 						]
@@ -704,7 +710,7 @@ class Gallery_Slider extends Extras_Widget {
 							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .ee-carousel__arrow' => 'opacity: {{SIZE}};',
+							'{{WRAPPER}} .ee-carousel__arrow.slick-disabled' => 'opacity: {{SIZE}};',
 						],
 						'condition'		=> [
 							'show_arrows!' => '',
@@ -2310,36 +2316,76 @@ class Gallery_Slider extends Extras_Widget {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		if ( ! $settings['wp_gallery'] ) {
+		if ( ! $settings['wp_gallery'] )
 			return;
-		}
 
-		$this->add_render_attribute( 'wrapper', 'class', 'ee-gallery-slider' );
-
-		$this->add_render_attribute( 'preview', 'class', [
-			'ee-gallery-slider__preview',
-			'elementor-slick-slider',
-		] );
-
-		$this->add_render_attribute( 'gallery-wrapper', 'class', 'ee-gallery-slider__gallery' );
-		
-		$this->add_render_attribute( 'gallery', 'class', [
-			'ee-gallery',
-			'ee-grid',
-			'ee-grid--gallery',
-			'ee-gallery__gallery',
-			'ee-media-align--' . $settings['vertical_align'],
-			'ee-media-align--' . $settings['horizontal_align'],
-			'ee-media-effect__content--' . $settings['caption_effect'],
-		] );
-
-		$this->add_render_attribute( 'slider', 'class', [
-			'elementor-image-carousel',
-			'ee-carousel',
-			'ee-gallery-slider__carousel',
-			'ee-media-align--' . $settings['preview_vertical_align'],
-			'ee-media-align--' . $settings['preview_horizontal_align'],
-			'ee-media-effect__content--' . $settings['preview_caption_effect'],
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' => 'ee-gallery-slider',
+			],
+			'preview' => [
+				'class' => [
+					'ee-gallery-slider__preview',
+					'elementor-slick-slider',
+				],
+			],
+			'gallery-wrapper' => [
+				'class' => [
+					'ee-gallery-slider__gallery',
+				],
+			],
+			'gallery' => [
+				'class' => [
+					'ee-gallery',
+					'ee-grid',
+					'ee-grid--gallery',
+					'ee-gallery__gallery',
+					'ee-media-align--' . $settings['vertical_align'],
+					'ee-media-align--' . $settings['horizontal_align'],
+					'ee-media-effect__content--' . $settings['caption_effect'],
+				],
+			],
+			'slider' => [
+				'class' => [
+					'elementor-image-carousel',
+					'ee-carousel',
+					'ee-gallery-slider__carousel',
+					'ee-media-align--' . $settings['preview_vertical_align'],
+					'ee-media-align--' . $settings['preview_horizontal_align'],
+					'ee-media-effect__content--' . $settings['preview_caption_effect'],
+				],
+			],
+			'gallery-thumbnail' => [
+				'class' => [
+					'ee-media__thumbnail',
+					'ee-gallery__media__thumbnail',
+				],
+			],
+			'gallery-overlay' => [
+				'class' => [
+					'ee-media__overlay',
+					'ee-gallery__media__overlay',
+				],
+			],
+			'gallery-content' => [
+				'class' => [
+					'ee-media__content',
+					'ee-gallery__media__content',
+				],
+			],
+			'gallery-caption' => [
+				'class' => [
+					'wp-caption-text',
+					'ee-media__content__caption',
+					'ee-gallery__media__caption',
+				],
+			],
+			'gallery-item' => [
+				'class' => [
+					'ee-gallery__item',
+					'ee-grid__item',
+				],
+			],
 		] );
 
 		if ( $settings['columns'] ) {
@@ -2349,32 +2395,6 @@ class Gallery_Slider extends Extras_Widget {
 		if ( ! empty( $settings['gallery_rand'] ) ) {
 			$this->add_render_attribute( 'shortcode', 'orderby', $settings['gallery_rand'] );
 		}
-
-		$this->add_render_attribute( 'gallery-thumbnail', 'class', [
-			'ee-media__thumbnail',
-			'ee-gallery__media__thumbnail',
-		] );
-
-		$this->add_render_attribute( 'gallery-overlay', 'class', [
-			'ee-media__overlay',
-			'ee-gallery__media__overlay',
-		] );
-
-		$this->add_render_attribute( 'gallery-content', 'class', [
-			'ee-media__content',
-			'ee-gallery__media__content',
-		] );
-
-		$this->add_render_attribute( 'gallery-caption', 'class', [
-			'wp-caption-text',
-			'ee-media__content__caption',
-			'ee-gallery__media__caption',
-		] );
-
-		$this->add_render_attribute( 'gallery-item', 'class', [
-			'ee-gallery__item',
-			'ee-grid__item',
-		] );
 
 		if ( 'yes' === $settings['preview_stretch'] ) {
 			$this->add_render_attribute( 'slider', 'class', 'slick-image-stretch' );
@@ -2401,7 +2421,7 @@ class Gallery_Slider extends Extras_Widget {
 	protected function render_wp_gallery() {
 
 		$settings 			= $this->get_settings_for_display();
-		$gallery 			= $settings['wp_gallery'];
+		$gallery 			= is_rtl() ? array_reverse( $settings['wp_gallery'] ) : $settings['wp_gallery'];
 		$media_tag 			= 'figure';
 
 		foreach ( $gallery as $index => $item ) {

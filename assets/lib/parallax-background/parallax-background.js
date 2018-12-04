@@ -236,6 +236,9 @@
 
 			plugin.move = function() {
 
+				if ( ! $element.visible( true ) )
+					return;
+
 				i = $window.scrollTop() - scroll_top;
 
 				p = i * ( plugin.getSpeed() / 4 );
@@ -260,13 +263,11 @@
 					t = 'translate3d(' + s + 'px, ' + e[1] + 'px, ' + e[2] + 'px)';
 				}
 
-				if ( $element.visible(true) ) {
-					$parallax_inner.css({
-						'width'		: d[0],
-						'height'	: d[1],
-						'transform'	: t
-					});
-				}
+				$parallax_inner.css({
+					'width'		: d[0],
+					'height'	: d[1],
+					'transform'	: t
+				});
 
 				scroll_top = $window.scrollTop();
 			};

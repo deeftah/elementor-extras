@@ -169,13 +169,20 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 
 	protected function render_loop_start() {
 
-		$this->parent->add_render_attribute( 'metas-separator', 'class', 'ee-post__meta__separator' );
-		$this->parent->add_render_attribute( 'terms-separator', 'class', 'ee-post__terms__separator' );
-
-		$this->parent->add_render_attribute( 'loop', [
-			'class' => [
-				'ee-grid',
-				'ee-loop',
+		$this->parent->add_render_attribute( [
+			'metas-separator' => [
+				'class' => 'ee-post__meta__separator',
+			],
+			'terms-separator' => [
+				'class' => [
+					'ee-post__terms__separator',
+				],
+			],
+			'loop' => [
+				'class' => [
+					'ee-grid',
+					'ee-loop',
+				],
 			],
 		] );
 
@@ -183,9 +190,7 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			$this->parent->add_render_attribute( 'loop', 'class', 'ee-grid--' . $this->parent->get_settings( 'classic_layout' ) );
 		}
 
-		?>
-		<div <?php echo $this->parent->get_render_attribute_string( 'loop' ); ?>>
-		<?php
+		?><div <?php echo $this->parent->get_render_attribute_string( 'loop' ); ?>><?php
 	}
 
 	protected function render_sizer() {
@@ -232,7 +237,15 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 	protected function render_horizontal_post() {
 		$this->render_post_media();
 
-		?><div class="ee-post__content"><?php
+		$post_content_key = 'post-content-' . get_the_ID();
+
+		$this->parent->add_render_attribute( [
+			$post_content_key => [
+				'class' => 'ee-post__content',
+			],
+		] );
+
+		?><div <?php echo $this->parent->get_render_attribute_string( $post_content_key ); ?>><?php
 			$this->render_post_header();
 			$this->render_post_body();
 			$this->render_post_footer();
@@ -243,8 +256,9 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		global $post;
 
 		$settings = $this->parent->get_settings();
+		$grid_item_key = 'grid-item-' . get_the_ID();
 
-		$this->parent->add_render_attribute( 'grid-item' . get_the_ID(), [
+		$this->parent->add_render_attribute( $grid_item_key, [
 			'class'	=> [
 				'ee-grid__item',
 				'ee-loop__item',
@@ -268,7 +282,7 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		}
 
 		?>
-		<div <?php echo $this->parent->get_render_attribute_string( 'grid-item' . get_the_ID() ); ?>>
+		<div <?php echo $this->parent->get_render_attribute_string( $grid_item_key ); ?>>
 			<article <?php post_class( $post_classes ); ?>>
 		<?php
 	}
@@ -297,9 +311,11 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 
 	protected function render_post_media() {
 
-		$area = 'media';
-		$media_tag = 'div';
-		$settings = $this->parent->get_settings();
+		$area 				= 'media';
+		$media_tag 			= 'div';
+		$media_key 			= 'post-media-' . get_the_ID();
+		$media_content_key 	= 'post-media-content-' . get_the_ID();
+		$settings 			= $this->parent->get_settings();
 
 		// Option to not show media
 		if ( 'yes' !== $settings['post_media'] )
@@ -309,36 +325,42 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		if ( ! has_post_thumbnail() && empty( $settings['image']['url'] ) && $this->parent->is_empty_area( $area ) )
 			return;
 
-		$this->parent->add_render_attribute( 'post-media-' . get_the_ID(), 'class', [
+		$this->parent->add_render_attribute( $media_key, 'class', [
 			'ee-media',
 			'ee-post__media',
 		] );
 
-		$this->parent->add_helper_render_attribute( 'post-media-' . get_the_ID(), 'Media' );
+		$this->parent->add_helper_render_attribute( $media_key, 'Media' );
 
 		if ( 'yes' === $settings['post_media_link'] ) {
 			$media_tag = 'a';
-			$this->parent->add_render_attribute( 'post-media-' . get_the_ID(), 'href', get_permalink() );
+			$this->parent->add_render_attribute( $media_key, 'href', get_permalink() );
 		}
 
 		if ( ! $this->parent->is_empty_area( $area ) ) {
-			$this->parent->add_render_attribute( 'post-media-' . get_the_ID(), 'class', 'ee-post__media--content' );
-			$this->parent->add_render_attribute( 'post-media-content-' . get_the_ID(), 'class', [
-				'ee-media__content',
-				'ee-post__media__content',
-				'ee-post__area',
+			$this->parent->add_render_attribute( [
+				$media_key => [
+					'class' => [
+						'ee-post__media--content'
+					],
+				],
+				$media_content_key => [
+					'class' => [
+						'ee-media__content',
+						'ee-post__media__content',
+						'ee-post__area',
+					],
+				],
 			] );
 		}
 
-		?><<?php echo $media_tag; ?> <?php echo $this->parent->get_render_attribute_string( 'post-media-' . get_the_ID() ); ?>><?php
-
+		?><<?php echo $media_tag; ?> <?php echo $this->parent->get_render_attribute_string( $media_key ); ?>><?php
 			$this->render_post_media_thumbnail();
-
 			$this->render_post_media_overlay();
 
 		if ( ! $this->parent->is_empty_area( $area ) ) {
 
-			?><div <?php echo $this->parent->get_render_attribute_string( 'post-media-content-' . get_the_ID() ); ?>><?php
+			?><div <?php echo $this->parent->get_render_attribute_string( $media_content_key ); ?>><?php
 				$this->render_post_parts( $area );
 			?></div><!-- .ee-post__media__content --><?php
 		}
@@ -349,20 +371,21 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 	protected function render_post_body() {
 
 		$area = 'body';
+		$body_key = 'post-body-' . get_the_ID();
 
 		if ( $this->parent->is_empty_area( $area ) )
 			return;
 
 		$settings = $this->parent->get_settings();
 
-		$this->parent->add_render_attribute( 'post-body-' . get_the_ID(), 'class', [
+		$this->parent->add_render_attribute( $body_key, 'class', [
 			'ee-post__body',
 			'ee-post__area',
 		] );
 
-		$this->parent->add_helper_render_attribute( 'post-body-' . get_the_ID(), 'Body' );
+		$this->parent->add_helper_render_attribute( $body_key, 'Body' );
 
-		?><div <?php echo $this->parent->get_render_attribute_string( 'post-body-' . get_the_ID() ); ?>><?php
+		?><div <?php echo $this->parent->get_render_attribute_string( $body_key ); ?>><?php
 			$this->render_post_parts( $area );
 		?></div><!-- .ee-post__body --><?php
 	}
@@ -370,27 +393,28 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 	protected function render_post_footer() {
 
 		$area = 'footer';
+		$footer_key = 'post-footer-' . get_the_ID();
 
 		if ( $this->parent->is_empty_area( $area ) )
 			return;
 
 		$settings = $this->parent->get_settings();
 
-		$this->parent->add_render_attribute( 'post-footer-' . get_the_ID(), 'class', [
+		$this->parent->add_render_attribute( $footer_key, 'class', [
 			'ee-post__footer',
 			'ee-post__area',
 		] );
 
-		$this->parent->add_helper_render_attribute( 'post-footer-' . get_the_ID(), 'Footer' );
+		$this->parent->add_helper_render_attribute( $footer_key, 'Footer' );
 
-		?><div <?php echo $this->parent->get_render_attribute_string( 'post-footer-' . get_the_ID() ); ?>><?php
+		?><div <?php echo $this->parent->get_render_attribute_string( $footer_key ); ?>><?php
 			$this->render_post_parts( $area );
 		?></div><!-- .ee-post__footer --><?php
 	}
 
 	protected function render_post_parts( $area ) {
 
-		$_ordered_parts = $this->parent->get_ordered_post_parts( $this->parent->_post_parts );
+		$_ordered_parts = $this->parent->get_ordered_post_parts( $this->parent->get_post_parts() );
 
 		foreach ( $_ordered_parts as $part => $index ) {
 			call_user_func( array( $this, 'render_post_' . $part ), $area );
@@ -402,33 +426,40 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		// Render any metas in an area
 		if ( $this->parent->metas_in_area( $area ) || $this->parent->is_in_area( 'post_avatar_position', $area ) ) {
 
-			$this->parent->add_render_attribute( 'post-metas-' . $area . '-' . get_the_ID(), 'class', 'ee-post__metas' );
+			$metas_area_key = 'post-metas-' . $area . '-' . get_the_ID();
+			$metas_list_key = 'post-metas-list-' . $area . '-' . get_the_ID();
 
-			$this->parent->add_helper_render_attribute( 'post-metas-' . $area . '-' . get_the_ID(), 'Metas' );
+			$this->parent->add_render_attribute( [
+				 $metas_area_key => [
+					'class' => 'ee-post__metas',
+				],
+			] );
 
-			$this->parent->add_render_attribute( 'post-metas-list-' . $area . '-' . get_the_ID(), 'class', 'ee-post__metas__list' );
+			$this->parent->add_helper_render_attribute( $metas_area_key, 'Metas' );
+
+			$this->parent->add_render_attribute( $metas_list_key, 'class', 'ee-post__metas__list' );
 
 			if ( '' !== $this->parent->get_settings( 'metas_display' ) ) {
-				$this->parent->add_render_attribute( 'post-metas-list-' . $area . '-' . get_the_ID(), 'class', 'display--' . $this->parent->get_settings( 'metas_display' ) );
+				$this->parent->add_render_attribute( $metas_list_key, 'class', 'display--' . $this->parent->get_settings( 'metas_display' ) );
 			}
 
 			if ( $this->parent->is_in_area( 'post_avatar_position', $area ) ) {
-				$this->parent->add_render_attribute( 'post-metas-' . $area . '-' . get_the_ID(), 'class', 'ee-post__metas--has-avatar' );
+				$this->parent->add_render_attribute( $metas_area_key, 'class', 'ee-post__metas--has-avatar' );
 			}
 
 			if ( $this->parent->metas_in_area( $area ) ) {
-				$this->parent->add_render_attribute( 'post-metas-' . $area . '-' . get_the_ID(), 'class', 'ee-post__metas--has-metas' );
+				$this->parent->add_render_attribute( $metas_area_key, 'class', 'ee-post__metas--has-metas' );
 			}
 
-			?><div <?php echo $this->parent->get_render_attribute_string( 'post-metas-' . $area . '-' . get_the_ID() ); ?>><?php
+			?><div <?php echo $this->parent->get_render_attribute_string( $metas_area_key ); ?>><?php
 
 				$this->render_post_avatar( $area );
 
 				if ( $this->parent->metas_in_area( $area ) ) {
 
-					?><ul <?php echo $this->parent->get_render_attribute_string( 'post-metas-list-' . $area . '-' . get_the_ID() ); ?>><?php
+					?><ul <?php echo $this->parent->get_render_attribute_string( $metas_list_key ); ?>><?php
 
-						$_ordered_parts = $this->parent->get_ordered_post_parts( $this->parent->_meta_parts );
+						$_ordered_parts = $this->parent->get_ordered_post_parts( $this->parent->get_meta_parts() );
 
 						foreach ( $_ordered_parts as $part => $index ) {
 							call_user_func( array( $this, 'render_post_' . $part ), $area );
@@ -462,14 +493,16 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			return;
 		}
 
-		$this->parent->add_render_attribute( 'post-thumbnail' . get_the_ID(), 'class', [
+		$thumbnail_key = 'post-thumbnail' . get_the_ID();
+
+		$this->parent->add_render_attribute( $thumbnail_key, 'class', [
 			'ee-post__media__thumbnail',
 			'ee-media__thumbnail',
 		] );
 		
 		?>
 
-		<div <?php echo $this->parent->get_render_attribute_string( 'post-thumbnail' . get_the_ID() ); ?>>
+		<div <?php echo $this->parent->get_render_attribute_string( $thumbnail_key ); ?>>
 			<?php echo $thumbnail; ?>
 		</div>
 
@@ -477,12 +510,14 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 	}
 
 	protected function render_post_media_overlay() {
-		$this->parent->add_render_attribute( 'post-overlay' . get_the_ID(), 'class', [
+		$overlay_key = 'post-overlay' . get_the_ID();
+
+		$this->parent->add_render_attribute( $overlay_key, 'class', [
 			'ee-post__media__overlay',
 			'ee-media__overlay',
 		] );
 
-		?><div <?php echo $this->parent->get_render_attribute_string( 'post-overlay' . get_the_ID() ); ?>></div><?php
+		?><div <?php echo $this->parent->get_render_attribute_string( $overlay_key ); ?>></div><?php
 	}
 
 	protected function render_post_terms( $area = 'header' ) {
@@ -491,6 +526,8 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 
 		$settings 	= $this->parent->get_settings();
 		$terms 		= $this->parent->get_terms();
+		$terms_key 	= 'post-terms-' . get_the_ID();
+		$term_prefix_key = 'term-prefix-' . get_the_ID();
 		$term_count = $settings['post_terms_count'];
 
 		if ( ! $terms || $term_count === 0 )
@@ -502,33 +539,51 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		$media_linked 	= 'yes' === $this->parent->get_settings( 'post_media_link' );
 		$in_media 		= $this->parent->is_in_area( 'post_terms_position', 'media' );
 
-		$this->parent->add_render_attribute( 'post-terms-' . get_the_ID(), 'class', 'ee-post__terms' );
-		$this->parent->add_helper_render_attribute( 'post-terms-' . get_the_ID(), 'Terms' );
+		$this->parent->add_render_attribute( [
+			$terms_key => [
+				'class' => [
+					'ee-post__terms',
+				],
+			],
+			$term_prefix_key => [
+				'class' => [
+					'ee-post__terms__term',
+					'ee-post__terms__term--prefix',
+				],
+			],
+		] );
+
+		$this->parent->add_helper_render_attribute( $terms_key, 'Terms' );
 
 		?>
-		<ul <?php echo $this->parent->get_render_attribute_string( 'post-terms-'. get_the_ID() ); ?>>
+		<ul <?php echo $this->parent->get_render_attribute_string( $terms_key ); ?>>
 
 			<?php if ( $settings['post_terms_prefix'] ) { ?>
-			<li class="ee-post__terms__term ee-post__terms__term--prefix">
+			<li <?php echo $this->parent->get_render_attribute_string( $term_prefix_key ); ?>>
 				<?php echo $settings['post_terms_prefix']; ?>
 			</li>
 			<?php } ?>
 
 			<?php foreach( $terms as $term ) {
-				if ( $term_count === $count ) break;
+				if ( '' !== $term_count && $term_count === $count ) break;
 
 				$term_render_key = 'term-item-' . get_the_ID() . ' ' . $term->term_id;
 				$term_link_render_key = 'term-link-' . get_the_ID() . ' ' . $term->term_id;
 
-				$this->parent->add_render_attribute( $term_render_key, 'class', [
-					'ee-post__terms__term',
-					'ee-term',
-					'ee-term--' . $term->slug,
-				] );
-
-				$this->parent->add_render_attribute( $term_link_render_key, 'class', [
-					'ee-post__terms__link',
-					'ee-term__link',
+				$this->parent->add_render_attribute( [
+					$term_render_key => [
+						'class' => [
+							'ee-post__terms__term',
+							'ee-term',
+							'ee-term--' . $term->slug,
+						],
+					],
+					$term_link_render_key => [
+						'class' => [
+							'ee-post__terms__link',
+							'ee-term__link',
+						],
+					],
 				] );
 
 				if ( ( $in_media && ! $media_linked && $terms_linked ) || ( ! $in_media && $terms_linked ) ) {
@@ -554,6 +609,10 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 
 		$title_tag 		= 'div';
 		$heading_tag 	= $this->parent->get_settings( 'post_title_element' );
+
+		$title_key 		= 'post-title-' . get_the_ID();
+		$heading_key 	= 'post-title-heading-' . get_the_ID();
+
 		$in_media 		= $this->parent->is_in_area( 'post_title_position', 'media' );
 		
 		$title_linked 	= 'yes' === $this->parent->get_settings( 'post_title_link' );
@@ -566,14 +625,19 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			$this->parent->add_render_attribute( 'post-title-' . get_the_ID(), 'href', get_permalink() );
 		}
 
-		$this->parent->add_render_attribute( 'post-title-' . get_the_ID(), 'class', 'ee-post__title' );
-		$this->parent->add_helper_render_attribute( 'post-title-' . get_the_ID(), 'Title' );
-
-		$this->parent->add_render_attribute( 'post-title-heading-' . get_the_ID(), 'class', 'ee-post__title__heading' );
+		$this->parent->add_render_attribute( [
+			$title_key => [
+				'class' => 'ee-post__title',
+			],
+			$heading_key => [
+				'class' => 'ee-post__title__heading',
+			],
+		] );
+		$this->parent->add_helper_render_attribute( $title_key, 'Title' );
 
 		?>
-			<<?php echo $title_tag; ?> <?php echo $this->parent->get_render_attribute_string( 'post-title-' . get_the_ID() ); ?>>
-				<<?php echo $heading_tag; ?> <?php echo $this->parent->get_render_attribute_string( 'post-title-heading-' . get_the_ID() ); ?>><?php echo apply_filters( 'ee_posts_title', $post_title ); ?></<?php echo $heading_tag; ?>>
+			<<?php echo $title_tag; ?> <?php echo $this->parent->get_render_attribute_string( $title_key ); ?>>
+				<<?php echo $heading_tag; ?> <?php echo $this->parent->get_render_attribute_string( $heading_key ); ?>><?php echo apply_filters( 'ee_posts_title', $post_title ); ?></<?php echo $heading_tag; ?>>
 			</<?php echo $title_tag; ?>>
 		<?php
 	}
@@ -601,10 +665,25 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			return;
 
 		$has_link = ! $this->parent->is_in_area( 'post_author_position', 'media' ) && 'yes' === $this->parent->get_settings( 'post_author_link' );
+		$meta_author_key = 'meta-author-' . get_the_ID();
+		$meta_author_link_key = 'meta-author-link-' . get_the_ID();
 
-		?>
-		<li class="ee-post__meta ee-post__meta--author">
-			<?php if ( $has_link ) : ?><a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>"><?php endif; ?>
+		$this->parent->add_render_attribute( [
+			$meta_author_key => [
+				'class' => [
+					'ee-post__meta',
+					'ee-post__meta--author',
+				],
+			],
+			$meta_author_link_key => [
+				'href' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+			],
+		] );
+
+		?><li <?php echo $this->parent->get_render_attribute_string( $meta_author_key ); ?>>
+			<?php if ( $has_link ) : ?>
+				<a <?php echo $this->parent->get_render_attribute_string( $meta_author_link_key ); ?>>
+			<?php endif; ?>
 				<?php echo $this->parent->get_settings('post_author_prefix'); ?> <?php the_author(); ?><?php echo $this->render_metas_separator(); ?>
 			<?php if ( $has_link ) : ?></a><?php endif; ?>
 		</li>
@@ -616,9 +695,25 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			return;
 
 		$has_link = ! $this->parent->is_in_area( 'post_avatar_position', 'media' ) && 'yes' === $this->parent->get_settings( 'post_avatar_link' );
+		$meta_avatar_key = 'meta-avatar-' . get_the_ID();
+		$meta_avatar_link_key = 'meta-avatar-link-' . get_the_ID();
 
-		?><div class="ee-post__metas__avatar ee-post__meta--avatar">
-			<?php if ( $has_link ) : ?><a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>"><?php endif; ?>
+		$this->parent->add_render_attribute( [
+			$meta_avatar_key => [
+				'class' => [
+					'ee-post__metas__avatar',
+					'ee-post__meta--avatar'
+				],
+			],
+			$meta_avatar_link_key => [
+				'href' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+			],
+		] );
+
+		?><div <?php echo $this->parent->get_render_attribute_string( $meta_avatar_key ); ?>>
+			<?php if ( $has_link ) : ?>
+				<a <?php echo $this->parent->get_render_attribute_string( $meta_avatar_link_key ); ?>>
+			<?php endif; ?>
 				<?php echo get_avatar( get_the_author_meta( 'ID' ), 256, '', get_the_author_meta( 'display_name' ), [ 'class' => 'ee-post__metas__avatar__image' ] ); ?>
 			<?php if ( $has_link ) : ?></a><?php endif; ?>
 		</div><?php
@@ -628,12 +723,55 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		if ( ! $this->parent->is_in_area( 'post_date_position', $area ) )
 			return;
 
+		$meta_date_key = 'post-date-' . get_the_ID();
+
+		$this->parent->add_render_attribute( [
+			$meta_date_key => [
+				'class' => [
+					'ee-post__meta',
+					'ee-post__meta--date',
+					'ee-post__metas__date',
+				],
+			],
+		] );
+
 		$post_date_time = $this->parent->get_settings('post_date_prefix') . ' ';
 		$post_date_time .= apply_filters( 'the_date', get_the_date(), get_option( 'date_format' ), '', '' ) . ' ';
 		$post_date_time .= $this->render_post_time();
 
-		?><li class="ee-post__meta ee-post__meta--date">
+		?><li <?php echo $this->parent->get_render_attribute_string( $meta_date_key ); ?>>
 			<?php echo apply_filters( 'ee_posts_date_time', $post_date_time, 10, 2 ); ?>
+			<?php echo $this->render_metas_separator(); ?>
+		</li><?php
+	}
+
+	protected function render_post_price( $area = 'footer' ) {
+		if ( ! is_woocommerce_active() || ! function_exists( 'wc_get_product' ) )
+			return;
+
+		if ( ! $this->parent->is_in_area( 'post_price_position', $area ) )
+			return;
+
+		global $product;
+		$product = wc_get_product();
+
+		if ( empty( $product ) )
+			return;
+
+		$meta_date_key = 'post-price-' . get_the_ID();
+
+		$this->parent->add_render_attribute( [
+			$meta_date_key => [
+				'class' => [
+					'ee-post__meta',
+					'ee-post__meta--price',
+					'ee-post__metas__price',
+				],
+			],
+		] );
+
+		?><li <?php echo $this->parent->get_render_attribute_string( $meta_date_key ); ?>>
+			<?php wc_get_template( '/single-product/price.php' ); ?>
 			<?php echo $this->render_metas_separator(); ?>
 		</li><?php
 	}
@@ -653,9 +791,19 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			return;
 
 		$post_comments = get_comments_number();
+		$comments_key = 'post-comments-' . get_the_ID();
+
+		$this->parent->add_render_attribute( [
+			$comments_key => [
+				'class' => [
+					'ee-post__meta',
+					'ee-post__meta--comments',
+				],
+			],
+		] );
 
 		?>
-		<li class="ee-post__meta ee-post__meta--comments">
+		<li <?php echo $this->parent->get_render_attribute_string( $comments_key ); ?>>
 			<?php echo apply_filters( 'ee_posts_comments', $post_comments ); ?>
 			<?php echo $this->render_metas_separator(); ?>
 		</li>
@@ -667,40 +815,59 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		if ( ! $this->parent->is_in_area( 'post_excerpt_position', $area ) || ! $this->parent->get_settings( 'post_excerpt_length' ) )
 			return;
 
-		$this->parent->add_render_attribute( 'post-excerpt-' . get_the_ID(), 'class', 'ee-post__excerpt' );
-		$this->parent->add_helper_render_attribute( 'post-excerpt-' . get_the_ID(), 'Excerpt' );
+		$post_excerpt_key = 'post-excerpt-' . get_the_ID();
+
+		$this->parent->add_render_attribute( $post_excerpt_key, 'class', 'ee-post__excerpt' );
+		$this->parent->add_helper_render_attribute( $post_excerpt_key, 'Excerpt' );
 
 		$post_excerpt = get_the_excerpt();
 		$tag = 'div';
 
-		if ( 'media' === $area ) {
-			$tag = 'span';
-		}
+		if ( 'media' === $area ) $tag = 'span';
 
 		?>
-		<<?php echo $tag; ?> <?php echo $this->parent->get_render_attribute_string( 'post-excerpt-' . get_the_ID() ); ?>>
+		<<?php echo $tag; ?> <?php echo $this->parent->get_render_attribute_string( $post_excerpt_key ); ?>>
 			<?php echo apply_filters( 'ee_posts_excerpt', $post_excerpt ); ?>
-			<?php if ( 'media' !== $area ) { $this->render_post_read_more(); } ?>
 		</<?php echo $tag; ?>>
 		<?php
 	}
 
-	protected function render_post_read_more() {
+	protected function render_post_button( $area = 'body' ) {
 
-		if ( 'yes' !== $this->parent->get_settings( 'post_read_more' ) || '' === $this->parent->get_settings( 'post_read_more_text' ) )
+		if ( ! $this->parent->is_in_area( 'post_button_position', $area ) )
 			return;
 
-		$this->parent->add_render_attribute( 'post-read-more-' . get_the_ID(), [
+		$button_tag = 'a';
+
+		$post_read_more_key = 'post-read-more-' . get_the_ID();
+		$post_button_key = 'post-button-' . get_the_ID();
+
+		$this->parent->add_render_attribute( $post_read_more_key, [
 			'class' => 'ee-post__read-more',
-			'href' 	=> get_permalink( get_the_ID() ),
 		] );
+
+		$this->parent->add_render_attribute( $post_button_key, [
+			'class' => 'ee-post__button',
+		] );
+
+		if ( 'media' === $area && 'yes' === $this->parent->get_settings( 'post_media_link' ) ) {
+
+			$button_tag = 'div';
+
+		} else {
+			$this->parent->add_render_attribute( $post_button_key, [
+				'href' 	=> get_permalink( get_the_ID() ),
+			] );
+		}
 		
-		$this->parent->add_helper_render_attribute( 'post-read-more-' . get_the_ID(), 'Read More' );
+		$this->parent->add_helper_render_attribute( $post_read_more_key, 'Button' );
 
 		?>
-		<a <?php echo $this->parent->get_render_attribute_string( 'post-read-more-' . get_the_ID() ); ?>>
-			<?php echo $this->parent->get_settings( 'post_read_more_text' ); ?>
-		</a>
+		<div <?php echo $this->parent->get_render_attribute_string( $post_read_more_key ); ?>>
+			<<?php echo $button_tag; ?> <?php echo $this->parent->get_render_attribute_string( $post_button_key ); ?>>
+				<?php echo $this->parent->get_settings( 'post_read_more_text' ); ?>
+			</<?php echo $button_tag; ?>>
+		</div>
 		<?php
 	}
 

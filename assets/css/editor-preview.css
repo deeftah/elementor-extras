@@ -66,6 +66,12 @@
   display: block !important;
   clear: both !important;
 }
+.ee-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
 .elementor-editor-active .ee-posts-helpers-on .ee-editor-helper {
   position: relative;
   border: 1px dashed transparent;

@@ -18,7 +18,7 @@ use Elementor\Scheme_Typography;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Widget_Button_Group
+ * Button_Group
  *
  * @since 0.1.0
  */
@@ -527,6 +527,35 @@ class Button_Group extends Extras_Widget {
 		);
 
 			$this->add_control(
+				'trigger',
+				[
+					'label'		=> __( 'Trigger', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SELECT,
+					'default' 	=> 'hover',
+					'options' 	=> [
+						'hover' => __( 'Hover', 'elementor-extras' ),
+						'load' 	=> __( 'Page Load', 'elementor-extras' ),
+					],
+					'frontend_available' => true
+				]
+			);
+
+			$this->add_control(
+				'disable',
+				[
+					'label'		=> __( 'Disable On', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SELECT,
+					'default' 	=> '',
+					'options' 	=> [
+						'' 			=> __( 'None', 'elementor-extras' ),
+						'tablet' 	=> __( 'Tablet & Mobile', 'elementor-extras' ),
+						'mobile' 	=> __( 'Mobile', 'elementor-extras' ),
+					],
+					'frontend_available' => true
+				]
+			);
+
+			$this->add_control(
 				'position',
 				[
 					'label'		=> __( 'Position', 'elementor-extras' ),
@@ -830,8 +859,8 @@ class Button_Group extends Extras_Widget {
 					],
 					'selectors' => [
 						// No stacking
-						'{{WRAPPER}} .ee-button-group' 	=> 'margin-left: -{{SIZE}}{{UNIT}};',
-						'{{WRAPPER}} .ee-button-gap' => 'margin-left: {{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-button-group' 	=> 'margin-left: -{{SIZE}}{{UNIT}}; margin-bottom: -{{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-button-gap' => 'margin-left: {{SIZE}}{{UNIT}}; margin-bottom: {{SIZE}}{{UNIT}};',
 
 						// Stacked
 						'(desktop){{WRAPPER}}.ee-button-group-stack-desktop .ee-button-gap:not(:last-child)' 	=> 'margin-bottom: {{SIZE}}{{UNIT}};',
@@ -1131,28 +1160,52 @@ class Button_Group extends Extras_Widget {
 				$text_key		= $this->get_repeater_setting_key( 'text', 'buttons', $index );
 				$content_id 	= $this->get_id() . '_' . $item['_id'];
 
-				$this->add_render_attribute( $gap_key, 'class', [
-					'ee-button-gap',
-					'elementor-repeater-item-' . $item['_id']
+				$this->add_render_attribute( [
+					$gap_key => [
+						'class' => [
+							'ee-button-gap',
+							'elementor-repeater-item-' . $item['_id'],
+						],
+					],
+					$wrapper_key => [
+						'class' => [
+							'ee-button-wrapper',
+						],
+					],
+					$button_key => [
+						'class' => [
+							'ee-button',
+						],
+					],
+					$content_key => [
+						'class' => [
+							'ee-button-content-wrapper',
+						],
+					],
+					$text_key => [
+						'class' => [
+							'ee-button-text',
+						],
+					],
+					$tooltip_key => [
+						'class' => 'hotip-content',
+						'id' => 'hotip-content-' . $content_id,
+					],
 				] );
 
-				$this->add_render_attribute( $wrapper_key, 'class', 'ee-button-wrapper' );
-				$this->add_render_attribute( $button_key, 'class', 'ee-button' );
-				$this->add_render_attribute( $content_key, 'class', 'ee-button-content-wrapper' );
-
-				$this->add_render_attribute( $text_key, 'class', 'ee-button-text' );
 				$this->add_inline_editing_attributes( $text_key, 'none' );
-
-				$this->add_render_attribute( $tooltip_key, [
-					'class' => 'hotip-content',
-					'id' 	=> 'hotip-content-' . $content_id,
-				] );
 
 				if ( ! empty( $item['icon'] ) ) {
 					$this->add_render_attribute( $icon_key, 'class', [
 						'ee-button-icon',
 						'ee-icon--' . $item['icon_align'],
 					] );
+
+					if ( '' === $item['text'] ) {
+						$this->add_render_attribute( $icon_key, 'class', [
+							'ee-icon--flush',
+						] );
+					}
 
 					$_has_icon = true;
 				}
@@ -1363,6 +1416,12 @@ class Button_Group extends Extras_Widget {
 						'ee-button-icon',
 						'ee-icon--' + item.icon_align,
 					] );
+
+					if ( '' === item.text ) {
+					view.addRenderAttribute( iconKey, 'class', [
+						'ee-icon--flush',
+					] );
+				}
 
 					_has_icon = true;
 				}

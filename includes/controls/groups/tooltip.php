@@ -70,6 +70,19 @@ class Group_Control_Tooltip extends Group_Control_Base {
 			'options' 	=> [
 				'hover' 	=> __( 'Hover', 'elementor-extras' ),
 				'click' 	=> __( 'Click', 'elementor-extras' ),
+				'load' 		=> __( 'Page Load', 'elementor-extras' ),
+			],
+			'frontend_available' => true
+		];
+
+		$controls['disable'] = [
+			'label'		=> _x( 'Disable On', 'Tooltip Control', 'elementor-extras' ),
+			'type' 		=> Controls_Manager::SELECT,
+			'default' 	=> '',
+			'options' 	=> [
+				'' 			=> __( 'None', 'elementor-extras' ),
+				'tablet' 	=> __( 'Tablet & Mobile', 'elementor-extras' ),
+				'mobile' 	=> __( 'Mobile', 'elementor-extras' ),
 			],
 			'frontend_available' => true
 		];

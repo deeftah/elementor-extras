@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Extensions_Manager {
 
+	const DISPLAY_CONDITIONS 	= 'display-conditions';
 	const PORTFOLIO_PARALLAX 	= 'portfolio-parallax';
 	const STICKY_ELEMENTS 		= 'sticky-elements';
 	const PARALLAX_ELELENTS		= 'parallax-elements';
@@ -14,6 +15,7 @@ class Extensions_Manager {
 	private $_extensions = null;
 
 	public $available_extensions = [
+		self::DISPLAY_CONDITIONS,
 		self::PORTFOLIO_PARALLAX,
 		self::STICKY_ELEMENTS,
 		self::PARALLAX_ELELENTS,
@@ -77,9 +79,26 @@ class Extensions_Manager {
 		$section 		= 'elementor_extras_extensions';
 		$option 		= \ElementorExtras\ElementorExtrasPlugin::instance()->settings->get_option( $option_name, $section, false );
 
-		if ( 'off' === $option ) {
+		return ( 'off' === $option ) || ( ! $option && $this->is_default_disabled( $extension_name ) );
+	}
+
+	/**
+	 * Check if extension is disabled by default
+	 *
+	 * @since 2.0.0
+	 *
+	 * @access public
+	 * @return bool
+	 */
+	public function is_default_disabled( $extension_name ) {
+		if ( ! $extension_name )
+			return false;
+
+		$class_name = str_replace( '-', '_', $extension_name );
+		$class_name = 'ElementorExtras\Extensions\Extension_' . ucwords( $class_name );
+
+		if ( $class_name::is_default_disabled() )
 			return true;
-		}
 
 		return false;
 	}

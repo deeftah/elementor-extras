@@ -19,7 +19,7 @@ use Elementor\Scheme_Typography;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Hotspots
+ * Hotspots
  *
  * @since 0.1.0
  */
@@ -178,7 +178,7 @@ class Hotspots extends Extras_Widget {
 					'link',
 					[
 						'label' 		=> __( 'Link', 'elementor-extras' ),
-						'description' 	=> __( 'Active only when tolltips\' Trigger is set to Hover', 'elementor-extras' ),
+						'description' 	=> __( 'Active only when tolltips\' Trigger is set to Hover or if tooltip is disabled responsively, below a certain breakpoint.', 'elementor-extras' ),
 						'type' 			=> Controls_Manager::URL,
 						'dynamic' => [
 							'active' => true,
@@ -233,6 +233,14 @@ class Hotspots extends Extras_Widget {
 			$repeater->start_controls_tab( 'tab_style', [ 'label' => __( 'Style', 'elementor-extras' ) ] );
 
 				$repeater->add_control(
+					'default',
+					[
+						'label' => __( 'Default', 'elementor-extras' ),
+						'type' => Controls_Manager::HEADING,
+					]
+				);
+
+				$repeater->add_control(
 					'color',
 					[
 						'label' 	=> __( 'Color', 'elementor-extras' ),
@@ -255,6 +263,74 @@ class Hotspots extends Extras_Widget {
 					]
 				);
 
+				$repeater->add_responsive_control(
+					'opacity',
+					[
+						'label' 	=> __( 'Opacity (%)', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::SLIDER,
+						'range' 	=> [
+							'px' 	=> [
+								'max' 	=> 1,
+								'min' 	=> 0,
+								'step' 	=> 0.1,
+							],
+						],
+						'separator' => 'after',
+						'selectors' 	=> [
+							'{{WRAPPER}} {{CURRENT_ITEM}}.ee-hotspot' => 'opacity: {{SIZE}};',
+						],
+					]
+				);
+
+				$repeater->add_control(
+					'hover',
+					[
+						'label' => __( 'Hover', 'elementor-extras' ),
+						'type' => Controls_Manager::HEADING,
+					]
+				);
+
+				$repeater->add_control(
+					'color_hover',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} {{CURRENT_ITEM}}:hover .ee-hotspot__wrapper' => 'color: {{VALUE}};',
+						],
+					]
+				);
+
+				$repeater->add_control(
+					'background_color_hover',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'selectors' => [
+							'{{WRAPPER}} {{CURRENT_ITEM}}:hover .ee-hotspot__wrapper' 			=> 'background-color: {{VALUE}};',
+							'{{WRAPPER}} {{CURRENT_ITEM}}:hover .ee-hotspot__wrapper:before' 	=> 'background-color: {{VALUE}};',
+						],
+					]
+				);
+
+				$repeater->add_responsive_control(
+					'opacity_hover',
+					[
+						'label' 	=> __( 'Opacity (%)', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::SLIDER,
+						'range' 	=> [
+							'px' 	=> [
+								'max' 	=> 1,
+								'min' 	=> 0,
+								'step' 	=> 0.1,
+							],
+						],
+						'selectors' 	=> [
+							'{{WRAPPER}} {{CURRENT_ITEM}}.ee-hotspot:hover' => 'opacity: {{SIZE}};',
+						],
+					]
+				);
+
 			$repeater->end_controls_tab();
 
 			$repeater->start_controls_tab( 'tab_position', [ 'label' => __( 'Position', 'elementor-extras' ) ] );
@@ -264,6 +340,9 @@ class Hotspots extends Extras_Widget {
 					[
 						'label' 	=> __( 'Horizontal position (%)', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::SLIDER,
+						'default'	=> [
+							'size'	=> 50,
+						],
 						'range' 	=> [
 							'px' 	=> [
 								'min' 	=> 0,
@@ -282,6 +361,9 @@ class Hotspots extends Extras_Widget {
 					[
 						'label' 	=> __( 'Vertical position (%)', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::SLIDER,
+						'default'	=> [
+							'size'	=> 50,
+						],
 						'range' 	=> [
 							'px' 	=> [
 								'min' 	=> 0,
@@ -350,6 +432,21 @@ class Hotspots extends Extras_Widget {
 		);
 
 			$this->add_control(
+				'disable',
+				[
+					'label'		=> __( 'Disable On', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SELECT,
+					'default' 	=> '',
+					'options' 	=> [
+						'' 			=> __( 'None', 'elementor-extras' ),
+						'tablet' 	=> __( 'Tablet & Mobile', 'elementor-extras' ),
+						'mobile' 	=> __( 'Mobile', 'elementor-extras' ),
+					],
+					'frontend_available' => true
+				]
+			);
+
+			$this->add_control(
 				'position',
 				[
 					'label'		=> __( 'Position', 'elementor-extras' ),
@@ -375,8 +472,9 @@ class Hotspots extends Extras_Widget {
 					'type' 		=> Controls_Manager::SELECT,
 					'default' 	=> 'hover',
 					'options' 	=> [
-						'hover' 	=> __( 'Hover', 'elementor-extras' ),
-						'click' 	=> __( 'Click', 'elementor-extras' ),
+						'hover' => __( 'Hover', 'elementor-extras' ),
+						'click' => __( 'Click', 'elementor-extras' ),
+						'load' 	=> __( 'Page Load', 'elementor-extras' ),
 					],
 					'condition'		=> [
 						'image[url]!' => '',
@@ -698,7 +796,7 @@ class Hotspots extends Extras_Widget {
 							],
 						],
 						'selectors' 	=> [
-							'{{WRAPPER}} .ee-hotspot__wrapper' => 'opacity: {{SIZE}};',
+							'{{WRAPPER}} .ee-hotspot' => 'opacity: {{SIZE}};',
 						],
 					]
 				);
@@ -1016,27 +1114,31 @@ class Hotspots extends Extras_Widget {
 
 					$content_id 			= $this->get_id() . '_' . $item['_id'];
 
-					$this->add_render_attribute( $wrapper_key, 'class', 'ee-hotspot__wrapper' );
-					$this->add_render_attribute( $text_key, 'class', 'ee-hotspot-text' );
-
-					$this->add_render_attribute( $tooltip_key, [
-						'class' => 'hotip-content',
-						'id'	=> 'hotip-content-' . $content_id,
-					] );
-
-					$this->add_render_attribute( $hotspot_key, [
-						'class' => [
-							'elementor-repeater-item-' . $item['_id'],
-							'hotip',
-							'ee-hotspot',
+					$this->add_render_attribute( [
+						$wrapper_key => [
+							'class' => 'ee-hotspot__wrapper',
 						],
-						'data-hotips-content' 	=> '#hotip-content-' . $content_id,
-						'data-hotips-position' 	=> $item['tooltip_position'],
-						'data-hotips-class' 	=> [
-							'ee-global',
-							'ee-tooltip',
-							'ee-tooltip-' . $this->get_id(),
-						]
+						$text_key => [
+							'class' => 'ee-hotspot-text',
+						],
+						$tooltip_key => [
+							'class' => 'hotip-content',
+							'id'	=> 'hotip-content-' . $content_id,
+						],
+						$hotspot_key => [
+							'class' => [
+								'elementor-repeater-item-' . $item['_id'],
+								'hotip',
+								'ee-hotspot',
+							],
+							'data-hotips-content' 	=> '#hotip-content-' . $content_id,
+							'data-hotips-position' 	=> $item['tooltip_position'],
+							'data-hotips-class' 	=> [
+								'ee-global',
+								'ee-tooltip',
+								'ee-tooltip-' . $this->get_id(),
+							]
+						],
 					] );
 
 					if ( 'icon' === $item['hotspot'] && ! empty( $item['icon'] ) ) {
@@ -1053,7 +1155,7 @@ class Hotspots extends Extras_Widget {
 						$this->add_render_attribute( $hotspot_key, 'class', $item['css_classes'] );
 					}
 
-					if ( ! empty( $item['link']['url'] ) && $settings['trigger'] !== 'click' ) {
+					if ( ! empty( $item['link']['url'] ) ) {
 
 						$hotspot_tag = 'a';
 
@@ -1104,15 +1206,23 @@ class Hotspots extends Extras_Widget {
 					url: settings.image.url,
 					size: settings.image_size,
 					dimension: settings.image_custom_dimension,
+					model: view.getEditModel(),
 				},
 
 				widgetId 		= view.$el.data('id');
 				currentItem 	= ( editSettings.activeItemIndex > 0 ) ? editSettings.activeItemIndex : false;
 
-				view.addRenderAttribute( 'wrapper', 'class', 'ee-hotspots' );
-				view.addRenderAttribute( 'container', 'class', 'ee-hotspots__container' );
-
-				view.addRenderAttribute( 'image', 'src', elementor.imagesManager.getImageUrl( image ) );
+				view.addRenderAttribute( {
+					'wrapper' : {
+						'class' : 'ee-hotspots',
+					},
+					'container' : {
+						'class' : 'ee-hotspots__container',
+					},
+					'image' : {
+						'src' : elementor.imagesManager.getImageUrl( image ),
+					}
+				} );
 
 			#><div {{{ view.getRenderAttributeString( 'wrapper' ) }}}>
 				<img {{{ view.getRenderAttributeString( 'image' ) }}} />
@@ -1137,18 +1247,19 @@ class Hotspots extends Extras_Widget {
 						view.addRenderAttribute( tooltipKey, 'class', 'hotip-content' );
 						view.addRenderAttribute( tooltipKey, 'id', 'hotip-content-' + contentId );
 
-						view.addRenderAttribute( hotspotKey, 'class', [
-							'elementor-repeater-item-' + item._id,
-							'hotip',
-							'ee-hotspot',
-						] );
-
-						view.addRenderAttribute( hotspotKey, 'data-hotips-content', '#hotip-content-' + contentId );
-						view.addRenderAttribute( hotspotKey, 'data-hotips-position', item.tooltip_position );
-						view.addRenderAttribute( hotspotKey, 'data-hotips-class', [
-							'ee-tooltip',
-							'ee-tooltip-' + widgetId,
-						] );
+						view.addRenderAttribute( hotspotKey, {
+							'class' : [
+								'elementor-repeater-item-' + item._id,
+								'hotip',
+								'ee-hotspot',
+							],
+							'data-hotips-content' : '#hotip-content-' + contentId,
+							'data-hotips-position' : item.tooltip_position,
+							'data-hotips-class' : [
+								'ee-tooltip',
+								'ee-tooltip-' + widgetId,
+							],
+						} );
 
 						if ( 'icon' === item.hotspot && '' !== item.icon ) {
 							_has_icon = true;
@@ -1166,7 +1277,7 @@ class Hotspots extends Extras_Widget {
 							view.addRenderAttribute( hotspotKey, 'class', item.css_classes );
 						}
 
-						if ( '' !== item.link.url && settings.trigger !== 'click' ) {
+						if ( '' !== item.link.url ) {
 
 							hotspotTag = 'a';
 

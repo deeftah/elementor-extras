@@ -19,6 +19,18 @@ abstract class Module_Base {
 	private $reflection;
 
 	/**
+	 * Module components.
+	 *
+	 * Holds the module components.
+	 *
+	 * @since 2.0.0
+	 * @access private
+	 *
+	 * @var array
+	 */
+	private $components = [];
+
+	/**
 	 * @var Module_Base
 	 */
 	protected static $_instances = [];
@@ -151,6 +163,18 @@ abstract class Module_Base {
 	 * @return bool
 	 */
 	public static function requires_elementor_pro() {
+		return false;
+	}
+
+	public function add_component( $id, $instance ) {
+		$this->components[ $id ] = $instance;
+	}
+
+	public function get_component( $id ) {
+		if ( isset( $this->components[ $id ] ) ) {
+			return $this->components[ $id ];
+		}
+
 		return false;
 	}
 }

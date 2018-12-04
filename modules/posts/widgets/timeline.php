@@ -23,7 +23,7 @@ use ElementorPro\Modules\QueryControl\Module;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Timeline
+ * Timeline
  *
  * @since 0.1.0
  */
@@ -2053,51 +2053,65 @@ class Timeline extends Extras_Widget {
 	protected function add_global_render_attributes() {
 		$settings = $this->get_settings();
 
-		$this->add_render_attribute( 'wrapper', 'class', [
-			'ee-timeline',
-			'ee-timeline--vertical',
-			'ee-timeline-align--' . $this->get_horizontal_aligment(),
-			'ee-timeline-align--' . $this->get_vertical_aligment(),
-		] );
-
-		$this->add_render_attribute( 'item', 'class', [
-			'ee-timeline__item',
-			'timeline-item',
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' => [
+					'ee-timeline',
+					'ee-timeline--vertical',
+					'ee-timeline-align--' . $this->get_horizontal_aligment(),
+					'ee-timeline-align--' . $this->get_vertical_aligment(),
+				],
+			],
+			'item' => [
+				'class' => [
+					'ee-timeline__item',
+					'timeline-item',
+				],
+			],
+			'line' => [
+				'class' => 'ee-timeline__line',
+			],
+			'line-inner' => [
+				'class' => 'ee-timeline__line__inner',
+			],
+			'card-wrapper' => [
+				'class' => 'timeline-item__card-wrapper',
+			],
+			'icon' => [
+				'class' => $settings['global_icon'],
+			],
+			'point' => [
+				'class' => 'timeline-item__point',
+			],
+			'meta' => [
+				'class' => 'timeline-item__meta',
+			],
+			'image' => [
+				'class' => [
+					'timeline-item__img',
+					'elementor-post__thumbnail',
+				],
+			],
+			'content' => [
+				'class' => 'timeline-item__content',
+			],
+			'arrow' => [
+				'class' => 'timeline-item__card__arrow',
+			],
+			'meta-wrapper' => [
+				'class' => 'timeline-item__meta-wrapper',
+			],
 		] );
 
 		if ( $settings['animate_in'] === 'yes' ) {
 			$this->add_render_attribute( 'item', 'class', 'is--hidden' );
 		}
-
-		$this->add_render_attribute( 'line', 'class', 'ee-timeline__line' );
-		$this->add_render_attribute( 'line-inner', 'class', 'ee-timeline__line__inner' );
-
-		$this->add_render_attribute( 'card-wrapper', 'class', 'timeline-item__card-wrapper' );
-		$this->add_render_attribute( 'icon', 'class', $settings['global_icon'] );
-		$this->add_render_attribute( 'point', 'class', [
-			'timeline-item__point',
-		] );
-
-		$this->add_render_attribute( 'meta', 'class', [
-			'timeline-item__meta',
-		] );
-
-		$this->add_render_attribute( 'image', 'class', [
-			'timeline-item__img',
-			'elementor-post__thumbnail',
-		] );
-
-		$this->add_render_attribute( 'content', 'class', 'timeline-item__content' );
-		$this->add_render_attribute( 'arrow', 'class', 'timeline-item__card__arrow' );
-		$this->add_render_attribute( 'meta-wrapper', 'class', 'timeline-item__meta-wrapper' );
 	}
 
 	protected function render() {
 		$settings = $this->get_settings();
 
-		$this->add_global_render_attributes();
-
-		?>
+		$this->add_global_render_attributes(); ?>
 
 		<section <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 
@@ -2125,7 +2139,7 @@ class Timeline extends Extras_Widget {
 
 					$wp_query->the_post();
 
-					$this->render_post_card();			
+					$this->render_post_card( $wp_query->current_post );
 				}
 
 				remove_filter( 'excerpt_length', [ $this, 'custom_excerpt_length' ], 99 );
@@ -2146,28 +2160,40 @@ class Timeline extends Extras_Widget {
 
 		foreach ( $settings['items'] as $index => $item ) {
 
-			$card_tag 	= 'div';
-			$item_key 	= $this->get_repeater_setting_key( 'item', 'items', $index );
-			$card_key 	= $this->get_repeater_setting_key( 'card', 'items', $index );
-			$point 		= '';
-			$meta 		= '';
+			$card_tag 		= 'div';
+			$item_key 		= $this->get_repeater_setting_key( 'item', 'items', $index );
+			$card_key 		= $this->get_repeater_setting_key( 'card', 'items', $index );
+			$point_content 	= '';
+			$wysiwyg_key 	= $this->get_repeater_setting_key( 'content', 'items', $index );
+			$meta_key 		= $this->get_repeater_setting_key( 'date', 'items', $index );
 
-			$this->add_render_attribute( $item_key, 'class', [
-				'elementor-repeater-item-' . $item['_id'],
-				'ee-timeline__item',
-				'timeline-item',
+			$this->add_render_attribute( [
+				$item_key => [
+					'class' => [
+						'elementor-repeater-item-' . $item['_id'],
+						'ee-timeline__item',
+						'timeline-item',
+					],
+				],
+				$card_key => [
+					'class' => 'timeline-item__card',
+				],
+				$wysiwyg_key => [
+					'class' => 'timeline-item__content__wysiwyg',
+				],
+				$meta_key => [
+					'class' => [
+						'timeline-item__meta',
+						'meta',
+					],
+				],
 			] );
 
 			if ( $settings['animate_in'] === 'yes' ) {
 				$this->add_render_attribute( $item_key, 'class', 'is--hidden' );
 			}
 
-			$this->add_render_attribute( $card_key, 'class', [
-				'timeline-item__card',
-			] );
-
 			if ( ! empty( $item['link']['url'] ) ) {
-
 				$card_tag = 'a';
 
 				$this->add_render_attribute( $card_key, 'href', $item['link']['url'] );
@@ -2181,79 +2207,66 @@ class Timeline extends Extras_Widget {
 				}
 			}
 
-			$wysiwyg_key = $this->get_repeater_setting_key( 'content', 'items', $index );
-			$meta_key = $this->get_repeater_setting_key( 'date', 'items', $index );
-
-			$this->add_render_attribute( $wysiwyg_key, 'class', 'timeline-item__content__wysiwyg' );
-			$this->add_render_attribute( $meta_key, 'class', [
-				'timeline-item__meta',
-				'meta',
-			] );
-
 			$this->add_inline_editing_attributes( $wysiwyg_key, 'advanced' );
 			$this->add_inline_editing_attributes( $meta_key, 'basic' );
 
-			$point  = '<div ' . $this->get_render_attribute_string( 'point' ) . '>';
-
-			$point_content_type = ( 'yes' === $item['custom_style'] && '' !== $item['point_content_type'] ) ? $item['point_content_type'] : $settings['points_content'];
+			if ( ( 'yes' === $item['custom_style'] && '' !== $item['point_content_type'] ) ) {
+				$point_content_type = $item['point_content_type'];
+			} else {
+				$point_content_type = $settings['points_content'];
+			}
 
 			switch( $point_content_type ) {
 				case 'numbers' :
 				case 'letters' :
-					$point .= $this->get_point_text( $item, $index, $point_content_type );
+					$point_content = $this->get_point_text( $point_content_type, $index, $item );
 					break;
 				default:
-					$point .= $this->get_point_icon( $item, $index );
+					$point_content = $this->get_point_icon( $index, $item );
 			}
-			
-			$point .= '</div>';
-
-			$meta .= '<div ' . $this->get_render_attribute_string( $meta_key ) . '>';
-			$meta .= $this->parse_text_editor( $item['date'] );
-			$meta .= '</div>';
 		?>
 		
 			<div <?php echo $this->get_render_attribute_string( $item_key ); ?>>
-
-				<?php if ( $this->get_horizontal_aligment() === 'center' ) echo $point; ?>
-
+				<?php if ( $this->get_horizontal_aligment() === 'center' ) { ?>
+					<div <?php echo $this->get_render_attribute_string( 'point' ); ?>><?php echo $point_content; ?></div>
+				<?php } ?>
 				<div <?php echo $this->get_render_attribute_string( 'card-wrapper' ); ?>>
 					<<?php echo $card_tag; ?> <?php echo $this->get_render_attribute_string( $card_key ); ?>>
-
 						<?php if ( ! empty( $item['image']['url'] ) ) { ?>
-
 						<!-- image -->
 						<div <?php echo $this->get_render_attribute_string( 'image' ); ?>>
 							<?php echo Group_Control_Image_Size::get_attachment_image_html( $item ); ?>
 						</div>
-
 						<?php } ?>
 
 						<?php if ( '' !== $item['content'] ) { ?>
-
 						<!-- content -->
 						<div <?php echo $this->get_render_attribute_string( 'content' ); ?>>
-
 							<!-- meta -->
-							<?php echo $meta; ?>
-
+							<div <?php echo $this->get_render_attribute_string( $meta_key ); ?>>
+								<?php echo $this->parse_text_editor( $item['date'] ); ?>
+							</div>
 							<!-- body -->
 							<div <?php echo $this->get_render_attribute_string( $wysiwyg_key ); ?>>
 								<?php echo $this->parse_text_editor( $item['content'] ); ?>
 							</div>
-
 						</div>
-
 						<?php } ?>
 						
 						<!-- arrow -->
 						<?php echo $this->render_card_arrow(); ?>
-
 					</<?php echo $card_tag; ?>>
 				</div>
-
 				<div <?php echo $this->get_render_attribute_string( 'meta-wrapper' ); ?>>
-					<?php if ( $this->get_horizontal_aligment() !== 'center' ) { echo $point; } else { echo $meta; } ?>
+					<?php if ( $this->get_horizontal_aligment() !== 'center' ) { ?>
+						<div <?php echo $this->get_render_attribute_string( 'point' ); ?>>
+							<?php echo $point_content; ?>
+						</div>
+					<?php } else { ?>
+						<div <?php echo $this->get_render_attribute_string( $meta_key ); ?>>
+							<?php echo $this->parse_text_editor( $item['date'] ); ?>
+						</div>
+					<?php } ?>
 				</div>
 			</div>
 
@@ -2264,91 +2277,58 @@ class Timeline extends Extras_Widget {
 		}
 	}
 
-	protected function get_point_text( $item, $index, $type ) {
-
-		$letters 	= range('A', 'Z');
-		$settings 	= $this->get_settings();
-		$point_key 	= $this->get_repeater_setting_key( 'icon', 'items', $index );
-		$number 	= 0;
-
-		$number = ( $type === 'numbers' ) ? $index + 1 : $letters[ $index ];
-
-		if ( $item['custom_style'] === 'yes' && $item['point_content'] !== '' ) {
-			$number = $item['point_content'];
-		}
-
-		$this->add_render_attribute( $point_key, 'class', 'timeline-item__point__text' );
-
-		$output = '<div ' . $this->get_render_attribute_string( $point_key ) . '>' . $number . '</div>';
-
-		return $output;
-	}
-
-	protected function get_point_icon( $item, $index ) {
-
-		$settings = $this->get_settings();
-		$point_key = $this->get_repeater_setting_key( 'icon', 'items', $index );
-
-		if ( $item['custom_style'] === 'yes' && $item['icon'] !== '' ) {
-			$this->add_render_attribute( $point_key, 'class', $item['icon'] );
-		} else {
-			$this->add_render_attribute( $point_key, 'class', $settings['global_icon'] );
-		}
-
-		$this->add_render_attribute( $point_key, 'class', 'timeline-item__point__icon' );
-
-		$output = '<i ' . $this->get_render_attribute_string( $point_key ) . '></i>';
-
-		return $output;
-	}
-
-	protected function render_post_card() {
+	protected function render_post_card( $index ) {
 
 		$settings = $this->get_settings();
 
 		$card_tag 	= 'div';
-		$point 		= '';
-		$meta 		= '';
+		$point_content = '';
 
-		$this->add_render_attribute( 'card-' . get_the_ID(), 'class', [
-			'timeline-item__card',
-			implode( ' ', get_post_class() ),
+		$this->add_render_attribute( [
+			'card-' . get_the_ID() => [
+				'class' => [
+					'timeline-item__card',
+					implode( ' ', get_post_class() ),
+				],
+			],
 		] );
 
 		if ( $settings['card_links'] === 'yes' ) {
-
 			$card_tag = 'a';
 
 			$this->add_render_attribute( 'card-' . get_the_ID(), 'href', get_permalink() );
 		}
 
-		$point  = '<div ' . $this->get_render_attribute_string( 'point' ) . '>';
-		$point .= '<i ' . $this->get_render_attribute_string( 'icon' ) . '></i>';
-		$point .= '</div>';
-
-		$meta .= '<div ' . $this->get_render_attribute_string( 'meta' ) . '>';
-		$meta .= $this->render_date( false );
-		$meta .= '</div>';
+		switch( $settings['points_content'] ) {
+			case 'numbers' :
+			case 'letters' :
+				$point_content = $this->get_point_text( $settings['points_content'], $index );
+				break;
+			default:
+				$point_content = $this->get_point_icon();
+		}
 
 		?>
 		<div <?php echo $this->get_render_attribute_string( 'item' ); ?>>
-
-			<?php if ( $this->get_horizontal_aligment() === 'center' ) echo $point; ?>
-
+			<?php if ( $this->get_horizontal_aligment() === 'center' ) { ?>
+				<div <?php echo $this->get_render_attribute_string( 'point' ); ?>>
+					<?php echo $point_content; ?>
+				</div>
+			<?php } ?>
 			<div <?php echo $this->get_render_attribute_string( 'card-wrapper' ); ?>>
 				<<?php echo $card_tag; ?> <?php echo $this->get_render_attribute_string( 'card-' . get_the_ID() ); ?>>
-
 					<?php if ( $settings['post_thumbnail'] === 'yes' && has_post_thumbnail() ) {
 						$this->render_thumbnail( 'yes' !== $settings['card_links'] );
 					} ?>
 
 					<!-- content -->
 					<div <?php echo $this->get_render_attribute_string( 'content' ); ?>>
-
 						<?php
-
-						if ( 'product' !== $settings['posts_post_type'] )
-							echo $meta;
+						if ( 'product' !== $settings['posts_post_type'] ) { ?>
+							<div <?php echo $this->get_render_attribute_string( 'meta' ); ?>>
+								<?php echo $this->render_date( false ); ?>
+							</div>
+						<?php }
 
 						if ( $settings['post_title'] === 'yes' ) {
 							$this->render_title( 'yes' !== $settings['card_links'] );	
@@ -2362,22 +2342,71 @@ class Timeline extends Extras_Widget {
 
 						if ( is_woocommerce_active() && $settings['post_buy'] === 'yes' && $settings['card_links'] !== 'yes' )
 							echo do_shortcode('[add_to_cart id="' . get_the_ID() . '" style="border:0px;padding:0px"]');
-
 						?>
 
 					</div>
-
 					<?php echo $this->render_card_arrow(); ?>
-
 				</<?php echo $card_tag; ?>>
 
 			</div>
 
 			<div <?php echo $this->get_render_attribute_string( 'meta-wrapper' ); ?>>
-				<?php if ( $this->get_horizontal_aligment() !== 'center' ) { echo $point; } else { echo $meta; } ?>
+				<?php if ( $this->get_horizontal_aligment() !== 'center' ) { ?>
+				<div <?php echo $this->get_render_attribute_string( 'point' ); ?>>
+					<?php echo $point_content; ?>
+				</div>
+				<?php } else { ?>
+					<div <?php echo $this->get_render_attribute_string( 'meta' ); ?>>
+						<?php echo $this->render_date( false ); ?>
+					</div>
+				<?php } ?>
 			</div>
 		</div>
 		<?php	
+	}
+
+	protected function get_point_text( $type, $index = false, $item = false ) {
+
+		$settings 	= $this->get_settings();
+		$letters 	= range('A', 'Z');
+		$point_key 	= ( $item ) ? $this->get_repeater_setting_key( 'icon', 'items', $index ) : 'point-text';
+		$text 		= 0;
+
+		$text 		= ( $type === 'numbers' ) ? $index + 1 : $letters[ $index ];
+
+		if ( $item ) {
+			if ( $item['custom_style'] === 'yes' && '' !== $item['point_content'] ) {
+				$text = $item['point_content'];
+			}
+		}
+
+		$this->add_render_attribute( $point_key, 'class', 'timeline-item__point__text' );
+
+		$output = '<div ' . $this->get_render_attribute_string( $point_key ) . '>' . $text . '</div>';
+
+		return $output;
+	}
+
+	protected function get_point_icon( $index = false, $item = false ) {
+
+		$settings = $this->get_settings();
+		$point_key = ( false !== $item ) ? $this->get_repeater_setting_key( 'icon', 'items', $index ) : 'point-text';
+
+		if ( $item ) {
+			if ( $item['custom_style'] === 'yes' && $item['icon'] !== '' ) {
+				$this->add_render_attribute( $point_key, 'class', $item['icon'] );
+			} else {
+				$this->add_render_attribute( $point_key, 'class', $settings['global_icon'] );
+			}
+		} else {
+			$this->add_render_attribute( $point_key, 'class', $settings['global_icon'] );
+		}
+
+		$this->add_render_attribute( $point_key, 'class', 'timeline-item__point__icon' );
+
+		$output = '<i ' . $this->get_render_attribute_string( $point_key ) . '></i>';
+
+		return $output;
 	}
 
 	protected function render_line() {
