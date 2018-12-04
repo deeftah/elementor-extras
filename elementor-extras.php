@@ -3,7 +3,7 @@
  * Plugin Name: 	Elementor Extras
  * Plugin URI: 		https://shop.namogo.com/product/elementor-extras/
  * Description: 	Elementor Extras is a premium Wordpress plugin for Elementor, extending its capability with seriously useful and unique widgets and extensions
- * Version: 		1.9.16
+ * Version: 		2.0.1
  * Author: 			Namogo
  * Author URI: 		https://shop.namogo.com/
  * Text Domain: 	elementor-extras
@@ -27,7 +27,7 @@
  * — jquery-circle-progress v1.2.2, Copyright Rostyslav Bryzgunov Licenses: MIT Source: link http://kottenator.github.io/jquery-circle-progress/
  * — jQuery appear plugin v0.3.6, Copyright 2012 Andrey Sidorov Licenses: MIT Source: link https://github.com/morr/jquery.appear/
  * — LongShadow jQuery Plugin v1.1.0, Copyright 2013 - 2016 Dang Van Thanh Licenses: MIT Source: link git://github.com/dangvanthanh/jquery.longShadow.git
- * — Sticky-kit v1.1.3, Copyright 2015 Leaf Corcoran Licenses: MIT Source: link http://leafo.net
+ * — HC-Sticky 2.2.3, Copyright Some Web Media License: MIT Source: link https://github.com/somewebmedia/hc-sticky
  * — jQuery Mobile v1.4.3, Copyright 2010, 2014 jQuery Foundation, Inc. Licenses: jquery.org/license
  * — jquery-visible, Copyright 2012, Digital Fusion, License: http://teamdf.com/jquery-plugins/license/ Source: http://teamdf.com/jquery-plugins/license/
  * — Parallax Background v1.2, by Eren Suleymanoglu Licenses: MIT Source: link https://github.com/erensuleymanoglu/parallax-background
@@ -35,8 +35,14 @@
  * — Isotope PACKAGED v3.0.6, Copyright 2017 Metafizzy License: GPLv3 Source: link http://isotope.metafizzy.co
  * — Infinite Scroll PACKAGED v3.0.2, Copyright 2017 Metafizzy License: GPLv3 Source: link https://infinite-scroll.com
  * — Packery layout mode PACKAGED v2.0.0 Copyright 2017 Metafizzy License: GPLv3 Source: link http://isotope.metafizzy.co
- * — javascript-detect-element-resize 0.5.3 Copyright (c) 2013 Sebastián Décima License: MIT Source: link https://github.com/sdecima/javascript-detect-element-resize
- * — tilt.js 1.2.1 Copyright (c) 2017 Gijs Rogé License: MIT Source: link https://github.com/gijsroge/tilt.js
+ * — javascript-detect-element-resize, 0.5.3 Copyright (c) 2013 Sebastián Décima License: MIT Source: link https://github.com/sdecima/javascript-detect-element-resize
+ * — tilt.js 1.2.1, Copyright (c) 2017 Gijs Rogé License: MIT Source: link https://github.com/gijsroge/tilt.js
+ * - CLNDR v1.4.7, Copyright Kyle Stetz (github.com/kylestetz) License: MIT Source: link https://github.com/kylestetz/CLNDR
+ * — GMAP3 Plugin for jQuery v7.2 Copyright DEMONTE Jean-Baptiste License: GPL-3.0+ Source: link http://gmap3.net
+ * — Moment.js v2.22.2 License: MIT Source: link https://github.com/moment/moment/
+ * — Slidebars v2 Copyright Adam Charles Smith License: MIT http://www.adchsm.com/slidebars/license/ Source: link http://www.adchsm.com/slidebars/
+ * — Splittext.js Copyright (c) 2008-2016, GreenSock
+ * — Magnific Popup v1.1.0 License: MIT Copyright 2016 Dmitry Semenov Soruce: link http://dimsemenov.com/plugins/magnific-popup/
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -46,7 +52,7 @@ define( 'ELEMENTOR_EXTRAS_PLUGIN_BASE', 					plugin_basename( ELEMENTOR_EXTRAS__
 define( 'ELEMENTOR_EXTRAS_URL', 							plugins_url( '/', ELEMENTOR_EXTRAS__FILE__ ) );
 define( 'ELEMENTOR_EXTRAS_PATH', 							plugin_dir_path( ELEMENTOR_EXTRAS__FILE__ ) );
 define( 'ELEMENTOR_EXTRAS_ASSETS_URL', 						ELEMENTOR_EXTRAS_URL . 'assets/' );
-define( 'ELEMENTOR_EXTRAS_VERSION', 						'1.9.16' );
+define( 'ELEMENTOR_EXTRAS_VERSION', 						'2.0.1' );
 define( 'ELEMENTOR_EXTRAS_ELEMENTOR_VERSION_REQUIRED', 		'2.0.0' );
 define( 'ELEMENTOR_EXTRAS_ELEMENTOR_PRO_VERSION_REQUIRED', 	'2.1.0' );
 define( 'ELEMENTOR_EXTRAS_PHP_VERSION_REQUIRED', 			'5.0' );
@@ -70,6 +76,8 @@ function elementor_extras_load() {
 
 	// Load localization file
 	load_plugin_textdomain( 'elementor-extras', false, dirname( ELEMENTOR_EXTRAS_PLUGIN_BASE ) . '/languages/' );
+
+	add_action( 'admin_notices', 'elementor_extras_disable_widgets_notice' );
 
 	// Dismissable notices
 	if( is_admin() ) {
@@ -215,7 +223,7 @@ function elementor_extras_fail_load() {
  * @since 0.1.0
  */
 function elementor_extras_fail_load_out_of_date() {
-	$class = 'notice notice-error is-dismissible';
+	$class = 'notice notice-error';
 	$message = __( 'Elementor Extras requires at least Elementor version ' . ELEMENTOR_EXTRAS_ELEMENTOR_VERSION_REQUIRED . '. Please update Elementor and re-activate Elementor Extras.', 'elementor-extras' );
 
 	printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
@@ -227,10 +235,28 @@ function elementor_extras_fail_load_out_of_date() {
  * @since 1.1.2
  */
 function elementor_pro_extras_fail_load_out_of_date() {
-	$class = 'notice notice-error is-dismissible';
+	$class = 'notice notice-error';
 	$message = __( 'Elementor Extras requires you update Elementor Pro to at least version ' . ELEMENTOR_EXTRAS_ELEMENTOR_PRO_VERSION_REQUIRED . ' to avoid any issues. Please update Elementor Pro and re-activate Elementor Extras.', 'elementor-extras' );
 
 	printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+}
+
+/**
+ * Handles admin notice for the disable widgets recommendation
+ *
+ * @since 2.0.0
+ */
+function elementor_extras_disable_widgets_notice() {
+
+	$screen = get_current_screen();
+
+	if ( ! \ElementorExtras\Dismiss_Notice::is_admin_notice_active( 'ee-disable-widget-notice-forever' ) || 'elementor_page_elementor-extras' === $screen->id )
+        return;
+
+	$class = 'notice notice-error is-dismissible';
+	$message = __( 'Take a moment to disable the Elementor Extras widgets and extensions that you don\'t plan on using. This will speed up the load time of the Elementor editor.', 'elementor-extras' );
+
+	printf( '<div data-dismissible="ee-disable-widget-notice-forever" class="%1$s"><p>%2$s <a href="%3$s">%4$s</a></p></div>', esc_attr( $class ), esc_html( $message ), admin_url( 'admin.php?page=elementor-extras#elementor_extras_widgets' ), __( 'Manage widgets', 'elementor-extras' ) );
 }
 
 /**
@@ -364,7 +390,7 @@ if ( ! function_exists( 'is_wpml_string_translation_active' ) ) {
 }
 
 /**
- * Check if Elementor Pro is active
+ * Check if WooCommerce is active
  *
  * @since 1.6.0
  *

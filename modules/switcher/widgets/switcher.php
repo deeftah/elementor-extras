@@ -24,7 +24,7 @@ use Elementor\Scheme_Typography;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Switcher
+ * Switcher
  *
  * @since 1.6.0
  */
@@ -57,11 +57,8 @@ class Switcher extends Extras_Widget {
 			'custom-ease',
 			'jquery-resize-ee',
 			'jquery-appear',
+			'jquery-visible',
 		];
-	}
-
-	public static function requires_elementor_pro() {
-		return false;
 	}
 
 	protected function _register_skins() {
@@ -77,6 +74,7 @@ class Switcher extends Extras_Widget {
 		$this->register_layout_style_controls();
 		$this->register_media_style_controls();
 		$this->register_title_style_controls();
+		$this->register_description_style_controls();
 		$this->register_menu_style_controls();
 		$this->register_arrows_style_controls();
 	}
@@ -133,15 +131,17 @@ class Switcher extends Extras_Widget {
 					]
 				);
 
-				// $content->add_control(
-				// 	'description',
-				// 	[
-				// 		'label' 		=> __( 'Description', 'elementor-extras' ),
-				// 		'type' 			=> Controls_Manager::TEXTAREA,
-				// 		'default' 		=> '',
-				// 		'rows' 			=> 5,
-				// 	]
-				// );
+				$content->add_control(
+					'description',
+					[
+						'label' 		=> __( 'Description', 'elementor-extras' ),
+						'description'	=> __( 'Remeber to enables the display of description under the Settings section.', 'elementor-extras' ),
+						'dynamic' 		=> [ 'active' => true ],
+						'type' 			=> Controls_Manager::TEXTAREA,
+						'default' 		=> '',
+						'rows' 			=> 5,
+					]
+				);
 
 				$content->add_control(
 					'label',
@@ -248,14 +248,17 @@ class Switcher extends Extras_Widget {
 						[
 							'title' 	=> __( 'Title', 'elementor-extras' ),
 							'label' 	=> __( 'Item #1', 'elementor-extras' ),
+							'description' => __( 'Lorem ipsum dolor sit amet, dictas evertitur philosophia an duo. At tamquam similique constituam vis, his tale similique disputationi an.', 'elementor-extras' ),
 						],
 						[
 							'title' 	=> __( 'Title', 'elementor-extras' ),
 							'label' 	=> __( 'Item #2', 'elementor-extras' ),
+							'description' => __( 'Periculis voluptatum vis ad, ex nam alienum iudicabit reprehendunt. Movet iisque voluptatum nec at.', 'elementor-extras' ),
 						],
 						[
 							'title' 	=> __( 'Title', 'elementor-extras' ),
 							'label' 	=> __( 'Item #2', 'elementor-extras' ),
+							'description' => __( 'Hinc novum id mei, mel nominavi probatus id. Meis iudicabit ei nam, vidit latine atomorum vim at, ne pro purto cotidieque.', 'elementor-extras' ),
 						],
 					],
 					'fields' 		=> array_values( $content->get_controls() ),
@@ -321,6 +324,19 @@ class Switcher extends Extras_Widget {
 					'type' 			=> Controls_Manager::SWITCHER,
 					'default'		=> 'yes',
 					'return_value' 	=> 'yes',
+				]
+			);
+
+			$this->add_control(
+				'link_description',
+				[
+					'label' 		=> __( 'Link Description', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default'		=> 'yes',
+					'return_value' 	=> 'yes',
+					'condition'		=> [
+						'description!' => '',
+					],
 				]
 			);
 
@@ -510,6 +526,26 @@ class Switcher extends Extras_Widget {
 						'span' 	=> __( 'span', 'elementor-extras' ),
 					],
 					'default' => 'h1',
+				]
+			);
+
+			$this->add_control(
+				'settings_description_heading',
+				[
+					'label' => __( 'Description', 'elementor-extras' ),
+					'type'	=> Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+			$this->add_control(
+				'description',
+				[
+					'label' 		=> __( 'Enable', 'elementor-extras' ),
+					'description' 	=> __( 'Disable this to hide the description wrappers completely.', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default'		=> '',
+					'return_value' 	=> 'yes',
 				]
 			);
 
@@ -1257,7 +1293,7 @@ class Switcher extends Extras_Widget {
 						],
 					],
 					'selectors'		=> [
-						'{{WRAPPER}} .ee-switcher__items' 	=> 'text-align: {{VALUE}};',
+						'{{WRAPPER}} .ee-switcher__titles' 	=> 'text-align: {{VALUE}};',
 					]
 				]
 			);
@@ -1282,8 +1318,8 @@ class Switcher extends Extras_Widget {
 						'layout' => 'default',
 					],
 					'selectors'		=> [
-						'{{WRAPPER}} .ee-switcher__items' 								=> 'margin-left: -{{SIZE}}{{UNIT}};',
-						'{{WRAPPER}}.ee-switcher-layout--reverse .ee-switcher__items' 	=> 'margin-left: 0px; margin-right: -{{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-switcher__titles' 								=> 'margin-left: -{{SIZE}}{{UNIT}};',
+						'{{WRAPPER}}.ee-switcher-layout--reverse .ee-switcher__titles' 	=> 'margin-left: 0px; margin-right: -{{SIZE}}{{UNIT}};',
 					]
 				]
 			);
@@ -1300,7 +1336,7 @@ class Switcher extends Extras_Widget {
 						],
 					],
 					'selectors' 	=> [
-						'{{WRAPPER}} .ee-switcher__items' => 'margin-top: {{SIZE}}px',
+						'{{WRAPPER}} .ee-switcher__titles' => 'margin-top: {{SIZE}}px',
 					],
 				]
 			);
@@ -1333,6 +1369,126 @@ class Switcher extends Extras_Widget {
 					'exclude'	=> [ 'font_size', 'font_style' ],
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
 					'selector' 	=> '{{WRAPPER}} .ee-switcher__title',
+				]
+			);
+
+		$this->end_controls_section();
+
+	}
+
+	protected function register_description_style_controls() {
+
+		$this->start_controls_section(
+			'section_style_description',
+			[
+				'label' => __( 'Description', 'elementor-extras' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'description!' => '',
+				],
+			]
+		);
+
+			$this->add_control(
+				'description_color',
+				[
+					'label' 	=> __( 'Color', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .ee-switcher__descriptions__description' => 'color: {{VALUE}};',
+					],
+					'condition' => [
+						'description!' => '',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'description_align',
+				[
+					'label' 		=> __( 'Align', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::CHOOSE,
+					'default' 		=> '',
+					'options' 		=> [
+						'left'    		=> [
+							'title' 	=> __( 'Left', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-left',
+						],
+						'center' 		=> [
+							'title' 	=> __( 'Center', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-center',
+						],
+						'right' 		=> [
+							'title' 	=> __( 'Right', 'elementor-extras' ),
+							'icon' 		=> 'fa fa-align-right',
+						],
+					],
+					'condition' => [
+						'description!' => '',
+					],
+					'selectors'		=> [
+						'{{WRAPPER}} .ee-switcher__descriptions__description' 	=> 'text-align: {{VALUE}};',
+					]
+				]
+			);
+
+			$this->add_responsive_control(
+				'description_overlap',
+				[
+					'label' 		=> __( 'Overlap', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SLIDER,
+					'range' 		=> [
+						'vw' 		=> [
+							'min' => 0,
+							'max' => 50,
+						],
+						'px' 		=> [
+							'min' => 0,
+							'max' => 200,
+						],
+					],
+					'size_units' => [ 'vw', 'px' ],
+					'condition'		=> [
+						'layout' => 'default',
+						'description!' => '',
+					],
+					'selectors'		=> [
+						'{{WRAPPER}} .ee-switcher__descriptions' => 'margin-left: -{{SIZE}}{{UNIT}};',
+						'{{WRAPPER}}.ee-switcher-layout--reverse .ee-switcher__descriptions' => 'margin-left: 0px; margin-right: -{{SIZE}}{{UNIT}};',
+					]
+				]
+			);
+
+			$this->add_responsive_control(
+				'description_distance',
+				[
+					'label' 		=> __( 'Distance', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SLIDER,
+					'range' 		=> [
+						'px' 		=> [
+							'min' => 0,
+							'max' => 100,
+						],
+					],
+					'condition' => [
+						'description!' => '',
+					],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-switcher__descriptions' => 'margin-top: {{SIZE}}px',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' 		=> 'description_typography',
+					'label' 	=> __( 'Typography', 'elementor-extras' ),
+					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+					'selector' 	=> '{{WRAPPER}} .ee-switcher__descriptions__description',
+					'condition' => [
+						'description!' => '',
+					],
 				]
 			);
 
@@ -1974,17 +2130,29 @@ class Switcher extends Extras_Widget {
 
 	public function render() {
 
-		$this->add_render_attribute( 'switcher', 'class', [
-			'ee-switcher',
-			'ee-switcher--stack-' . $this->get_settings( 'layout_stack' )
+		$this->add_render_attribute( [
+			'switcher' => [
+				'class' => [
+					'ee-switcher',
+					'ee-switcher--stack-' . $this->get_settings( 'layout_stack' ),
+				],
+			],
+			'switcher-wrapper' => [
+				'class' => 'ee-switcher__wrapper',
+			],
+			'switcher-media-wrapper' => [
+				'class' => [
+					'ee-switcher__media-wrapper',
+					'ee-media--stretch',
+				],
+			],
+			'switcher-content-wrapper' => [
+				'class' => 'ee-switcher__content-wrapper',
+			],
+			'switcher-content' => [
+				'class' => 'ee-switcher__content',
+			],
 		] );
-		$this->add_render_attribute( 'switcher-wrapper', 'class', 'ee-switcher__wrapper' );
-		$this->add_render_attribute( 'switcher-media-wrapper', 'class', [
-			'ee-switcher__media-wrapper',
-			'ee-media--stretch',
-		]);
-		$this->add_render_attribute( 'switcher-content-wrapper', 'class', 'ee-switcher__content-wrapper' );
-		$this->add_render_attribute( 'switcher-content', 'class', 'ee-switcher__content' );
 
 		?>
 
@@ -1998,7 +2166,8 @@ class Switcher extends Extras_Widget {
 				<div <?php echo $this->get_render_attribute_string( 'switcher-content-wrapper' ); ?>>
 					<div <?php echo $this->get_render_attribute_string( 'switcher-content' ); ?>>
 						<?php
-						$this->render_items_loop();
+						$this->render_titles_loop();
+						$this->render_descriptions_loop();
 						$this->render_nav_loop();
 						$this->render_arrows(); ?>
 					</div>
@@ -2011,15 +2180,13 @@ class Switcher extends Extras_Widget {
 
 	}
 
-	public function render_items_loop() {
+	public function render_titles_loop() {
 
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'items', 'class', 'ee-switcher__items' );
+		$this->add_render_attribute( 'items', 'class', 'ee-switcher__titles' );
 
-		?>
-
-		<div <?php echo $this->get_render_attribute_string( 'items' ); ?>>
+		?><div <?php echo $this->get_render_attribute_string( 'items' ); ?>>
 			<?php foreach ( $settings['items'] as $index => $item ) {
 
 				$title_tag 		= 'div';
@@ -2027,8 +2194,14 @@ class Switcher extends Extras_Widget {
 				$item_key 		= $this->get_repeater_setting_key( 'item', 'items', $index );
 				$item_title_key = $this->get_repeater_setting_key( 'item-title', 'items', $index );
 
-				$this->add_render_attribute( $item_key, 'class', 'ee-switcher__items__item' );
-				$this->add_render_attribute( $item_title_key, 'class', 'ee-switcher__title' );
+				$this->add_render_attribute( [
+					$item_key => [
+						'class' => 'ee-switcher__titles__title'
+					],
+					$item_title_key => [
+						'class' => 'ee-switcher__title',
+					],
+				] );
 
 				if ( 'yes' === $settings['link_title'] ) {
 					$title_tag = 'a';
@@ -2046,27 +2219,64 @@ class Switcher extends Extras_Widget {
 		<?php
 	}
 
+	public function render_descriptions_loop() {
+
+		$settings = $this->get_settings_for_display();
+
+		if ( 'yes' !== $settings['description'] )
+			return;
+
+		$this->add_render_attribute( 'descriptions', 'class', 'ee-switcher__descriptions' );
+
+		?>
+
+		<div <?php echo $this->get_render_attribute_string( 'descriptions' ); ?>>
+			<?php foreach ( $settings['items'] as $index => $item ) {
+
+				$description_tag = 'div';
+				$description_key = $this->get_repeater_setting_key( 'description', 'items', $index );
+
+				$this->add_render_attribute( $description_key, 'class', 'ee-switcher__descriptions__description' );
+
+				if ( 'yes' === $settings['link_description'] ) {
+					$description_tag = 'a';
+					$this->set_item_link_attributes( $item, $description_key );
+				}
+			?>
+
+			<<?php echo $description_tag; ?> <?php echo $this->get_render_attribute_string( $description_key ); ?>>
+				<?php echo $item['description']; ?>
+			</<?php echo $description_tag; ?>>
+
+			<?php } ?>
+		</div>
+
+		<?php
+	}
+
 	public function render_media_loop() {
 
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'media', 'class', [
-			'ee-switcher__media',
-			'ee-media',
-			'ee-effect--' . $settings['effect_media'],
-		] );
-
-		// if ( $settings['tilt_enable'] ) {
-		// 	$this->add_render_attribute( 'media', 'class', 'ee-switcher__media--tilt' );
-		// }
-
-		$this->add_render_attribute( 'media-items', 'class', [
-			'ee-switcher__media__items',
-		] );
-
-		$this->add_render_attribute( 'media-overlay', 'class', [
-			'ee-switcher__media__overlay',
-			'ee-media__overlay',
+		$this->add_render_attribute( [
+			'media' => [
+				'class' => [
+					'ee-switcher__media',
+					'ee-media',
+					'ee-effect--' . $settings['effect_media'],
+				],
+			],
+			'media-items' => [
+				'class' => [
+					'ee-switcher__media__items',
+				],
+			],
+			'media-overlay' => [
+				'class' => [
+					'ee-switcher__media__overlay',
+					'ee-media__overlay',
+				],
+			],
 		] );
 
 		?>
@@ -2114,21 +2324,26 @@ class Switcher extends Extras_Widget {
 
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'nav', 'class', [
-			'ee-switcher__nav',
-			'ee-nav',
+		$this->add_render_attribute( [
+			'nav' => [
+				'class' => [
+					'ee-switcher__nav',
+					'ee-nav',
+				],
+			],
+			'loader' => [
+				'class' => 'ee-loader',
+			],
+			'loader-progress' => [
+				'class' => 'ee-loader__progress',
+			],
 		]);
 
 		if ( 'row' === $settings['menu_direction'] ) {
 			$this->add_render_attribute( 'nav', 'class', 'ee-nav--stacked' );
 		} else {
 			$this->add_render_attribute( 'nav', 'class', 'ee-nav--inline' );
-		}
-
-		$this->add_render_attribute( 'loader', 'class', 'ee-loader' );
-		$this->add_render_attribute( 'loader-progress', 'class', 'ee-loader__progress' );
-
-		?>
+		} ?>
 
 		<ul  <?php echo $this->get_render_attribute_string( 'nav' ); ?>>
 			<?php foreach ( $settings['items'] as $index => $item ) {
@@ -2182,11 +2397,38 @@ class Switcher extends Extras_Widget {
 
 	public function render_arrows() {
 
+		$this->add_render_attribute( [
+			'arrows' => [
+				'class' => 'ee-switcher__arrows',
+			],
+			'arrow-prev' => [
+				'class' => [
+					'ee-arrow',
+					'ee-arrow--prev',
+				],
+			],
+			'arrow-prev-icon' => [
+				'class' => 'eicon-chevron-left',
+			],
+			'arrow-next' => [
+				'class' => [
+					'ee-arrow',
+					'ee-arrow--next',
+				],
+			],
+			'arrow-next-icon' => [
+				'class' => 'eicon-chevron-right',
+			],
+		] );
+
 		?>
 
-		<ul class="ee-switcher__arrows">
-			<li class="ee-arrow ee-arrow--prev"><i class="eicon-chevron-left"></i></li>
-			<li class="ee-arrow ee-arrow--next"><i class="eicon-chevron-right"></i>
+		<ul <?php echo $this->get_render_attribute_string( 'arrows' ); ?>>
+			<li <?php echo $this->get_render_attribute_string( 'arrow-prev' ); ?>>
+				<i <?php echo $this->get_render_attribute_string( 'arrow-prev-icon' ); ?>></i>
+			</li>
+			<li <?php echo $this->get_render_attribute_string( 'arrow-next' ); ?>>
+				<i <?php echo $this->get_render_attribute_string( 'arrow-next-icon' ); ?>></i>
 				<svg x="0px" y="0px" viewBox="0 0 80 80" xml:space="preserve" class="ee-arrow__svg">
 					<defs>
 						<clipPath id="clipLoader<?php echo $this->get_id(); ?>">
@@ -2196,34 +2438,52 @@ class Switcher extends Extras_Widget {
 					<circle transform="rotate(-90 40 40)" class="ee-arrow__circle--loader" stroke-dasharray="227" stroke-dashoffset="227" cx="40" cy="40" r="40" fill="transparent" stroke="transparent" stroke-width="4" vector-effect="non-scaling-stroke" clip-path="url(#clipLoader<?php echo $this->get_id(); ?>)" />
 				</svg>
 			</li>
-		</ul>
-
-		<?php
+		</ul><?php
 	}
 
 	public function render_loader() {
-		?>
+		$this->add_render_attribute( [
+			'loader' => [
+				'class' => [
+					'ee-switcher__loader',
+					'ee-progress-loader',
+				],
+			],
+			'loader-inner' => [
+				'class' => 'ee-progress-loader__inner',
+			],
+		] );
 
-		<div class="ee-switcher__loader ee-progress-loader">
-			<span class="ee-progress-loader__inner"></span>
-		</div>
-
-		<?php
+		?><div <?php echo $this->get_render_attribute_string( 'loader' ); ?>>
+			<span <?php echo $this->get_render_attribute_string( 'loader-inner' ); ?>></span>
+		</div><?php
 	}
 
 	public function _content_template() { ?><#
 
-			view.addRenderAttribute( 'switcher', 'class', [
-				'ee-switcher',
-				'ee-switcher--stack-' + settings.layout_stack,
-			] );
-			view.addRenderAttribute( 'switcher-wrapper', 'class', 'ee-switcher__wrapper' );
-			view.addRenderAttribute( 'switcher-media-wrapper', 'class', [
-				'ee-switcher__media-wrapper',
-				'ee-media--stretch',
-			]);
-			view.addRenderAttribute( 'switcher-content-wrapper', 'class', 'ee-switcher__content-wrapper' );
-			view.addRenderAttribute( 'switcher-content', 'class', 'ee-switcher__content' );
+			view.addRenderAttribute( {
+				'switcher' : {
+					'class' : [
+						'ee-switcher',
+						'ee-switcher--stack-' + settings.layout_stack,
+					],
+				},
+				'switcher-wrapper' : {
+					'class' : 'ee-switcher__wrapper',
+				},
+				'switcher-media-wrapper' : {
+					'class' : [
+						'ee-switcher__media-wrapper',
+						'ee-media--stretch',
+					],
+				},
+				'switcher-content-wrapper' : {
+					'class' : 'ee-switcher__content-wrapper',
+				},
+				'switcher-content' : {
+					'class' : 'ee-switcher__content',
+				},
+			} );
 
 		#><div {{{ view.getRenderAttributeString( 'switcher' ) }}}>
 			<div {{{ view.getRenderAttributeString( 'switcher-wrapper' ) }}}>
@@ -2235,7 +2495,8 @@ class Switcher extends Extras_Widget {
 				<div {{{ view.getRenderAttributeString( 'switcher-content-wrapper' ) }}}>
 					<div {{{ view.getRenderAttributeString( 'switcher-content' ) }}}>
 						<?php
-						$this->_items_loop_template();
+						$this->_titles_loop_template();
+						$this->_descriptions_loop_template();
 						$this->_nav_loop_template();
 						$this->render_arrows(); ?>
 					</div>
@@ -2247,9 +2508,9 @@ class Switcher extends Extras_Widget {
 		<?php
 	}
 
-	public function _items_loop_template() { ?><#
+	public function _titles_loop_template() { ?><#
 
-		view.addRenderAttribute( 'items', 'class', 'ee-switcher__items' );
+		view.addRenderAttribute( 'items', 'class', 'ee-switcher__titles' );
 
 		#><div {{{ view.getRenderAttributeString( 'items' ) }}}>
 			<# _.each( settings.items, function( item, index ) {
@@ -2259,7 +2520,7 @@ class Switcher extends Extras_Widget {
 					itemKey 		= view.getRepeaterSettingKey( 'item', 'items', index ),
 					itemTitleKey 	= view.getRepeaterSettingKey( 'itemTitle', 'items', index );
 
-				view.addRenderAttribute( itemKey, 'class', 'ee-switcher__items__item' );
+				view.addRenderAttribute( itemKey, 'class', 'ee-switcher__titles__title' );
 				view.addRenderAttribute( itemTitleKey, 'class', 'ee-switcher__title' );
 
 				if ( 'yes' === settings.link_title ) {
@@ -2296,26 +2557,75 @@ class Switcher extends Extras_Widget {
 		<?php
 	}
 
+	public function _descriptions_loop_template() { ?><#
+
+		if ( 'yes' === settings.description ) {
+
+		view.addRenderAttribute( 'descriptions', 'class', 'ee-switcher__descriptions' );
+
+		#><div {{{ view.getRenderAttributeString( 'descriptions' ) }}}>
+			<# _.each( settings.items, function( item, index ) {
+
+				var descriptionTag 	= 'div',
+					descriptionKey 	= view.getRepeaterSettingKey( 'description', 'items', index );
+
+				view.addRenderAttribute( descriptionKey, 'class', 'ee-switcher__descriptions__description' );
+
+				if ( 'yes' === settings.link_description ) {
+					if ( 'file' == settings.link_to ) {
+
+						descriptionTag = 'a';
+						view.addRenderAttribute( descriptionKey, 'href', item.image.url );
+						view.addRenderAttribute( descriptionKey, 'class', 'elementor-clickable' );
+						view.addRenderAttribute( descriptionKey, 'data-elementor-open-lightbox', settings.link_open_lightbox );
+						view.addRenderAttribute( descriptionKey, 'data-elementor-lightbox-slideshow', view.$el.data('id') );
+
+					} else if ( 'attachment' === settings.link_to ) {
+
+						titleTag = 'a';
+						view.addRenderAttribute( descriptionKey, 'href', '' );
+
+					} else if ( 'custom' === settings.link_to && '' !== item.link.url ) {
+
+						titleTag = 'a';
+						view.addRenderAttribute( descriptionKey, 'href', item.link.url );
+
+					}
+				}
+			#>
+
+			<{{{ descriptionTag }}} {{{ view.getRenderAttributeString( descriptionKey ) }}}>
+				{{ item.description }}
+			</{{{ descriptionTag }}}>
+
+			<# }); #>
+		</div><#
+
+		} #>
+
+		<?php
+	}
+
 	public function _media_loop_template() { ?><#
 
-		view.addRenderAttribute( 'media', 'class', [
-			'ee-switcher__media',
-			'ee-media',
-			'ee-effect--' + settings.effect_media,
-		] );
-
-		/* if ( settings.tilt_enable ) {
-			view.addRenderAttribute( 'media', 'class', 'ee-switcher__media--tilt' );
-		} */
-
-		view.addRenderAttribute( 'media-items', 'class', [
-			'ee-switcher__media__items',
-		] );
-
-		view.addRenderAttribute( 'media-overlay', 'class', [
-			'ee-switcher__media__overlay',
-			'ee-media__overlay',
-		] );
+		view.addRenderAttribute( {
+			'media' : {
+				'class' : [
+					'ee-switcher__media',
+					'ee-media',
+					'ee-effect--' + settings.effect_media,
+				],
+			},
+			'media-items' : {
+				'class' : 'ee-switcher__media__items',
+			},
+			'media-overlay' : {
+				'class' : [
+					'ee-switcher__media__overlay',
+					'ee-media__overlay',
+				],
+			},
+		} );
 
 		#>
 
@@ -2381,19 +2691,26 @@ class Switcher extends Extras_Widget {
 
 	public function _nav_loop_template() { ?><#
 
-		view.addRenderAttribute( 'nav', 'class', [
-			'ee-switcher__nav',
-			'ee-nav',
-		]);
+		view.addRenderAttribute( {
+			'nav' : {
+				'class' : [
+					'ee-switcher__nav',
+					'ee-nav',
+				],
+			},
+			'loader' : {
+				'class' : 'ee-loader',
+			},
+			'loader-progress' : {
+				'class' : 'ee-loader__progress',
+			},
+		} );
 
 		if ( 'row' === settings.menu_direction ) {
 			view.addRenderAttribute( 'nav', 'class', 'ee-nav--stacked' );
 		} else {
 			view.addRenderAttribute( 'nav', 'class', 'ee-nav--inline' );
 		}
-
-		view.addRenderAttribute( 'loader', 'class', 'ee-loader' );
-		view.addRenderAttribute( 'loader-progress', 'class', 'ee-loader__progress' );
 
 		#><ul {{{ view.getRenderAttributeString( 'nav' ) }}}>
 			<# _.each( settings.items, function( item, index ) {
@@ -2408,7 +2725,7 @@ class Switcher extends Extras_Widget {
 
 					view.addRenderAttribute( navItemIconKey, 'class', [
 						item.icon,
-						'ee-icon--' + item.icon_align
+						'ee-icon--' + item.icon_align,
 					] );
 					view.addRenderAttribute( navItemKey, 'class', 'has--icon' );
 				}
@@ -2460,12 +2777,13 @@ class Switcher extends Extras_Widget {
 
 		if ( 'file' == $link_to ) {
 
-			$this->add_render_attribute( $key, 'href', $item['image']['url'] );
-
-			$this->add_render_attribute( $key, [
-				'class' 							=> 'elementor-clickable',
-				'data-elementor-open-lightbox' 		=> $open_lightbox,
-				'data-elementor-lightbox-slideshow' => $this->get_id(),
+			$this->add_render_attribute( [
+				$key => [
+					'href' => $item['image']['url'],
+					'class' => 'elementor-clickable',
+					'data-elementor-open-lightbox' => $open_lightbox,
+					'data-elementor-lightbox-slideshow' => $this->get_id(),
+				],
 			] );
 
 		} else if ( 'attachment' === $link_to ) {

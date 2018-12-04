@@ -18,11 +18,13 @@ use Elementor\Scheme_Typography;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Table
+ * Table
  *
  * @since 0.1.0
  */
 class Table extends Extras_Widget {
+
+	private $cell_counter = 0;
 
 	public function get_name() {
 		return 'table';
@@ -295,7 +297,7 @@ class Table extends Extras_Widget {
 			$this->add_control(
 				'header_cells',
 				[
-					'label' 	=> __( 'Rows', 'elementor-extras' ),
+					'label' 	=> __( 'Columns', 'elementor-extras' ),
 					'type' 		=> Controls_Manager::REPEATER,
 					'default' 	=> [
 						[
@@ -319,7 +321,7 @@ class Table extends Extras_Widget {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Content', 'elementor-extras' ),
+				'label' => __( 'Body', 'elementor-extras' ),
 			]
 		);
 
@@ -1204,89 +1206,134 @@ class Table extends Extras_Widget {
 	}
 
 	protected function render_header() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
-		$counter 	= 1;
-		$output 	= '';
+		if ( empty( $settings['header_cells'] ) )
+			return;
 
-		if ( $settings['header_cells'] ) {
+		$this->add_render_attribute( [
+			'header-row' => [
+				'class' => 'ee-table__row',
+			],
+			'header-cell-text' => [
+				'class' => [
+					'ee-table__text',
+				],
+			],
+			'header-cell-text-inner' => [
+				'class' => [
+					'ee-table__text__inner',
+				],
+			],
+			'sort' => [
+				'class' => [
+					'nicon',
+					'nicon-sort-up-down',
+				],
+			],
+			'sort-up' => [
+				'class' => [
+					'nicon',
+					'nicon-sort-up',
+				],
+			],
+			'sort-down' => [
+				'class' => [
+					'nicon',
+					'nicon-sort-down',
+				],
+			],
+		] );
 
-			$this->add_render_attribute( 'row', 'class', 'ee-table__row' );
+		$this->add_inline_editing_attributes( 'header-cell-text-inner', 'basic' );
 
-			?>
+		?><thead>
+			<tr <?php echo $this->get_render_attribute_string( 'header-row' ); ?>>
 
-			<thead>
-				<tr <?php echo $this->get_render_attribute_string( 'row' ); ?>>
+			<?php foreach ( $settings['header_cells'] as $index => $item ) {
 
-				<?php foreach ( $settings['header_cells'] as $index => $row ) {
+				$header_cell_key 				= $this->get_repeater_setting_key( 'cell', 'header_cells', $index );
+				$header_cell_icon_wrapper_key 	= $this->get_repeater_setting_key( 'cell-icon-wrapper', 'header_cells', $index );
+				$header_cell_icon_key 			= $this->get_repeater_setting_key( 'cell-icon', 'header_cells', $index );
+				
+				$this->add_render_attribute( [
+					$header_cell_key => [
+						'class' => [
+							'ee-table__cell',
+							'elementor-repeater-item-' . $item['_id']
+						],
+					],
+				] );
 
-					$header_text_key = $this->get_repeater_setting_key( 'cell_text', 'header_cells', $index );
-					
-					$this->add_render_attribute( 'header-' . $counter, 'class', 'ee-table__cell' );
-					$this->add_render_attribute( 'header-' . $counter, 'class', 'elementor-repeater-item-' . $row['_id'] );
+				if ( $item['_item_id'] )
+					$this->add_render_attribute( $header_cell_key, 'id', $item['_item_id'] );
 
-					$this->add_render_attribute( 'header-text-' . $counter, 'class', 'ee-table__text' );
-					$this->add_render_attribute( $header_text_key, 'class', 'ee-table__text-inner' );
-					$this->add_inline_editing_attributes( $header_text_key, 'basic' );
+				if ( $item['css_classes'] )
+					$this->add_render_attribute( $header_cell_key, 'class', $item['css_classes'] );
 
-					if ( $row['_item_id'] )
-						$this->add_render_attribute( 'header-' . $counter, 'id', $row['_item_id'] );
+				if ( $item['cell_span'] > 1 )
+					$this->add_render_attribute( $header_cell_key, 'colspan', $item['cell_span'] );
 
-					if ( $row['css_classes'] )
-						$this->add_render_attribute( 'header-' . $counter, 'class', $row['css_classes'] );
+				if ( $item['cell_row_span'] > 1 )
+					$this->add_render_attribute( $header_cell_key, 'rowspan', $item['cell_row_span'] );
 
-					if ( $row['cell_span'] > 1 )
-						$this->add_render_attribute( 'header-' . $counter, 'colspan', $row['cell_span'] );
+				// Output header contents
+				?><th <?php echo $this->get_render_attribute_string( $header_cell_key ); ?>>
+					<span <?php echo $this->get_render_attribute_string( 'header-cell-text' ); ?>>
 
-					if ( $row['cell_row_span'] > 1 )
-						$this->add_render_attribute( 'header-' . $counter, 'rowspan', $row['cell_row_span'] );
+					<?php if ( 'text' === $item['cell_content'] && '' !== $item['cell_icon'] ) {
+						$this->add_render_attribute( [
+							$header_cell_icon_wrapper_key => [
+								'class' => 'ee-align-icon--' . $item['cell_icon_align'],
+							],
+							$header_cell_icon_key => [
+								'class' => esc_attr( $item['cell_icon'] ),
+							],
+						] );
 
-					// Output header contents
-					$output .= '<th ' . $this->get_render_attribute_string( 'header-' . $counter ) . '>';
-					$output .= '<span ' . $this->get_render_attribute_string( 'header-text-' . $counter ) . '>';
-
-					if ( 'text' === $row['cell_content'] && '' !== $row['cell_icon'] ) {
-
-						$this->add_render_attribute( 'icon-' . $counter, 'class', 'ee-align-icon--' . $row['cell_icon_align'] );
-
-						$output .= '<span ' . $this->get_render_attribute_string( 'icon-' . $counter ) . '>';
-							$output .= '<i class="' . esc_attr( $row['cell_icon'] ) . '"></i>';
-						$output .= '</span>';
+						?><span <?php echo $this->get_render_attribute_string( $header_cell_icon_wrapper_key ); ?>>
+							<i <?php echo $this->get_render_attribute_string( $header_cell_icon_key ); ?>></i>
+						</span><?php
 					}
 
-					$output .= '<span ' . $this->get_render_attribute_string( $header_text_key ) . '>' . $row['cell_text'] . '</span>';
+						?><span <?php echo $this->get_render_attribute_string( 'header-cell-text-inner' ); ?>>
+							<?php echo $item['cell_text']; ?>
+						</span>
 
-					if ( 'yes' === $settings['sortable'] ) {
-						$output .= '<span class="nicon nicon-sort-up-down"></span>';
-						$output .= '<span class="nicon nicon-sort-up"></span>';
-						$output .= '<span class="nicon nicon-sort-down"></span>';
-					}
+						<?php if ( 'yes' === $settings['sortable'] ) { ?>
+							<span <?php echo $this->get_render_attribute_string( 'sort' ); ?>></span>
+							<span <?php echo $this->get_render_attribute_string( 'sort-up' ); ?>></span>
+							<span <?php echo $this->get_render_attribute_string( 'sort-down' ); ?>></span>
+						<?php } ?>
 
-					$output .= '</span>';
-					$output .= '</th>';
+					</span>
+				</th>
 
-				}
-
-			echo $output; ?>
-
-				</tr>
-
-			</thead>
-
-		<?php }
+			<?php } // foreach ?>
+			</tr>
+		</thead><?php
 	}
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$counter 		= 1;
-		$cell_counter 	= 0;
-		$output 		= '';
-		$row_count 		= count( $settings['rows'] );
+		if ( empty( $settings['rows'] ) )
+				return;
 
-		$this->add_render_attribute( 'table', 'class', 'ee-table' );
-		$this->add_render_attribute( 'row', 'class', 'ee-table__row' );
-		$this->add_render_attribute( 'table', 'class', 'ee-table--' . $settings['row_alternate'] );
+		$this->add_render_attribute( [
+			'table' => [
+				'class' => [
+					'ee-table',
+					'ee-table--' . $settings['row_alternate'],
+				],
+			],
+			'body-row' => [
+				'class' => 'ee-table__row',
+			],
+			'body-cell-text-inner' => [
+				'class' => 'ee-table__text__inner',
+			],
+		] );
 
 		if ( $settings['sortable'] ) {
 			$this->add_render_attribute( 'table', 'class', 'ee-table--sortable' );
@@ -1294,303 +1341,161 @@ class Table extends Extras_Widget {
 
 		if ( $settings['rules'] ) {
 			$this->add_render_attribute( 'table', 'class', 'ee-table--rules' );
-		}
-
-		?>
+		} ?>
 		
 		<table <?php echo $this->get_render_attribute_string( 'table' ); ?>>
 
-			<?php $this->render_rules(); ?>
+			<?php
 
-			<?php $this->render_header(); ?>
+			$this->render_rules();
+			$this->render_header();
 
-			<?php if ( $settings['rows'] ) { ?>
+			?><tbody><?php
 
-				<tbody>
+				if ( $this->is_invalid_first_row() ) {
+					?><tr <?php echo $this->get_render_attribute_string( 'body-row' ); ?>><?php
+				}
 
-					<?php if ( $this->is_invalid_first_row() ) { ?>
-						<tr <?php echo $this->get_render_attribute_string( 'row' ); ?>>
-					<?php } ?>
+				foreach ( $settings['rows'] as $index => $row ) {
+					call_user_func( [ $this, 'render_' . $row['type'] ], $row, $index );
+				}
 
-					<?php foreach ( $settings['rows'] as $index => $row ) {
+				?></tr>
+			</tbody>
+		</table>
 
-						$text_tag 		= 'span';
-						$header_text 	= $row['cell_header'];
-						$cell_text_key = $this->get_repeater_setting_key( 'cell_text', 'rows', $index );
+		<?php
+	}
 
-						if ( ! empty( $row['link']['url'] ) ) {
+	protected function render_cell( $row, $index ) {
 
-							$text_tag = 'a';
+		$settings = $this->get_settings_for_display();
 
-							$this->add_render_attribute( 'text-' . $counter, 'href', $row['link']['url'] );
+		$text_tag 		= 'span';
+		$header_text 	= $row['cell_header'];
 
-							if ( $row['link']['is_external'] ) {
-								$this->add_render_attribute( 'text-' . $counter, 'target', '_blank' );
-							}
+		$cell_key 				= $this->get_repeater_setting_key( 'cell', 'rows', $index );
+		$cell_text_key 			= $this->get_repeater_setting_key( 'cell-text', 'rows', $index );
+		$cell_text_inner_key 	= $this->get_repeater_setting_key( 'cell-text-inner', 'rows', $index );
+		$cell_icon_wrapper_key 	= $this->get_repeater_setting_key( 'cell-icon-wrapper', 'rows', $index );
+		$cell_icon_key 			= $this->get_repeater_setting_key( 'cell-icon', 'rows', $index );
 
-							if ( ! empty( $row['link']['nofollow'] ) ) {
-								$this->add_render_attribute( 'text-' . $counter, 'rel', 'nofollow' );
-							}
-						}
-						
-						if ( $row['type'] === 'cell' ) {
+		if ( ! empty( $row['link']['url'] ) ) {
 
-							if ( 'hide' !== $settings['mobile_headers_hide'] ) {
-								if ( 'yes' === $settings['mobile_headers_auto'] ) {
+			$text_tag = 'a';
 
-									// Fetch corresponding header cell text
-									if ( isset( $settings['header_cells'][ $cell_counter ] ) && '' === $row['cell_header'] ) {
-										$header_text = $settings['header_cells'][ $cell_counter ]['cell_text'];
-									}
+			$this->add_render_attribute( $cell_text_key, 'href', $row['link']['url'] );
 
-									// Increment to next cell
-									$cell_counter++;
-								}
-							}
+			if ( $row['link']['is_external'] ) {
+				$this->add_render_attribute( $cell_text_key, 'target', '_blank' );
+			}
 
-							$this->add_render_attribute( 'cell-' . $counter, 'class', 'ee-table__cell' );
-							$this->add_render_attribute( 'cell-' . $counter, 'class', 'elementor-repeater-item-' . $row['_id'] );
+			if ( ! empty( $row['link']['nofollow'] ) ) {
+				$this->add_render_attribute( $cell_text_key, 'rel', 'nofollow' );
+			}
+		}
 
-							$this->add_render_attribute( 'text-' . $counter, 'class', 'ee-table__text' );
-							$this->add_render_attribute( $cell_text_key, 'class', 'ee-table__text-inner' );
-							$this->add_inline_editing_attributes( $cell_text_key, 'basic' );
+		if ( 'hide' !== $settings['mobile_headers_hide'] ) {
+			if ( 'yes' === $settings['mobile_headers_auto'] ) {
 
-							if ( $row['_item_id'] )
-								$this->add_render_attribute( 'cell-' . $counter, 'id', $row['_item_id'] );
+				// Fetch corresponding header cell text
+				if ( isset( $settings['header_cells'][ $this->cell_counter ] ) && '' === $row['cell_header'] ) {
+					$header_text = $settings['header_cells'][ $this->cell_counter ]['cell_text'];
+				}
 
-							if ( $row['css_classes'] )
-								$this->add_render_attribute( 'cell-' . $counter, 'class', $row['css_classes'] );
+				// Increment to next cell
+				$this->cell_counter ++;
+			}
+		}
 
-							if ( $header_text )
-								$this->add_render_attribute( 'cell-' . $counter, 'data-title', $header_text );
+		$this->add_render_attribute( [
+			$cell_key => [
+				'class' => [
+					'ee-table__cell',
+					'elementor-repeater-item-' . $row['_id'],
+				],
+			],
+			$cell_text_key => [
+				'class' => [
+					'ee-table__text',
+				],
+			],
+		] );
 
-							if ( $row['cell_span'] > 1 )
-								$this->add_render_attribute( 'cell-' . $counter, 'colspan', $row['cell_span'] );
+		$this->add_inline_editing_attributes( $cell_text_inner_key, 'basic' );
 
-							if ( $row['cell_row_span'] > 1 )
-								$this->add_render_attribute( 'cell-' . $counter, 'rowspan', $row['cell_row_span'] );
+		if ( $row['_item_id'] )
+			$this->add_render_attribute( $cell_key, 'id', $row['_item_id'] );
 
-							// Output cell contents
-							$output .= '<' . $row['cell_type'] . ' ' . $this->get_render_attribute_string( 'cell-' . $counter ) . '>';
-							$output .= '<' . $text_tag . ' ' . $this->get_render_attribute_string( 'text-' . $counter ) . '>';
+		if ( $row['css_classes'] )
+			$this->add_render_attribute( $cell_key, 'class', $row['css_classes'] );
 
-							if ( 'text' === $row['cell_content'] && '' !== $row['cell_icon'] ) {
+		if ( $header_text )
+			$this->add_render_attribute( $cell_key, 'data-title', $header_text );
 
-								$this->add_render_attribute( 'icon-' . $counter, 'class', 'ee-align-icon--' . $row['cell_icon_align'] );
+		if ( $row['cell_span'] > 1 )
+			$this->add_render_attribute( $cell_key, 'colspan', $row['cell_span'] );
 
-								$output .= '<span ' . $this->get_render_attribute_string( 'icon-' . $counter ) . '>';
-									$output .= '<i class="' . esc_attr( $row['cell_icon'] ) . '"></i>';
-								$output .= '</span>';
-							}
+		if ( $row['cell_row_span'] > 1 )
+			$this->add_render_attribute( $cell_key, 'rowspan', $row['cell_row_span'] );
 
-							$output .= '<span ' . $this->get_render_attribute_string( $cell_text_key ) . '>' . $row['cell_text'] . '</span>';
-							$output .= '</' . $text_tag . '>';
-							$output .= '</' . $row['cell_type'] . '>';
+		// Output cell contents
+		?>
+		<<?php echo $row['cell_type']; ?> <?php echo $this->get_render_attribute_string( $cell_key ); ?>>
+			<<?php echo $text_tag; ?> <?php echo $this->get_render_attribute_string( $cell_text_key ); ?>>
 
-						} else {
+			<?php if ( 'text' === $row['cell_content'] && '' !== $row['cell_icon'] ) {
+				$this->add_render_attribute( [
+					$cell_icon_wrapper_key => [
+						'class' => 'ee-align-icon--' . $row['cell_icon_align'],
+					],
+					$cell_icon_key => [
+						'class' => esc_attr( $row['cell_icon'] ),
+					],
+				] );
 
-							$this->add_render_attribute( 'row-' . $counter, 'class', 'ee-table__row' );
-							$this->add_render_attribute( 'row-' . $counter, 'class', 'elementor-repeater-item-' . $row['_id'] );
-
-							if ( $row['_item_id'] )
-								$this->add_render_attribute( 'row-' . $counter, 'id', $row['_item_id'] );
-
-							if ( $row['css_classes'] )
-								$this->add_render_attribute( 'row-' . $counter, 'class', $row['css_classes'] );
-
-							if ( $counter > 1 && $counter < $row_count ) {
-
-								// Break into new row
-								$output .= '</tr><tr ' . $this->get_render_attribute_string( 'row-' . $counter ) . '>';
-
-							} else if ( $counter === 1 && false === $this->is_invalid_first_row() ) {
-								$output .= '<tr ' . $this->get_render_attribute_string( 'row-' . $counter ) . '>';
-							}
-
-							$cell_counter = 0;
-						}
-
-						$counter++;
-
-					}
-
-					echo $output; ?>
-					</tr>
-
-				</tbody>
-
+				?><span <?php echo $this->get_render_attribute_string( $cell_icon_wrapper_key ); ?>>
+					<i <?php echo $this->get_render_attribute_string( $cell_icon_key ); ?>></i>
+				</span>
 			<?php } ?>
 
-		</table>
-
-		<?php
+				<span <?php echo $this->get_render_attribute_string( 'body-cell-text-inner' ); ?>>
+					<?php echo $row['cell_text']; ?>
+				</span>
+			</<?php echo $text_tag; ?>>
+		</<?php echo $row['cell_type']; ?>><?php
 	}
 
-	protected function _rules_template() {
-		?>
-		
-		<# if ( settings.rules ) { #>
-			<colgroup>
-				<# _.each( settings.rules, function( rule ) { #>
-					<col span="{{ rule.span }}" class="elementor-repeater-item-{{ rule._id }}">
-				<# }); #>
-			</colgroup>
-		<# } #>
+	protected function render_row( $row, $index ) {
 
-		<?php
-	}
+		$settings 	= $this->get_settings_for_display();
+		$row_count 	= count( $settings['rows'] );
+		$row_key 	= $this->get_repeater_setting_key( 'body-row', 'rows', $index );
 
-	protected function _header_template() {
-		?>
+		$this->add_render_attribute( [
+			$row_key => [
+				'class' => [
+					'ee-table__row',
+					'elementor-repeater-item-' . $row['_id'],
+				],
+			],
+		] );
 
-		<# var counter = 1;
+		if ( $row['_item_id'] )
+			$this->add_render_attribute( $row_key, 'id', $row['_item_id'] );
 
-		if ( settings.header_cells ) { #>
+		if ( $row['css_classes'] )
+			$this->add_render_attribute( $row_key, 'class', $row['css_classes'] );
 
-		<thead>
+		if ( $index > 1 && $index < $row_count ) {
 
-			<tr class="ee-table__row">
+			// Break into new row
+			?></tr><tr <?php echo $this->get_render_attribute_string( $row_key ); ?>>
 
-			<# _.each( settings.header_cells, function( row ) { #>
+		<?php } else if ( $index === 1 && false === $this->is_invalid_first_row() ) {
+			?><tr <?php echo $this->get_render_attribute_string( $row_key ); ?>>
+		<?php }
 
-				<th id="{{ row._item_id }}" class="ee-table__cell elementor-repeater-item-{{ row._id }} {{ row.css_classes }}" rowspan="{{ row.cell_row_span }}" colspan="{{ row.cell_span }}"">
-					<span class="ee-table__text">
-
-						<# if ( 'text' === row.cell_content && '' !== row.cell_icon ) { #>
-						<span class="ee-align-icon--{{ row.cell_icon_align }}">
-							<i class="{{ row.cell_icon }}"></i>
-						</span>
-						<# } #>
-
-						<span class="ee-table__text-inner elementor-inline-editing" data-elementor-setting-key="header_cells.{{ counter - 1 }}.cell_text" data-elementor-inline-editing-toolbar="basic">{{{ row.cell_text }}}</span>
-
-						<# if ( 'yes' === settings.sortable ) { #>
-							<span class="nicon nicon-sort-up-down"></span>
-							<span class="nicon nicon-sort-up"></span>
-							<span class="nicon nicon-sort-down"></span>
-						<# } #>
-
-					</span>
-				</th>
-
-			<# counter++;
-
-			}); counter = 1; #>
-
-			</tr>
-
-		</thead>
-
-		<# } #>
-
-		<?php
-	}
-
-	protected function _content_template() {
-		?>
-
-		<#
-
-		var counter 				= 1,
-			cell_counter 			= 0,
-			row_count 				= settings.rows.length,
-			is_invalid_first_row 	= false,
-			table_classes 			= '';
-
-		if ( '' !== settings.sortable ) {
-			table_classes += 'ee-table--sortable';
-		}
-
-		if ( 'row' !== settings.rows[0].type ) {
-			is_invalid_first_row = true;
-		}
-
-		if ( settings.rules ) {
-			table_classes += ' ee-table--rules';
-		} #>
-
-		<table class="ee-table ee-table--{{ settings.row_alternate }} {{ table_classes }} ">
-
-		<?php $this->_rules_template(); ?>
-
-		<?php $this->_header_template(); ?>
-
-		<# if ( settings.rows ) { #>
-
-			<tbody>
-
-				<# if ( is_invalid_first_row ) { #>
-				<tr class="ee-table__row">
-				<# }
-
-				_.each( settings.rows, function( row ) {
-
-					var text_tag 	= 'span',
-						text_link 	= '',
-						data_header_text = '',
-						header_text = row.cell_header;
-
-					if ( '' !== row.link.url ) {
-						text_tag = 'a';
-						text_link = 'href="' + row.link.url + '"';
-					}
-
-					if ( row.type === 'cell' ) {
-
-						if ( 'hide' !== settings.mobile_headers_hide ) {
-							if ( 'yes' === settings.mobile_headers_auto ) {
-
-								if ( undefined !== settings.header_cells[ cell_counter ] && '' === row.cell_header ) {
-									header_text = settings.header_cells[ cell_counter ].cell_text;
-								}
-
-								cell_counter++;
-							}
-						}
-
-						if ( '' !== header_text ) {
-							data_header_text = 'data-title="' + header_text + '"';
-						}
-					#>
-
-						<{{ row.cell_type }} id="{{ row._item_id }}" class="ee-table__cell elementor-repeater-item-{{ row._id }} {{ row.css_classes }}" rowspan="{{ row.cell_row_span }}" colspan="{{ row.cell_span }}" {{{ data_header_text }}}>
-
-							<{{ text_tag }} {{ text_link }} class="ee-table__text">
-								<# if ( 'text' === row.cell_content && '' !== row.cell_icon ) { #>
-								<span class="ee-align-icon--{{ row.cell_icon_align }}">
-									<i class="{{ row.cell_icon }}"></i>
-								</span>
-								<# } #>
-								<span class="ee-table__text-inner elementor-inline-editing" data-elementor-setting-key="rows.{{ counter - 1 }}.cell_text" data-elementor-inline-editing-toolbar="basic">{{{ row.cell_text }}}</span>
-							</{{ text_tag }}>
-
-						</{{ row.cell_type }}>
-
-					<# } else {
-
-						if ( counter > 1 && counter < row_count ) { #>
-
-							</tr><tr class="ee-table__row elementor-repeater-item-{{ row._id }} {{ row.css_classes }}" id="{{ row._item_id }}">
-
-						<# } else if ( 1 === counter && ! is_invalid_first_row ) { #>
-							<tr class="ee-table__row elementor-repeater-item-{{ row._id }} {{ row.css_classes }}" id="{{ row._item_id }}">
-						<# }
-
-						cell_counter = 0;
-					}
-
-				counter++;
-
-				}); #>
-
-				</tr>
-
-			</tbody>
-
-		<# } #>
-
-		</table>
-
-		<?php
+		$this->cell_counter = 0;
 	}
 }

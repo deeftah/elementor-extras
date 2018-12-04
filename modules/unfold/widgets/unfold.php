@@ -15,7 +15,7 @@ use Elementor\Scheme_Typography;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Elementor Unfold
+ * Unfold
  *
  * @since 1.2.0
  */
@@ -45,6 +45,7 @@ class Unfold extends Extras_Widget {
 		return [
 			'unfold',
 			'gsap-js',
+			'jquery-visible',
 		];
 	}
 
@@ -194,7 +195,7 @@ class Unfold extends Extras_Widget {
 				$this->add_control(
 					'duration_unfold',
 					[
-						'label' 	=> __( 'Unfold Duration', 'elementor-extras' ),
+						'label' 	=> __( 'Duration', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::SLIDER,
 						'dynamic' 	=> [ 'active' => true ],
 						'default'	=> [
@@ -579,8 +580,8 @@ class Unfold extends Extras_Widget {
 						'icon!' => '',
 					],
 					'selectors' => [
-						'{{WRAPPER}} .ee-button .elementor-align-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
-						'{{WRAPPER}} .ee-button .elementor-align-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-button .ee-icon--right' => 'margin-left: {{SIZE}}{{UNIT}};',
+						'{{WRAPPER}} .ee-button .ee-icon--left' => 'margin-right: {{SIZE}}{{UNIT}};',
 					],
 					'conditions'=> [
 						'relation' => 'or',
@@ -889,23 +890,40 @@ class Unfold extends Extras_Widget {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'wrapper', 'class', 'ee-unfold' );
-		$this->add_render_attribute( 'mask', 'class', 'ee-unfold__mask' );
-		$this->add_render_attribute( 'button', 'class', [ 'ee-button', 'elementor-button' ] );
-		$this->add_render_attribute( 'button-wrapper', 'class', 'ee-button-wrapper' );
-		$this->add_render_attribute( 'separator', 'class', 'ee-unfold__separator' );
+		$this->add_render_attribute( [
+			'wrapper' => [
+				'class' => 'ee-unfold',
+			],
+			'mask' => [
+				'class' => 'ee-unfold__mask',
+			],
+			'button' => [
+				'class' => [
+					'ee-button',
+					'elementor-button',
+				],
+			],
+			'button-wrapper' => [
+				'class' => 'ee-button-wrapper',
+			],
+			'separator' => [
+				'class' => 'ee-unfold__separator',
+			],
+			'content' => [
+				'class' => 'ee-unfold__content',
+			],
+			'trigger' => [
+				'class' => 'ee-unfold__trigger',
+			],
+		] );
 
 		$this->add_inline_editing_attributes( 'content', 'advanced' );
-		$this->add_render_attribute( 'content', 'class', 'ee-unfold__content' );
-		$this->add_render_attribute( 'trigger', 'class', 'ee-unfold__trigger' );
 
 		if ( ! empty( $settings['size'] ) ) {
 			$this->add_render_attribute( 'button', 'class', 'ee-size-' . $settings['size'] );
 		}
 
-		?>
-
-		<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+		?><div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 			<div <?php echo $this->get_render_attribute_string( 'mask' ); ?>>
 				<div <?php echo $this->get_render_attribute_string( 'content' ); ?>>
 					<?php echo $this->parse_text_editor( $settings['content'] ); ?>
@@ -919,111 +937,43 @@ class Unfold extends Extras_Widget {
 					</span>
 				</span>
 			</div>
-		</div>
-
-		<?php
-
-	}
-
-	protected function _content_template() { ?><#
-
-		view.addRenderAttribute( 'wrapper', 'class', 'ee-unfold' );
-		view.addRenderAttribute( 'mask', 'class', 'ee-unfold__mask' );
-		view.addRenderAttribute( 'button', 'class', 'ee-button' );
-		view.addRenderAttribute( 'button', 'class', 'elementor-button' );
-		view.addRenderAttribute( 'button-wrapper', 'class', 'ee-button-wrapper' );
-		view.addRenderAttribute( 'separator', 'class', 'ee-unfold__separator' );
-
-		view.addInlineEditingAttributes( 'content', 'advanced' );
-		view.addRenderAttribute( 'content', 'class', 'ee-unfold__content' );
-		view.addRenderAttribute( 'trigger', 'class', 'ee-unfold__trigger' );
-
-		if ( '' !== settings.size ) {
-			view.addRenderAttribute( 'button', 'class', 'ee-size-' + settings.size );
-		}
-
-		#><div {{{ view.getRenderAttributeString( 'wrapper' ) }}}>
-			<div {{{ view.getRenderAttributeString( 'mask' ) }}}>
-				<div {{{ view.getRenderAttributeString( 'content' ) }}}>
-					{{{ settings.content }}}
-				</div>
-				<div {{{ view.getRenderAttributeString( 'separator' ) }}}></div>
-			</div>
-			<div {{{ view.getRenderAttributeString( 'trigger' ) }}}>
-				<span {{{ view.getRenderAttributeString( 'button-wrapper' ) }}}>
-					<span {{{ view.getRenderAttributeString( 'button' ) }}}>
-						<?php echo $this->_text_template(); ?>
-					</span>
-				</span>
-			</div>
-		</div>
-
-		<?php
-	}
-
-	protected function _text_template() { ?><#
-
-		view.addRenderAttribute( 'content-wrapper', 'class', 'ee-button-content-wrapper' );
-		view.addRenderAttribute( 'icon-wrapper-closed', 'class', [
-			'ee-button-icon',
-			'elementor-align-icon-' + settings.icon_align,
-			'ee-unfold__icon',
-			'ee-unfold__icon--closed',
-		] );
-		view.addRenderAttribute( 'icon-wrapper-open', 'class', [
-			'ee-button-icon',
-			'elementor-align-icon-' + settings.icon_align,
-			'ee-unfold__icon',
-			'ee-unfold__icon--open',
-		] );
-		view.addRenderAttribute( 'icon-closed', 'class', settings.icon );
-		view.addRenderAttribute( 'icon-open', 'class', settings.icon_open );
-		view.addRenderAttribute( 'text', 'class', 'ee-button-text' );
-		view.addRenderAttribute( 'text', 'data-close-label', settings.text_open );
-		view.addRenderAttribute( 'text', 'data-open-label', settings.text_closed );
-
-		#><span {{{ view.getRenderAttributeString( 'content-wrapper' ) }}}>
-			
-			<# if ( settings.icon ) { #>
-			<span {{{ view.getRenderAttributeString( 'icon-wrapper-closed' ) }}}>
-				<i {{{ view.getRenderAttributeString( 'icon-closed' ) }}}></i>
-			</span>
-			<# } #>
-
-			<# if ( settings.icon_open ) { #>
-			<span {{{ view.getRenderAttributeString( 'icon-wrapper-open' ) }}}>
-				<i {{{ view.getRenderAttributeString( 'icon-open' ) }}}></i>
-			</span>
-			<# } #>
-
-			<span {{{ view.getRenderAttributeString( 'text' ) }}}>{{{ settings.text_closed }}}</span>
-		</span>
-
-		<?php
+		</div><?php
 	}
 
 	protected function render_text() {
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'content-wrapper', 'class', 'ee-button-content-wrapper' );
-		$this->add_render_attribute( 'icon-wrapper-closed', 'class', [
-			'ee-button-icon',
-			'ee-unfold__icon',
-			'ee-unfold__icon--closed',
-			'elementor-align-icon-' . $settings['icon_align']
-		] );
-		$this->add_render_attribute( 'icon-wrapper-open', 'class', [
-			'ee-button-icon',
-			'ee-unfold__icon',
-			'ee-unfold__icon--open',
-			'elementor-align-icon-' . $settings['icon_align']
-		] );
-		$this->add_render_attribute( 'icon-closed', 'class', $settings['icon'] );
-		$this->add_render_attribute( 'icon-open', 'class', $settings['icon_open'] );
-		$this->add_render_attribute( 'text', [
-			'class' 			=> 'ee-button-text',
-			'data-close-label' 	=> $settings['text_open'],
-			'data-open-label' 	=> $settings['text_closed'],
+		$this->add_render_attribute( [
+			'content-wrapper' => [
+				'class' => 'ee-button-content-wrapper'
+			],
+			'icon-wrapper-closed' => [
+				'class' => [
+					'ee-button-icon',
+					'ee-unfold__icon',
+					'ee-unfold__icon--closed',
+					'ee-icon--' . $settings['icon_align'],
+				],
+			],
+			'icon-wrapper-open' => [
+				'class' => [
+					'ee-button-icon',
+					'ee-unfold__icon',
+					'ee-unfold__icon--open',
+					'ee-icon--' . $settings['icon_align'],
+				],
+			],
+			'icon-closed' => [
+				'class' => $settings['icon'],
+			],
+			'icon-open' => [
+				'class' => $settings['icon_open'],
+			],
+			'text' => [
+				'class' => 'ee-button-text',
+				'data-close-label' 	=> $settings['text_open'],
+				'data-open-label' 	=> $settings['text_closed'],
+			],
 		] );
 
 		?><span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
@@ -1043,5 +993,110 @@ class Unfold extends Extras_Widget {
 			<span <?php echo $this->get_render_attribute_string( 'text' ); ?>><?php echo $settings['text_closed']; ?></span>
 		</span>
 		<?php
+	}
+
+	protected function _content_template() { ?><#
+
+		view.addRenderAttribute( {
+			'wrapper' : {
+				'class' : 'ee-unfold',
+			},
+			'mask' : {
+				'class' : 'ee-unfold__mask',
+			},
+			'button' : {
+				'class' : [
+					'ee-button',
+					'elementor-button',
+				],
+			},
+			'button-wrapper' : {
+				'class' : 'ee-button-wrapper',
+			},
+			'separator' : {
+				'class' : 'ee-unfold__separator',
+			},
+			'content' : {
+				'class' : 'ee-unfold__content',
+			},
+			'trigger' : {
+				'class' : 'ee-unfold__trigger',
+			},
+		} );
+
+		view.addInlineEditingAttributes( 'content', 'advanced' );
+
+		if ( '' !== settings.size ) {
+			view.addRenderAttribute( 'button', 'class', 'ee-size-' + settings.size );
+		}
+
+		#><div {{{ view.getRenderAttributeString( 'wrapper' ) }}}>
+			<div {{{ view.getRenderAttributeString( 'mask' ) }}}>
+				<div {{{ view.getRenderAttributeString( 'content' ) }}}>
+					{{{ settings.content }}}
+				</div>
+				<div {{{ view.getRenderAttributeString( 'separator' ) }}}></div>
+			</div>
+			<div {{{ view.getRenderAttributeString( 'trigger' ) }}}>
+				<span {{{ view.getRenderAttributeString( 'button-wrapper' ) }}}>
+					<span {{{ view.getRenderAttributeString( 'button' ) }}}>
+						<?php echo $this->_text_template(); ?>
+					</span>
+				</span>
+			</div>
+		</div><?php
+	}
+
+	protected function _text_template() { ?><#
+
+		view.addRenderAttribute( {
+			'content-wrapper' : {
+				'class' : 'ee-button-content-wrapper'
+			},
+			'icon-wrapper-closed' : {
+				'class' : [
+					'ee-button-icon',
+					'ee-icon--' + settings.icon_align,
+					'ee-unfold__icon',
+					'ee-unfold__icon--closed',
+				],
+			},
+			'icon-wrapper-open' : {
+				'class' : [
+					'ee-button-icon',
+					'ee-icon--' + settings.icon_align,
+					'ee-unfold__icon',
+					'ee-unfold__icon--open',
+				],
+			},
+			'icon-closed' : {
+				'class' : settings.icon,
+			},
+			'icon-open' : {
+				'class' : settings.icon_open,
+			},
+			'text' : {
+				'class' : 'ee-button-text',
+				'data-close-label' : settings.text_open,
+				'data-open-label' : settings.text_closed,
+			},
+		} );
+
+		#><span {{{ view.getRenderAttributeString( 'content-wrapper' ) }}}>
+			
+			<# if ( settings.icon ) { #>
+			<span {{{ view.getRenderAttributeString( 'icon-wrapper-closed' ) }}}>
+				<i {{{ view.getRenderAttributeString( 'icon-closed' ) }}}></i>
+			</span>
+			<# } #>
+
+			<# if ( settings.icon_open ) { #>
+			<span {{{ view.getRenderAttributeString( 'icon-wrapper-open' ) }}}>
+				<i {{{ view.getRenderAttributeString( 'icon-open' ) }}}></i>
+			</span>
+			<# } #>
+
+			<span {{{ view.getRenderAttributeString( 'text' ) }}}>{{{ settings.text_closed }}}</span>
+		</span><?php
 	}
 }

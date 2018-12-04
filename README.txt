@@ -1,9 +1,9 @@
 === Elementor Extras ===
 Contributors: Namogo
 Tags: elementor, addons, hotspots, image comparison, heading, parallax, sticky, widgets, button groups, text separator, circle progress, devices, timeline
-Requires at least: 	4.5
-Tested up to: 4.9.8
-Stable tag: 1.9.16
+Requires at least: 4.5
+Tested up to: 4.9.9
+Stable tag: 2.0.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,87 @@ Elementor Extras is a premium Wordpress plugin for Elementor. It extends its cap
 * Yes. You can activate licenses on local environments without limit and they won't take from your allowed activations count.
 
 == Changelog ==
+
+= 2.0.1 =
+
+* Fixed: Google Map — Navigation z-index
+* Fixed: Posts Extra — Default button position to hidden
+* Fixed: Devices — Video in window frame not displaying
+* Fixed: Google Map — JSON incorrectly reported as invalid
+* Fixed: Switcher — Cover picture tag with CSS
+* Fixed: Devices — Video css for browser frame
+* Added: Posts Extra — Infinite load button transition control
+* Added: Posts Extra — Infinite load button border control
+* Added: Hotspots — Individual hover controls for each hotspot
+* Added: Audio Player — Option to loop playlist
+* Tweak: Google Map — Make fields dynamic
+* Tweak: Audio Player — Added custom js events
+* Tweak: Audio Player — Separate control for play icon size
+* Tweak: Video Player — Added custom js events
+
+= 2.0.0 =
+
+* New Extension: Display Conditions
+* New Widget: Google Map
+* New Widget: Popup
+* New Widget: Age Gate
+* New Widget: Toggle Element
+* New Widget: Calendar
+* New Widget: Audio Player
+* New Widget: Offcanvas
+* New Widget: Slide Menu
+* New Widget: Random Image
+* Added: Posts Extra — Support for terms from multiple taxonomies
+* Added: Breadcrumbs — Include blog posts page in breadcrumbs
+* Added: Switcher — New option to add description
+* Added: Sticky Elements — Completely rewritten code
+* Added: Sticky Elements — Offset bottom control
+* Added: Global Tooltips — Control to disable on breakpoint
+* Added: Breadcrumbs — Option to show taxonomy terms for custom post types instead of CPT name
+* Added: Tooltips — New trigger on page load
+* Added: Switcher — Events to update when inside toggle element
+* Added: Posts Extra — Price meta for woocommerce products
+* Added: Posts Extra — Button content part replaces read more
+* Added: Posts Extra — Post count for filters
+* Added: Breadcrumbs — Schema.org properties
+* Fixed: Tooltips — Add option to disable on breakpoint
+* Fixed: Global Tooltips — Destroy on editor mode
+* Fixed: Parallax Background — Out of view sections have wrong background image positions
+* Fixed: Global Tooltips — Settings not being saved
+* Fixed: Parallax Element — Start position option not applying
+* Fixed: Hotspots — Image display block
+* Fixed: Unfold — Button alignment
+* Fixed: Unfold — Button icon position and indent
+* Fixed: Posts Extra — Check for woocommerce for price fields
+* Fixed: Video Player — Volume size undefined error
+* Fixed: Gallery Slider — RTL behviour on clicking thumbs
+* Fixed: Inline SVG — ACF image field
+* Fixed: Update to getEditModel method
+* Fixed: Compatibility with Elementor 2.3.0
+* Fixed: License not deactivating if expired
+* Fixed: Image Comparison — Distance for top-aligned labels
+* Fixed: Devices + Hotspots — Compatibility with Elementor 2.3.0
+* Fixed: Switcher — Astra theme images css conflict
+* Fixed: Breadcrumbs — Multiple hierarchical categories not showing
+* Fixed: Posts Extra — Filtered posts not found message
+* Fixed: Posts Extra — Wrong grid item width when filters are active and multiple instances on page
+* Fixed: Gallery Slider — Controls conditions
+* Fixed: Breacrumbs — Wrap crumbs automatically
+* Tweak: Posts Extra — Hide fields not available for Current Query option
+* Tweak: Hotspots — Default hotspots for better ux
+* Tweak: Video Player + Devices — Better behaviour and interactions for video player
+* Tweak: Video Player + Devices — Better selection of video source files
+* Tweak: Video Player + Devices — Added playback speed option
+* Tweak: Timeline — Support for point numbers and letter for posts
+* Tweak: Table — Remove render template to improve editing performance
+* Tweak: Buttons — Add bottom margin to custom spacing control
+* Tweak: Posts Extra — Increase options for carousel rows and slides to scroll
+* Tweak: Enable docs link in admin settings page
+* Tweak: Switcher — Make description field dynamic
+* Tweak: Google Maps – Adjust controls structure
+* Tweak: Table — Control names
+* Tweak: Text Divider — Controls position
+* Tweak: Posts Extra — Added read more to translatable fields for WPML
 
 = 1.9.16 =
 
@@ -674,7 +755,7 @@ Elementor Extras incorporates code from:
 — jquery-circle-progress v1.2.2, Copyright Rostyslav Bryzgunov Licenses: MIT Source: link http://kottenator.github.io/jquery-circle-progress/
 — jQuery appear plugin v0.3.6, Copyright 2012 Andrey Sidorov Licenses: MIT Source: link https://github.com/morr/jquery.appear/
 — LongShadow jQuery Plugin v1.1.0, Copyright 2013 - 2016 Dang Van Thanh Licenses: MIT Source: link git://github.com/dangvanthanh/jquery.longShadow.git
-— Sticky-kit v1.1.3, Copyright 2015 Leaf Corcoran Licenses: MIT Source: link http://leafo.net
+— HC-Sticky 2.2.3, Copyright Some Web Media License: MIT Source: link https://github.com/somewebmedia/hc-sticky
 — jQuery Mobile v1.4.3, Copyright 2010, 2014 jQuery Foundation, Inc. Licenses: jquery.org/license
 — jquery-visible, Copyright 2012, Digital Fusion, License: http://teamdf.com/jquery-plugins/license/ Source: http://teamdf.com/jquery-plugins/license/
 — Parallax Background v1.2, by Eren Suleymanoglu Licenses: MIT Source: link https://github.com/erensuleymanoglu/parallax-background
@@ -682,5 +763,11 @@ Elementor Extras incorporates code from:
 — Isotope PACKAGED v3.0.6, Copyright 2017 Metafizzy License: GPLv3 Source: link http://isotope.metafizzy.co
 — Infinite Scroll PACKAGED v3.0.2, Copyright 2017 Metafizzy License: GPLv3 Source: link https://infinite-scroll.com
 — Packery layout mode PACKAGED v2.0.0 Copyright 2017 Metafizzy License: GPLv3 Source: link http://isotope.metafizzy.co
-— javascript-detect-element-resize 0.5.3 Copyright (c) 2013 Sebastián Décima License: MIT Source: link https://github.com/sdecima/javascript-detect-element-resize
-— tilt.js 1.2.1 Copyright (c) 2017 Gijs Rogé License: MIT Source: link https://github.com/gijsroge/tilt.js
+— javascript-detect-element-resize, 0.5.3 Copyright (c) 2013 Sebastián Décima License: MIT Source: link https://github.com/sdecima/javascript-detect-element-resize
+— tilt.js 1.2.1, Copyright (c) 2017 Gijs Rogé License: MIT Source: link https://github.com/gijsroge/tilt.js
+- CLNDR v1.4.7, Copyright Kyle Stetz (github.com/kylestetz) License: MIT Source: link https://github.com/kylestetz/CLNDR
+— GMAP3 Plugin for jQuery v7.2 Copyright DEMONTE Jean-Baptiste License: GPL-3.0+ Source: link http://gmap3.net
+— Moment.js v2.22.2 License: MIT Source: link https://github.com/moment/moment/
+— Slidebars v2 Copyright Adam Charles Smith License: MIT http://www.adchsm.com/slidebars/license/ Source: link http://www.adchsm.com/slidebars/
+— Splittext.js Copyright (c) 2008-2016, GreenSock
+— Magnific Popup v1.1.0 License: MIT Copyright 2016 Dmitry Semenov Soruce: link http://dimsemenov.com/plugins/magnific-popup/

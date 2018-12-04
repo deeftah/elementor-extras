@@ -22,7 +22,7 @@ class Skin_Classic extends Skin_Base {
 	protected function _register_controls_actions() {
 		parent::_register_controls_actions();
 
-		// add_action( 'elementor/element/posts-extra/section_query/after_section_end', [ $this, 'register_parallax_controls' ] );
+		// add_action( 'elementor/element/ee-switcher/section_query/after_section_end', [ $this, 'register_parallax_controls' ] );
 	}
 
 	public function register_layout_content_controls() {
