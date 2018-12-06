@@ -80,9 +80,6 @@ class ElementorExtrasPlugin {
 		// Include extensions
 		$this->includes();
 
-		// Include custom controls
-		$this->controls_includes();
-
 		// Panel
 		$this->register_settings_managers();
 
@@ -125,7 +122,7 @@ class ElementorExtrasPlugin {
 
 		// Register widgets hook
 
-		add_action( 'elementor/controls/controls_registered', [ $this, 'register_controls' ], 0 );
+		add_action( 'elementor/controls/controls_registered', [ $this, 'register_controls' ] );
 
 		// ——— SCRIPTS ——— //
 
@@ -684,26 +681,6 @@ class ElementorExtrasPlugin {
 	}
 
 	/**
-	 * Include custom controls
-	 *
-	 * @since 1.1.4
-	 *
-	 * @access private
-	 */
-	private function controls_includes() {
-
-		// Control Groups
-		elementor_extras_include( 'includes/controls/groups/sticky.php' );
-		elementor_extras_include( 'includes/controls/groups/long-shadow.php' );
-		elementor_extras_include( 'includes/controls/groups/button-effect.php' );
-		elementor_extras_include( 'includes/controls/groups/transition.php' );
-		elementor_extras_include( 'includes/controls/groups/tooltip.php' );
-
-		// Controls
-		elementor_extras_include( 'includes/controls/snazzy.php' );
-	}
-
-	/**
 	 * Sections init
 	 *
 	 * @since 0.1.0
@@ -773,7 +750,14 @@ class ElementorExtrasPlugin {
 	 * @access private
 	 */
 	private function init_group_controls() {
+		// Include Control Groups
+		elementor_extras_include( 'includes/controls/groups/sticky.php' );
+		elementor_extras_include( 'includes/controls/groups/long-shadow.php' );
+		elementor_extras_include( 'includes/controls/groups/button-effect.php' );
+		elementor_extras_include( 'includes/controls/groups/transition.php' );
+		elementor_extras_include( 'includes/controls/groups/tooltip.php' );
 
+		// Add Control Groups
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'long-shadow', new Group_Control_Long_Shadow() );
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'effect', new Group_Control_Button_Effect() );
 		\Elementor\Plugin::instance()->controls_manager->add_group_control( 'ee-transition', new Group_Control_Transition() );
@@ -788,7 +772,14 @@ class ElementorExtrasPlugin {
 	 * @access private
 	 */
 	public function register_controls() {
+
+		// Include Controls
+		elementor_extras_include( 'includes/controls/query.php' );
+		elementor_extras_include( 'includes/controls/snazzy.php' );
+
+		// Register Controls
 		\Elementor\Plugin::instance()->controls_manager->register_control( 'ee-snazzy', new Control_Snazzy() );
+		\Elementor\Plugin::instance()->controls_manager->register_control( 'ee-query', new Control_Query() );
 	}
 
 	/**

@@ -109,6 +109,7 @@ class Breadcrumbs extends Extras_Widget {
 					'options'		=> [
 						'' 			=> __( 'CPT Name', 'elementor-extras' ),
 						'terms' 	=> __( 'Taxonomy Terms', 'elementor-extras' ),
+						'both' 		=> __( 'Both', 'elementor-extras' ),
 					],
 				]
 			);
@@ -651,30 +652,61 @@ class Breadcrumbs extends Extras_Widget {
 				
 			// ——— Custom Taxonomy Archive ——— //
 			} else if ( $query->is_archive() && $query->is_tax() && ! $query->is_category() && ! $query->is_tag() ) {
-				
-				$post_type = get_post_type();
-				
-				if ( $post_type != 'post' ) {
-					
-					$post_type_object = get_post_type_object( $post_type );
 
-					$this->render_item( 'post-type-archive', [
+				$queried_object = get_queried_object();
+				$parents = get_ancestors( $queried_object->term_id, $queried_object->taxonomy );
+
+				$parent_terms = get_terms( [
+					'taxonomy' => $queried_object->taxonomy,
+					'include' => $parents,
+				] );
+
+				$parent_terms = array_reverse( $parent_terms );
+
+				$post_type = get_post_type();
+				$post_type_object = get_post_type_object( $post_type );
+
+				$this->render_item( 'post-type-archive', [
+					'current' 	=> false,
+					'separator'	=> true,
+					'key' 		=> 'post-type-archive',
+					'ids' 		=> [ $post_type ],
+					'content' 	=> $post_type_object->labels->name,
+					'link'		=> get_post_type_archive_link( $post_type ),
+				] );
+
+				foreach ($parent_terms as $term) {
+					$this->render_item( 'custom-tax-archive-parents', [
 						'current' 	=> false,
 						'separator'	=> true,
-						'key' 		=> 'post-type-archive',
-						'ids' 		=> [ $post_type ],
-						'content' 	=> $post_type_object->labels->name,
-						'link'		=> get_post_type_archive_link( $post_type ),
+						'key' 		=> 'custom-tax-archive-parents',
+						'ids' 		=> [ $term->term_id, $term->slug ],
+						'content' 	=> $term->name,
+						'link'		=> get_term_link( $term ),
 					] );
 				}
 
-				$custom_tax_name = get_queried_object()->name;
-
-				$this->render_item( 'archive', [
+				$this->render_item( 'custom-tax-archive', [
 					'current' 	=> true,
 					'separator'	=> false,
-					'key' 		=> 'archive',
-					'content' 	=> $custom_tax_name,
+					'key' 		=> 'custom-tax-archive',
+					'ids' 		=> [ $post_type ],
+					'content' 	=> get_queried_object()->name,
+					'link'		=> '',
+				] );
+
+			} else if ( $query->is_post_type_archive() ) {
+
+				$post_type = get_post_type();
+				$post_type_object = get_post_type_object( $post_type );
+
+				$this->render_item( 'post-type-archive', [
+					'current' 	=> true,
+					'separator'	=> false,
+					'key' 		=> 'post-type-archive',
+					'ids' 		=> [ $post_type ],
+					'content' 	=> $post_type_object->labels->name,
+					'link'		=> get_post_type_archive_link( $post_type ),
 				] );
 				
 			} else if ( $query->is_single() ) {
@@ -683,11 +715,22 @@ class Breadcrumbs extends Extras_Widget {
 				
 				if ( $post_type !== 'post' ) {
 
-					$post_type_object = get_post_type_object( $post_type );
+					if ( '' === $settings['cpt_crumbs'] || 'both' === $settings['cpt_crumbs'] ) {
 
-					$item_content = $post_type_object->labels->name;
+						$post_type_object = get_post_type_object( $post_type );
+						$item_content = $post_type_object->labels->name;
 
-					if ( 'terms' === $settings['cpt_crumbs'] ) {
+						$this->render_item( 'post-type-archive', [
+							'current' 	=> false,
+							'separator'	=> true,
+							'key' 		=> 'post-type-archive',
+							'ids' 		=> [ $post_type ],
+							'content' 	=> $item_content,
+							'link'		=> get_post_type_archive_link( $post_type ),
+						] );
+					}
+
+					if ( in_array( $settings['cpt_crumbs'], [ 'terms', 'both' ] ) ) {
 						$item_content = 'terms';
 
 						$terms = Utils::get_parent_terms_highest( $post->ID );
@@ -705,16 +748,6 @@ class Breadcrumbs extends Extras_Widget {
 							}
 						}
 
-					} else {
-
-						$this->render_item( 'post-type-archive', [
-							'current' 	=> false,
-							'separator'	=> true,
-							'key' 		=> 'post-type-archive',
-							'ids' 		=> [ $post_type ],
-							'content' 	=> $item_content,
-							'link'		=> get_post_type_archive_link( $post_type ),
-						] );
 					}
 					
 				} else {

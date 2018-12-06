@@ -200,6 +200,7 @@ class Extension_Display_Conditions extends Extension_Base {
 						'label'					=> __( 'Current Page', 'elementor-extras' ),
 						'options' 				=> [
 							'page' 				=> __( 'Page', 'elementor-extras' ),
+							'post' 				=> __( 'Post', 'elementor-extras' ),
 							'static_page' 		=> __( 'Static Page', 'elementor-extras' ),
 							'post_type' 		=> __( 'Post Type', 'elementor-extras' ),
 						],
@@ -328,15 +329,33 @@ class Extension_Display_Conditions extends Extension_Base {
 		$repeater->add_control(
 			'ee_condition_page_value',
 			[
-				'type' 			=> Controls_Manager::SELECT2,
+				'type' 			=> 'ee-query',
 				'default' 		=> '',
 				'placeholder'	=> __( 'Any', 'elementor-extras' ),
 				'description'	=> __( 'Leave blank for any page.', 'elementor-extras' ),
 				'label_block' 	=> true,
 				'multiple'		=> true,
-				'options' 		=> Utils::get_pages_options( true ),
+				'query_type'	=> 'posts',
+				'object_type'	=> 'page',
 				'condition' 	=> [
 					'ee_condition_key' => 'page',
+				],
+			]
+		);
+
+		$repeater->add_control(
+			'ee_condition_post_value',
+			[
+				'type' 			=> 'ee-query',
+				'default' 		=> '',
+				'placeholder'	=> __( 'Any', 'elementor-extras' ),
+				'description'	=> __( 'Leave blank for any post.', 'elementor-extras' ),
+				'label_block' 	=> true,
+				'multiple'		=> true,
+				'query_type'	=> 'posts',
+				'object_type'	=> '',
+				'condition' 	=> [
+					'ee_condition_key' => 'post',
 				],
 			]
 		);
@@ -430,13 +449,13 @@ class Extension_Display_Conditions extends Extension_Base {
 		$repeater->add_control(
 			'ee_condition_author_archive_value',
 			[
-				'type' 			=> Controls_Manager::SELECT2,
+				'type' 			=> 'ee-query',
 				'default' 		=> '',
 				'placeholder'	=> __( 'Any', 'elementor-extras' ),
 				'description'	=> __( 'Leave blank for all authors.', 'elementor-extras' ),
 				'multiple'		=> true,
 				'label_block' 	=> true,
-				'options' 		=> Utils::get_users_options(),
+				'query_type'	=> 'authors',
 				'condition' 	=> [
 					'ee_condition_key' => 'author_archive',
 				],
@@ -874,7 +893,7 @@ class Extension_Display_Conditions extends Extension_Base {
 	/**
 	 * Check current page
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 *
 	 * @access protected
 	 *
@@ -891,6 +910,30 @@ class Extension_Display_Conditions extends Extension_Base {
 				}
 			}
 		} else { $show = is_page( $value ); }
+
+		return self::compare( $show, true, $operator );
+	}
+
+	/**
+	 * Check current post
+	 *
+	 * @since 2.0.0
+	 *
+	 * @access protected
+	 *
+	 * @param mixed  $value  The control value to check
+	 * @param string $operator  Comparison operator.
+	 */
+	protected static function check_post( $value, $operator ) {
+		$show = false;
+
+		if ( is_array( $value ) && ! empty( $value ) ) {
+			foreach ( $value as $_key => $_value ) {
+				if ( is_single( $_value ) || is_singular( $_value ) ) {
+					$show = true; break;
+				}
+			}
+		} else { $show = is_single( $value ) || is_singular( $value ); }
 
 		return self::compare( $show, true, $operator );
 	}

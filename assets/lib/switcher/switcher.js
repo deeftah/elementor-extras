@@ -1001,7 +1001,7 @@
 					latestKnownWindowHeight = currentWindowHeight;
 
 					if ( plugin.opts.autoplay && _appeared ) {
-						if ( ! $element.visible( true, false, 'vertical' ) || $element.is(':visible') ) {
+						if ( ! $element.visible( true, false, 'vertical' ) || ! $element.is(':visible') ) {
 							if ( _timerRunning ) {
 								plugin.stop();
 							}

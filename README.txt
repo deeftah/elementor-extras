@@ -3,7 +3,7 @@ Contributors: Namogo
 Tags: elementor, addons, hotspots, image comparison, heading, parallax, sticky, widgets, button groups, text separator, circle progress, devices, timeline
 Requires at least: 4.5
 Tested up to: 4.9.9
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,15 @@ Elementor Extras is a premium Wordpress plugin for Elementor. It extends its cap
 * Yes. You can activate licenses on local environments without limit and they won't take from your allowed activations count.
 
 == Changelog ==
+
+= 2.0.2 =
+
+* Added: New Query Control
+* Added: Display Conditions — Ajax powered fields
+* Added: Display Conditions — Current post condition
+* Fixed: Switcher – Autoplay not working without entrance animation
+* Fixed: Breadcrumbs — Custom taxonomy archive crumbs
+* Tweak: Audio Player — Added option for external sources
 
 = 2.0.1 =
 

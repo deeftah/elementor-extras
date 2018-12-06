@@ -84,6 +84,19 @@ class Audio_Player extends Extras_Widget {
 			);
 
 				$repeater->add_control(
+					'audio_source',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'file',
+						'options'		=> [
+							'file'		=> __( 'File', 'elementor-extras' ),
+							'url'		=> __( 'External', 'elementor-extras' ),
+						],
+					]
+				);
+
+				$repeater->add_control(
 					'source_mpeg',
 					[
 						'label' 		=> __( 'File', 'elementor' ),
@@ -95,7 +108,25 @@ class Audio_Player extends Extras_Widget {
 								TagsModule::MEDIA_CATEGORY,
 							],
 						],
+						'condition'		=> [
+							'audio_source' => 'file',
+						],
 						'media_type' => 'audio',
+					]
+				);
+
+				$repeater->add_control(
+					'source_mpeg_url',
+					[
+						'label' 		=> __( 'URL', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::TEXT,
+						'description' 	=> __( 'Insert URL to an .mp3 audio file', 'elementor-extras' ),
+						'dynamic' 		=> [
+							'active' 	=> true,
+						],
+						'condition' 	=> [
+							'audio_source' => 'url',
+						],
 					]
 				);
 
@@ -109,6 +140,19 @@ class Audio_Player extends Extras_Widget {
 			);
 
 				$repeater->add_control(
+					'audio_source_wav',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'file',
+						'options'		=> [
+							'file'		=> __( 'File', 'elementor-extras' ),
+							'url'		=> __( 'External', 'elementor-extras' ),
+						],
+					]
+				);
+
+				$repeater->add_control(
 					'source_wav',
 					[
 						'label' 		=> __( 'File', 'elementor' ),
@@ -120,7 +164,25 @@ class Audio_Player extends Extras_Widget {
 								TagsModule::MEDIA_CATEGORY,
 							],
 						],
+						'condition'		=> [
+							'audio_source_wav' => 'file',
+						],
 						'media_type' => 'audio',
+					]
+				);
+
+				$repeater->add_control(
+					'source_wav_url',
+					[
+						'label' 		=> __( 'URL', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::TEXT,
+						'description' 	=> __( 'Insert URL to an .wav audio file', 'elementor-extras' ),
+						'dynamic' 		=> [
+							'active' 	=> true,
+						],
+						'condition' 	=> [
+							'audio_source_wav' => 'url',
+						],
 					]
 				);
 
@@ -134,6 +196,19 @@ class Audio_Player extends Extras_Widget {
 			);
 
 				$repeater->add_control(
+					'audio_source_ogg',
+					[
+						'label' 		=> __( 'Source', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::SELECT,
+						'default'		=> 'file',
+						'options'		=> [
+							'file'		=> __( 'File', 'elementor-extras' ),
+							'url'		=> __( 'External', 'elementor-extras' ),
+						],
+					]
+				);
+
+				$repeater->add_control(
 					'source_ogg',
 					[
 						'label' 		=> __( 'File', 'elementor' ),
@@ -145,7 +220,25 @@ class Audio_Player extends Extras_Widget {
 								TagsModule::MEDIA_CATEGORY,
 							],
 						],
+						'condition'		=> [
+							'audio_source_ogg' => 'file',
+						],
 						'media_type' => 'audio',
+					]
+				);
+
+				$repeater->add_control(
+					'source_ogg_url',
+					[
+						'label' 		=> __( 'URL', 'elementor-extras' ),
+						'type' 			=> Controls_Manager::TEXT,
+						'description' 	=> __( 'Insert URL to an .ogg audio file', 'elementor-extras' ),
+						'dynamic' 		=> [
+							'active' 	=> true,
+						],
+						'condition' 	=> [
+							'audio_source_ogg' => 'url',
+						],
 					]
 				);
 
@@ -1357,7 +1450,15 @@ class Audio_Player extends Extras_Widget {
 			<ul <?php echo $this->get_render_attribute_string( 'playlist' ); ?>>
 				<?php foreach ( $settings['playlist'] as $index => $item ) {
 
-					if ( ! $item['source_mpeg']['url'] && ! $item['source_wav']['url'] && ! $item['source_ogg']['url'] )
+					$sources = [];
+
+					$sources['mpeg'] = ( 'file' === $item['audio_source'] ) ? $item['source_mpeg']['url'] : $item['source_mpeg_url'];
+					$sources['wav']  = ( 'file' === $item['audio_source_wav'] ) ? $item['source_wav']['url'] : $item['source_wav_url'];
+					$sources['ogg']  = ( 'file' === $item['audio_source_ogg'] ) ? $item['source_ogg']['url'] : $item['source_ogg_url'];
+					
+					$item['sources'] = $sources;
+
+					if ( empty( $sources['mpeg'] ) && empty( $sources['wav'] ) && empty( $sources['ogg'] ) )
 						continue;
 
 					$playlist_item_key = $this->get_repeater_setting_key( 'item', 'playlist', $index );
@@ -1413,23 +1514,23 @@ class Audio_Player extends Extras_Widget {
 
 		?><audio <?php echo $this->get_render_attribute_string( $audio_key ); ?>>
 			
-			<?php if ( $item['source_mpeg']['url'] ) {
+			<?php if ( ! empty( $item['sources']['mpeg'] ) ) {
 				$this->add_render_attribute( $mp3_key, [
-					'src' => $item['source_mpeg']['url'],
+					'src' => $item['sources']['mpeg'],
 					'type' => 'audio/mp3',
 				] );
 			?><source <?php echo $this->get_render_attribute_string( $mp3_key ); ?>><?php } ?>
 
-			<?php if ( $item['source_wav']['url'] ) {
+			<?php if ( ! empty( $item['sources']['wav'] ) ) {
 				$this->add_render_attribute( $wav_key, [
-					'src' => $item['source_wav']['url'],
+					'src' => $item['sources']['wav'],
 					'type' => 'audio/wav',
 				] );
 			?><source <?php echo $this->get_render_attribute_string( $wav_key ); ?>><?php } ?>
 
-			<?php if ( $item['source_ogg']['url'] ) {
+			<?php if ( ! empty( $item['sources']['ogg'] ) ) {
 				$this->add_render_attribute( $ogg_key, [
-					'src' => $item['source_ogg']['url'],
+					'src' => $item['sources']['ogg'],
 					'type' => 'audio/ogg',
 				] );
 			?><source <?php echo $this->get_render_attribute_string( $ogg_key ); ?>><?php } ?>
@@ -1682,7 +1783,11 @@ class Audio_Player extends Extras_Widget {
 
 				_.each( settings.playlist, function( item, index ) {
 
-					if ( item.source_mpeg || item.source_wav || item.source_ogg ) {
+					var source_mpeg = ( 'file' === item.audio_source ) ? item.source_mpeg.url : item.source_mpeg_url,
+						source_wav = ( 'file' === item.audio_source_wav ) ? item.source_wav.url : item.source_wav_url,
+						source_ogg = ( 'file' === item.audio_source_ogg ) ? item.source_ogg.url : item.source_ogg_url;
+
+					if ( source_mpeg || source_wav || source_ogg ) {
 
 						var playlistItemKey = view.getRepeaterSettingKey( 'item', 'playlist', index );
 
@@ -1724,23 +1829,23 @@ class Audio_Player extends Extras_Widget {
 
 							#><audio {{{ view.getRenderAttributeString( audioKey ) }}}><#
 								
-								if ( item.source_mpeg ) {
+								if ( source_mpeg ) {
 									view.addRenderAttribute( mpegKey, {
-										'src' : item.source_mpeg.url,
+										'src' : source_mpeg,
 										'type' : 'audio/mp3',
 									} );
 								#><source {{{ view.getRenderAttributeString( mpegKey ) }}}><# } #>
 
-								<# if ( item.source_wav ) {
+								<# if ( source_wav ) {
 									view.addRenderAttribute( wavKey, {
-										'src' : item.source_wav.url,
+										'src' : source_wav,
 										'type' : 'audio/wav',
 									} );
 								#><source {{{ view.getRenderAttributeString( wavKey ) }}}><# } #>
 
-								<# if ( item.source_ogg ) {
+								<# if ( source_ogg ) {
 									view.addRenderAttribute( oggKey, {
-										'src' : item.source_ogg.url,
+										'src' : source_ogg,
 										'type' : 'audio/ogg',
 									} );
 								#><source {{{ view.getRenderAttributeString( oggKey ) }}}><# } #>

@@ -35,6 +35,7 @@ class Modules_Manager {
 			'breadcrumbs',
 			'devices',
 			'templates-control',
+			'query-control',
 		];
 
 		foreach ( $available_modules as $module_name ) {

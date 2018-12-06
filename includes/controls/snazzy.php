@@ -8,9 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Elementor emoji one area control.
+ * Snazzy Maps control
  *
- * A control for displaying a textarea with the ability to add emojis.
+ * A control for displaying results using the snazzy maps API.
  *
  * @since 2.0.0
  */
@@ -39,7 +39,7 @@ class Control_Snazzy extends Base_Data_Control {
 	 * @return array Control default settings.
 	 */
 	protected function get_default_settings() {
-		$plugin = ElementorExtrasPlugin::$instance;
+		$plugin = \ElementorExtras\ElementorExtrasPlugin::$instance;
 
 		return [
 			'snazzy_options' => [
