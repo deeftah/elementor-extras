@@ -2,8 +2,8 @@
 Contributors: Namogo
 Tags: elementor, addons, hotspots, image comparison, heading, parallax, sticky, widgets, button groups, text separator, circle progress, devices, timeline
 Requires at least: 4.5
-Tested up to: 4.9.9
-Stable tag: 2.0.2
+Tested up to: 5.0.1
+Stable tag: 2.0.6
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,46 @@ Elementor Extras is a premium Wordpress plugin for Elementor. It extends its cap
 * Yes. You can activate licenses on local environments without limit and they won't take from your allowed activations count.
 
 == Changelog ==
+
+= 2.0.6 =
+
+* Fixed: Popup — Duplicate tab control name
+* Fixed: Popup — Remove rtl suffix
+* Added: Offcanvas — Global control for offcanvas container background color
+
+= 2.0.5 =
+
+* Added: Editor panel labels for widgets
+* Added: Calendar — Control to customise month names
+* Added: Offcanvas — Link navigate to anchors on page
+* Added: Popup — Text trigger styling controls
+* Fixed: Inline SVG — Multiple svgs have same settings
+* Fixed: Breadcrumbs — No parent custom taxonomy terms render all terms
+* Fixed: Posts Extra — PHP notice
+* Tweak: Updated language file
+
+= 2.0.4 =
+
+* Fixed: Display Conditions — Editor section for sections actions
+* Fixed: Display Conditions — Conditions evaluation per element
+
+= 2.0.3 =
+
+* Fixed: Popup Display Conditions — Check widget visibility before opening automatically
+* Fixed: Table — First row has no classes
+* Fixed: Google Map — Handle no snazzy maps selection
+* Fixed: Display Conditions — Wrong default keys resulting in wrong display
+* Fixed: Audio Player — Border type selector
+* Fixed: Breadcrumbs — Position structured data property
+* Fixed: Parallax Element — Parallax column affecting child columns
+* Fixed: Devices — Image extending outside the widget area
+* Fixed: Popup — Move font family to pseudo-element
+* Fixed: Slide Menu — Sub-menu links not working with link navigation turned on
+* Tweak: Rename infinite-scroll script
+* Tweak: Breadcrumbs — Increase typography selector specificity
+* Tweak: Posts Extra — Additional conditions for areas style sections
+* Remove widget disabling admin notif
+* Update Wordpress stable tag to 5.0.0
 
 = 2.0.2 =
 

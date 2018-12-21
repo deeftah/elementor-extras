@@ -1086,6 +1086,172 @@ class Popup extends Extras_Widget {
 		$this->end_controls_section();
 
 		$this->start_controls_section(
+			'section_style_trigger',
+			[
+				'label' => __( 'Trigger', 'elementor-extras' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition'		=> [
+					'popup_trigger'	=> 'click',
+					'popup_click_target' => 'text',
+				],
+			]
+		);
+
+			$this->add_control(
+				'trigger_padding',
+				[
+					'label' 		=> __( 'Padding', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::DIMENSIONS,
+					'size_units' 	=> [ 'px', 'em', '%' ],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-popup__trigger' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+					'condition'		=> [
+						'popup_trigger'	=> 'click',
+						'popup_click_target' => 'text',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' 		=> 'popup_trigger',
+					'label' 	=> __( 'Typography', 'elementor-extras' ),
+					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+					'selector' 	=> '{{WRAPPER}} .ee-popup__trigger',
+					'condition'		=> [
+						'popup_trigger'	=> 'click',
+						'popup_click_target' => 'text',
+					],
+				]
+			);
+
+			$this->add_control(
+				'trigger_border_radius',
+				[
+					'label' 		=> __( 'Border Radius', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SLIDER,
+					'range' 		=> [
+						'px' 		=> [
+							'min' => 0,
+							'max' => 100,
+						],
+					],
+					'selectors' 	=> [
+						'{{WRAPPER}} .ee-popup__trigger' => 'border-radius: {{SIZE}}{{UNIT}};',
+					],
+					'condition'		=> [
+						'popup_trigger'	=> 'click',
+						'popup_click_target' => 'text',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Transition::get_type(),
+				[
+					'name' 		=> 'trigger_transition',
+					'selector' 	=> '{{WRAPPER}} .ee-popup__trigger',
+					'separator'	=> '',
+					'condition'		=> [
+						'popup_trigger'	=> 'click',
+						'popup_click_target' => 'text',
+					],
+				]
+			);
+
+			$this->start_controls_tabs( 'trigger_default' );
+
+			$this->start_controls_tab( 'trigger_tab_default', [
+				'label' 	=> __( 'Default', 'elementor-extras' ),
+				'selector' 	=> '{{WRAPPER}} .ee-popup__trigger',
+				'condition'	=> [
+					'popup_trigger'	=> 'click',
+					'popup_click_target' => 'text',
+				],
+			] );
+
+				$this->add_control(
+					'trigger_color',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '',
+						'selectors' => [
+							'{{WRAPPER}} .ee-popup__trigger' => 'color: {{VALUE}};',
+						],
+						'condition'	=> [
+							'popup_trigger'	=> 'click',
+							'popup_click_target' => 'text',
+						],
+					]
+				);
+
+				$this->add_control(
+					'trigger_background',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '',
+						'selectors' => [
+							'{{WRAPPER}} .ee-popup__trigger' => 'background-color: {{VALUE}};',
+						],
+						'condition'	=> [
+							'popup_trigger'	=> 'click',
+							'popup_click_target' => 'text',
+						],
+					]
+				);
+
+			$this->end_controls_tab();
+
+			$this->start_controls_tab( 'trigger_tab_hover', [
+				'label' 	=> __( 'Hover', 'elementor-extras' ),
+				'selector' 	=> '{{WRAPPER}} .ee-popup__trigger',
+				'condition'	=> [
+					'popup_trigger'	=> 'click',
+					'popup_click_target' => 'text',
+				],
+			] );
+
+				$this->add_control(
+					'trigger_color_hover',
+					[
+						'label' 	=> __( 'Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '',
+						'selectors' => [
+							'{{WRAPPER}} .ee-popup__trigger:hover' => 'color: {{VALUE}};',
+						],
+						'condition'	=> [
+							'popup_trigger'	=> 'click',
+							'popup_click_target' => 'text',
+						],
+					]
+				);
+
+				$this->add_control(
+					'trigger_background_hover',
+					[
+						'label' 	=> __( 'Background Color', 'elementor-extras' ),
+						'type' 		=> Controls_Manager::COLOR,
+						'default'	=> '',
+						'selectors' => [
+							'{{WRAPPER}} .ee-popup__trigger:hover' => 'background-color: {{VALUE}};',
+						],
+						'condition'	=> [
+							'popup_trigger'	=> 'click',
+							'popup_click_target' => 'text',
+						],
+					]
+				);
+
+			$this->end_controls_tabs();
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
 			'section_style_header',
 			[
 				'label' => __( 'Header', 'elementor-extras' ),

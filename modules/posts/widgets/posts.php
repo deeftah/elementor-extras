@@ -72,6 +72,17 @@ class Posts extends Extras_Widget {
 		return $post_parts;
 	}
 
+	public function get_content_post_parts() {
+		$post_parts = [
+			'terms',
+			'title',	
+			'excerpt',
+			'button',
+		];
+
+		return $post_parts;
+	}
+
 	public function get_meta_parts() {
 		$meta_parts = [
 			'author',
@@ -105,7 +116,7 @@ class Posts extends Extras_Widget {
 	public function get_script_depends() {
 		return [
 			'jquery-resize-ee',
-			'infinite-scroll',
+			'infinite-scroll-ee',
 			'isotope',
 			'filtery',
 		];
@@ -1584,6 +1595,7 @@ class Posts extends Extras_Widget {
 			[
 				'label' => __( 'Header', 'elementor-extras' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'conditions' => $this->get_empty_area_condition( 'header' ),
 			]
 		);
 
@@ -1609,7 +1621,8 @@ class Posts extends Extras_Widget {
 					],
 					'selectors'		=> [
 						'{{WRAPPER}} .ee-post__header' 	=> 'text-align: {{VALUE}};',
-					]
+					],
+					'conditions' => $this->get_empty_area_condition( 'header' ),
 				]
 			);
 
@@ -1622,6 +1635,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__header' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'header' ),
 				]
 			);
 
@@ -1634,6 +1648,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__header' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'header' ),
 				]
 			);
 
@@ -1649,6 +1664,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__header' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'header' ),
 					]
 				);
 
@@ -1660,6 +1676,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__header' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'header' ),
 					]
 				);
 
@@ -1675,6 +1692,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__header' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'header' ),
 					]
 				);
 
@@ -1686,6 +1704,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__header' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'header' ),
 					]
 				);
 
@@ -2171,6 +2190,7 @@ class Posts extends Extras_Widget {
 			[
 				'label' => __( 'Body', 'elementor-extras' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'conditions' => $this->get_empty_area_condition( 'body' ),
 			]
 		);
 
@@ -2197,6 +2217,7 @@ class Posts extends Extras_Widget {
 					'selectors'		=> [
 						'{{WRAPPER}} .ee-post__body' 	=> 'text-align: {{VALUE}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'body' ),
 				]
 			);
 
@@ -2209,6 +2230,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__body' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'body' ),
 				]
 			);
 
@@ -2221,6 +2243,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__body' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'body' ),
 				]
 			);
 
@@ -2233,6 +2256,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__body' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'body' ),
 				]
 			);
 
@@ -2248,6 +2272,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__body' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'body' ),
 					]
 				);
 
@@ -2259,6 +2284,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__body' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'body' ),
 					]
 				);
 
@@ -2274,6 +2300,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__body' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'body' ),
 					]
 				);
 
@@ -2285,6 +2312,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__body' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'body' ),
 					]
 				);
 
@@ -2438,6 +2466,7 @@ class Posts extends Extras_Widget {
 			[
 				'label' => __( 'Footer', 'elementor-extras' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'conditions' => $this->get_empty_area_condition( 'footer' ),
 			]
 		);
 
@@ -2463,7 +2492,8 @@ class Posts extends Extras_Widget {
 					],
 					'selectors'		=> [
 						'{{WRAPPER}} .ee-post__footer' 	=> 'text-align: {{VALUE}};',
-					]
+					],
+					'conditions' => $this->get_empty_area_condition( 'footer' ),
 				]
 			);
 
@@ -2476,6 +2506,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__footer' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'footer' ),
 				]
 			);
 
@@ -2488,6 +2519,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__footer' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'footer' ),
 				]
 			);
 
@@ -2500,6 +2532,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__footer' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					],
+					'conditions' => $this->get_empty_area_condition( 'footer' ),
 				]
 			);
 
@@ -2515,6 +2548,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__footer' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2526,6 +2560,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__footer' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2534,6 +2569,7 @@ class Posts extends Extras_Widget {
 					[
 						'label' 	=> __( 'Separator', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::HEADING,
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2545,6 +2581,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post__footer' => 'border-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2560,6 +2597,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__footer' => 'background-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2571,6 +2609,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}}  .ee-post:hover .ee-post__footer' => 'color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2579,6 +2618,7 @@ class Posts extends Extras_Widget {
 					[
 						'label' 	=> __( 'Separator', 'elementor-extras' ),
 						'type' 		=> Controls_Manager::HEADING,
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2590,6 +2630,7 @@ class Posts extends Extras_Widget {
 						'selectors' => [
 							'{{WRAPPER}} .ee-post:hover .ee-post__footer' => 'border-color: {{VALUE}};',
 						],
+						'conditions' => $this->get_empty_area_condition( 'footer' ),
 					]
 				);
 
@@ -2612,6 +2653,7 @@ class Posts extends Extras_Widget {
 					'selectors' 	=> [
 						'{{WRAPPER}} .ee-post__footer' => 'border-width: {{SIZE}}px',
 					],
+					'conditions' => $this->get_empty_area_condition( 'footer' ),
 				]
 			);
 
@@ -4353,6 +4395,27 @@ class Posts extends Extras_Widget {
 				'value' 	=> $area,
 			];
 		}
+
+		return $conditions;
+	}
+
+	protected function get_empty_area_condition( $area, $other_conditions = [] ) {
+		if ( ! $area )
+			return;
+
+		$conditions = $this->get_area_metas_controls_conditions( $area );
+
+		$parts = $this->get_content_post_parts();
+
+		foreach( $parts as $part ) {
+			$conditions['terms'][] = [
+				'name' 		=> 'post_' . $part . '_position',
+				'operator' 	=> '==',
+				'value' 	=> $area,
+			];
+		}
+
+		$conditions = array_merge( $conditions, $other_conditions );
 
 		return $conditions;
 	}

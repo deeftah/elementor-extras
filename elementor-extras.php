@@ -3,7 +3,7 @@
  * Plugin Name: 	Elementor Extras
  * Plugin URI: 		https://shop.namogo.com/product/elementor-extras/
  * Description: 	Elementor Extras is a premium Wordpress plugin for Elementor, extending its capability with seriously useful and unique widgets and extensions
- * Version: 		2.0.2
+ * Version: 		2.0.6
  * Author: 			Namogo
  * Author URI: 		https://shop.namogo.com/
  * Text Domain: 	elementor-extras
@@ -52,7 +52,7 @@ define( 'ELEMENTOR_EXTRAS_PLUGIN_BASE', 					plugin_basename( ELEMENTOR_EXTRAS__
 define( 'ELEMENTOR_EXTRAS_URL', 							plugins_url( '/', ELEMENTOR_EXTRAS__FILE__ ) );
 define( 'ELEMENTOR_EXTRAS_PATH', 							plugin_dir_path( ELEMENTOR_EXTRAS__FILE__ ) );
 define( 'ELEMENTOR_EXTRAS_ASSETS_URL', 						ELEMENTOR_EXTRAS_URL . 'assets/' );
-define( 'ELEMENTOR_EXTRAS_VERSION', 						'2.0.2' );
+define( 'ELEMENTOR_EXTRAS_VERSION', 						'2.0.6' );
 define( 'ELEMENTOR_EXTRAS_ELEMENTOR_VERSION_REQUIRED', 		'2.0.0' );
 define( 'ELEMENTOR_EXTRAS_ELEMENTOR_PRO_VERSION_REQUIRED', 	'2.1.0' );
 define( 'ELEMENTOR_EXTRAS_PHP_VERSION_REQUIRED', 			'5.0' );
@@ -77,7 +77,7 @@ function elementor_extras_load() {
 	// Load localization file
 	load_plugin_textdomain( 'elementor-extras', false, dirname( ELEMENTOR_EXTRAS_PLUGIN_BASE ) . '/languages/' );
 
-	add_action( 'admin_notices', 'elementor_extras_disable_widgets_notice' );
+	// add_action( 'admin_notices', 'elementor_extras_disable_widgets_notice' );
 
 	// Dismissable notices
 	if( is_admin() ) {
@@ -250,7 +250,7 @@ function elementor_extras_disable_widgets_notice() {
 
 	$screen = get_current_screen();
 
-	if ( ! \ElementorExtras\Dismiss_Notice::is_admin_notice_active( 'ee-disable-widget-notice-forever' ) || 'elementor_page_elementor-extras' === $screen->id )
+	if ( ! \ElementorExtras\Dismiss_Notice::is_admin_notice_active( 'ee-disable-widget-notice-forever' ) )
         return;
 
 	$class = 'notice notice-error is-dismissible';

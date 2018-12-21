@@ -1471,6 +1471,7 @@ class Table extends Extras_Widget {
 		$settings 	= $this->get_settings_for_display();
 		$row_count 	= count( $settings['rows'] );
 		$row_key 	= $this->get_repeater_setting_key( 'body-row', 'rows', $index );
+		$counter 	= $index + 1;
 
 		$this->add_render_attribute( [
 			$row_key => [
@@ -1487,12 +1488,12 @@ class Table extends Extras_Widget {
 		if ( $row['css_classes'] )
 			$this->add_render_attribute( $row_key, 'class', $row['css_classes'] );
 
-		if ( $index > 1 && $index < $row_count ) {
+		if ( $counter > 1 && $counter < $row_count ) {
 
 			// Break into new row
 			?></tr><tr <?php echo $this->get_render_attribute_string( $row_key ); ?>>
 
-		<?php } else if ( $index === 1 && false === $this->is_invalid_first_row() ) {
+		<?php } else if ( 1 === $counter && false === $this->is_invalid_first_row() ) {
 			?><tr <?php echo $this->get_render_attribute_string( $row_key ); ?>>
 		<?php }
 

@@ -70,7 +70,26 @@
 			return false;
 		},
 
-		getElementSettings : function( $element ) {
+		getItems : function ( items, itemKey ) {
+			if ( itemKey) {
+				var keyStack = itemKey.split('.'),
+				    currentKey = keyStack.splice(0, 1);
+
+				if ( ! keyStack.length ) {
+					return items[ currentKey ];
+				}
+
+				if ( ! items[ currentKey ] ) {
+					return;
+				}
+
+				return this.getItems( items[ currentKey ], keyStack.join('.'));
+			}
+
+			return items;
+		},
+
+		getElementSettings : function( $element, setting ) {
 
 			var elementSettings = {},
 				modelCID 		= $element.data( 'model-cid' );
@@ -88,7 +107,7 @@
 				elementSettings = $element.data('settings') || {};
 			}
 
-			return elementSettings;
+			return ee.getItems( elementSettings, setting );
 		},
 
 		getElementType : function ( $element ) {
@@ -217,9 +236,27 @@
 					eventsMonthTemplate +
 				"</div>";
 
+			moment.updateLocale('en', {
+			    months : [
+			        ee.Calendar.elementSettings.month_january,
+			        ee.Calendar.elementSettings.month_february,
+			        ee.Calendar.elementSettings.month_march,
+			        ee.Calendar.elementSettings.month_april,
+			        ee.Calendar.elementSettings.month_may,
+			        ee.Calendar.elementSettings.month_june,
+			        ee.Calendar.elementSettings.month_july,
+			        ee.Calendar.elementSettings.month_august,
+			        ee.Calendar.elementSettings.month_september,
+			        ee.Calendar.elementSettings.month_october,
+			        ee.Calendar.elementSettings.month_november,
+			        ee.Calendar.elementSettings.month_december,
+			    ]
+			});
+
 			var thisMonth 		= moment().format('YYYY-MM'),
 				eventArray 		= [],
 				calendarArgs 	= {
+					moment: moment,
 					classes: {
 						past: "ee-calendar__day--passed",
 						today: "ee-calendar__day--today",
@@ -359,7 +396,7 @@
 
 			ee.GoogleMap.init = function() {
 
-				var mapStyle = ( 'api' === settings.map_style_type ) ? JSON.parse( settings.map_style_api ).json : settings.map_style_json;
+				var mapStyle = ( 'api' === settings.map_style_type && JSON.parse( settings.map_style_api ) ) ? JSON.parse( settings.map_style_api ).json : settings.map_style_json;
 
 				if ( '' !== $.trim( mapStyle ) && undefined !== mapStyle ) {
 					gmapArgs.styles = ee.GoogleMap.parseStyles( mapStyle );
@@ -837,6 +874,34 @@
 				});
 			};
 
+			ee.Offcanvas.anchorNavigation = function() {
+
+				var $links = $content.find("a[href^=#]");
+
+				$links.each( function() {
+					var $link 	= $(this),
+						url 	= $link.attr('href'),
+						hash 	= url.substring( url.indexOf('#') + 1 ),
+						$el 	= $( '#' + hash ),
+						top 	= $el.offset().top + $wrapper.scrollTop(),
+						speed 	= ( 'undefined' !== typeof ee.Offcanvas.elementSettings.anchor_navigation_speed.size ) ? ee.Offcanvas.elementSettings.anchor_navigation_speed.size : 0;
+
+					if ( ! $el.length )
+						return;
+
+					$link.on( 'click', function( e ) {
+						e.preventDefault();
+						
+						$wrapper.animate({ scrollTop: top }, speed, function(){
+							if( 'yes' === ee.Offcanvas.elementSettings.anchor_navigation_close ) {
+								offcanvas.controller.close();
+							}
+						});
+					});
+				});
+
+			};
+
 			ee.Offcanvas.setOverflows = function() {
 				// Get current scroll
 				var _scroll = $window.scrollTop();
@@ -878,6 +943,10 @@
 				offcanvas.init();
 				
 				ee.Offcanvas.events();
+
+				if ( 'yes' === ee.Offcanvas.elementSettings.anchor_navigation ) {
+					ee.Offcanvas.anchorNavigation();
+				}
 
 				if ( 'yes' === ee.Offcanvas.elementSettings.editor_open ) {
 					offcanvas.controller.open( slidebarId );
@@ -943,6 +1012,9 @@
 				};
 
 			ee.Popup.init = function() {
+
+				if ( $scope.is(':not(:visible)') )
+					return;
 
 				if ( ! elementorFrontend.isEditMode() && '' !== ee.Popup.elementSettings.popup_animation ) {
 					popupArgs.removalDelay = 500;
@@ -1331,10 +1403,9 @@
 
 		InlineSvg : function( $scope, $ ) {
 
-			ee.InlineSvg.elementSettings 	= ee.getElementSettings( $scope );
-
-			var $wrapper 	= $scope.find( '.ee-inline-svg' ),
-				url 		= '' !== ee.InlineSvg.elementSettings.svg.url ? ee.InlineSvg.elementSettings.svg.url : $wrapper.data('url');
+			var elementSettings = ee.getElementSettings( $scope ),
+				$wrapper 	= $scope.find( '.ee-inline-svg' ),
+				url 		= '' !== elementSettings.svg.url ? elementSettings.svg.url : $wrapper.data('url');
 
 			ee.InlineSvg.init = function() {
 
@@ -1371,7 +1442,7 @@
 				svgDesc.remove();
 
 				// Remove inline CSS
-				if ( 'yes' === ee.InlineSvg.elementSettings.remove_inline_css ) {
+				if ( 'yes' === elementSettings.remove_inline_css ) {
 					// Convert css styles to attributes
 					svgShapes.each( function() {
 						
@@ -1398,7 +1469,7 @@
 				}
 
 				// Color override
-				if ( 'yes' === ee.InlineSvg.elementSettings.override_colors ) {
+				if ( 'yes' === elementSettings.override_colors ) {
 					svgShapes.filter('[fill]:not([fill="none"])').attr( 'fill', 'currentColor' );
 					svgShapes.filter('[stroke]:not([stroke="none"])').attr( 'stroke', 'currentColor' );
 
@@ -1408,11 +1479,11 @@
 					// });
 				}
 
-				if ( 'yes' !== ee.InlineSvg.elementSettings.maintain_ratio ) {
+				if ( 'yes' !== elementSettings.maintain_ratio ) {
 					$svg[0].setAttribute( 'preserveAspectRatio', 'none' );
 				}
 
-				if ( 'yes' === ee.InlineSvg.elementSettings.sizing ) {
+				if ( 'yes' === elementSettings.sizing ) {
 					$svg[0].removeAttribute( 'width' );
 					$svg[0].removeAttribute( 'height' );
 				}
@@ -2130,7 +2201,7 @@
 
 			ee.ParallaxElement.init = function() {
 
-				if ( 'column' === ee.getElementType( $scope ) ) $element = $scope.find( '.elementor-column-wrap' );
+				if ( 'column' === ee.getElementType( $scope ) ) $element = $scope.find( '> .elementor-column-wrap' );
 				if ( 'widget'=== ee.getElementType( $scope ) ) $element = $scope.find( '.elementor-widget-container' );
 
 				ee.ParallaxElement.maybeDestroy();

@@ -326,7 +326,7 @@ class Breadcrumbs extends Extras_Widget {
 					'name' 		=> 'item_typography',
 					'label' 	=> __( 'Typography', 'elementor-extras' ),
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_4,
-					'selector' 	=> '{{WRAPPER}} .ee-breadcrumbs',
+					'selector' 	=> '{{WRAPPER}} .ee-breadcrumbs__text',
 				]
 			);
 
@@ -467,7 +467,7 @@ class Breadcrumbs extends Extras_Widget {
 					'name' 		=> 'current_typography',
 					'label' 	=> __( 'Typography', 'elementor-extras' ),
 					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_4,
-					'selector' 	=> '{{WRAPPER}} .ee-breadcrumbs__item--current',
+					'selector' 	=> '{{WRAPPER}} .ee-breadcrumbs__item--current .ee-breadcrumbs__text',
 				]
 			);
 
@@ -565,7 +565,7 @@ class Breadcrumbs extends Extras_Widget {
 	protected function render_home_link() {
 		$settings = $this->get_settings_for_display();
 
-		$this->add_item_render_attribute( 'home-item' );
+		$this->add_item_render_attribute( 'home-item', 0 );
 		$this->add_render_attribute( 'home-item', [
 			'class' => 'ee-breadcrumbs__item--home',
 		] );
@@ -582,6 +582,7 @@ class Breadcrumbs extends Extras_Widget {
 
 		$this->add_render_attribute( 'home-text', [
 			'itemprop' => 'name',
+			'class' => 'ee-breadcrumbs__text',
 		] );
 
 		?><li <?php echo $this->get_render_attribute_string( 'home-item' ); ?>>
@@ -644,6 +645,7 @@ class Breadcrumbs extends Extras_Widget {
 			if ( $query->is_archive() && ! $query->is_tax() && ! $query->is_category() && ! $query->is_tag() && ! $query->is_date() && ! $query->is_author() ) {
 
 				$this->render_item( 'archive', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'archive',
@@ -656,17 +658,11 @@ class Breadcrumbs extends Extras_Widget {
 				$queried_object = get_queried_object();
 				$parents = get_ancestors( $queried_object->term_id, $queried_object->taxonomy );
 
-				$parent_terms = get_terms( [
-					'taxonomy' => $queried_object->taxonomy,
-					'include' => $parents,
-				] );
-
-				$parent_terms = array_reverse( $parent_terms );
-
 				$post_type = get_post_type();
 				$post_type_object = get_post_type_object( $post_type );
 
 				$this->render_item( 'post-type-archive', [
+					'index'		=> 1,
 					'current' 	=> false,
 					'separator'	=> true,
 					'key' 		=> 'post-type-archive',
@@ -675,18 +671,31 @@ class Breadcrumbs extends Extras_Widget {
 					'link'		=> get_post_type_archive_link( $post_type ),
 				] );
 
-				foreach ($parent_terms as $term) {
-					$this->render_item( 'custom-tax-archive-parents', [
-						'current' 	=> false,
-						'separator'	=> true,
-						'key' 		=> 'custom-tax-archive-parents',
-						'ids' 		=> [ $term->term_id, $term->slug ],
-						'content' 	=> $term->name,
-						'link'		=> get_term_link( $term ),
+				if ( $parents )  {
+					$parent_terms = get_terms( [
+						'taxonomy' => $queried_object->taxonomy,
+						'include' => $parents,
 					] );
+
+					$parent_terms = array_reverse( $parent_terms );
+
+					$counter = 2;
+					foreach ( $parent_terms as $term ) {
+						$this->render_item( 'custom-tax-archive-parents', [
+							'index'		=> $counter,
+							'current' 	=> false,
+							'separator'	=> true,
+							'key' 		=> 'custom-tax-archive-' . $term->term_id,
+							'ids' 		=> [ $term->term_id, $term->slug ],
+							'content' 	=> $term->name,
+							'link'		=> get_term_link( $term ),
+						] );
+						$counter++;
+					}
 				}
 
 				$this->render_item( 'custom-tax-archive', [
+					'index'		=> $counter,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'custom-tax-archive',
@@ -701,6 +710,7 @@ class Breadcrumbs extends Extras_Widget {
 				$post_type_object = get_post_type_object( $post_type );
 
 				$this->render_item( 'post-type-archive', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'post-type-archive',
@@ -715,12 +725,15 @@ class Breadcrumbs extends Extras_Widget {
 				
 				if ( $post_type !== 'post' ) {
 
+					$counter = 1;
+
 					if ( '' === $settings['cpt_crumbs'] || 'both' === $settings['cpt_crumbs'] ) {
 
 						$post_type_object = get_post_type_object( $post_type );
 						$item_content = $post_type_object->labels->name;
 
 						$this->render_item( 'post-type-archive', [
+							'index'		=> 1,
 							'current' 	=> false,
 							'separator'	=> true,
 							'key' 		=> 'post-type-archive',
@@ -728,6 +741,8 @@ class Breadcrumbs extends Extras_Widget {
 							'content' 	=> $item_content,
 							'link'		=> get_post_type_archive_link( $post_type ),
 						] );
+
+						$counter++;
 					}
 
 					if ( in_array( $settings['cpt_crumbs'], [ 'terms', 'both' ] ) ) {
@@ -736,8 +751,10 @@ class Breadcrumbs extends Extras_Widget {
 						$terms = Utils::get_parent_terms_highest( $post->ID );
 
 						if ( $terms ) {
+							$counter = 1;
 							foreach( $terms as $term ) {
 								$this->render_item( 'post-type-terms', [
+									'index'		=> $counter,
 									'current' 	=> false,
 									'separator'	=> true,
 									'key' 		=> 'terms-' . $term->term_id,
@@ -745,6 +762,8 @@ class Breadcrumbs extends Extras_Widget {
 									'content' 	=> $term->name,
 									'link'		=> get_term_link( $term ),
 								] );
+
+								$counter++;
 							}
 						}
 
@@ -759,6 +778,7 @@ class Breadcrumbs extends Extras_Widget {
 						$posts_page = get_post( $posts_page_id );
 
 						$this->render_item( 'blog', [
+							'index'		=> 1,
 							'current' 	=> false,
 							'separator'	=> true,
 							'key' 		=> 'blog',
@@ -797,6 +817,7 @@ class Breadcrumbs extends Extras_Widget {
 				}
 
 				if( ! empty( $last_category ) ) {
+					$counter = 1;
 
 					foreach ( $cat_parents as $parent ) {
 						$_parent = get_term( $parent );
@@ -804,6 +825,7 @@ class Breadcrumbs extends Extras_Widget {
 						if ( has_category( $_parent->term_id, $post ) ) {
 
 							$this->render_item( 'category', [
+								'index'		=> $counter,
 								'current' 	=> false,
 								'separator'	=> true,
 								'key' 		=> 'category-' . $_parent->term_id,
@@ -811,10 +833,13 @@ class Breadcrumbs extends Extras_Widget {
 								'content' 	=> $_parent->name,
 								'link'		=> get_term_link( $_parent ),
 							] );
+
+							$counter++;
 						}
 					}
 
 					$this->render_item( 'category', [
+						'index'		=> $counter,
 						'current' 	=> false,
 						'separator'	=> true,
 						'key' 		=> 'category' . $last_category->term_id,
@@ -824,6 +849,7 @@ class Breadcrumbs extends Extras_Widget {
 					] );
 
 					$this->render_item( 'single', [
+						'index'		=> $counter++,
 						'current' 	=> true,
 						'separator'	=> false,
 						'key' 		=> 'single',
@@ -834,6 +860,7 @@ class Breadcrumbs extends Extras_Widget {
 				} else if ( ! empty( $cat_id ) ) {
 
 					$this->render_item( 'category', [
+						'index'		=> 1,
 						'current' 	=> false,
 						'separator'	=> true,
 						'key' 		=> 'category',
@@ -843,6 +870,7 @@ class Breadcrumbs extends Extras_Widget {
 					] );
 
 					$this->render_item( 'single', [
+						'index'		=> 2,
 						'current' 	=> true,
 						'separator'	=> false,
 						'key' 		=> 'single',
@@ -853,6 +881,7 @@ class Breadcrumbs extends Extras_Widget {
 				} else {
 
 					$this->render_item( 'single', [
+						'index'		=> 1,
 						'current' 	=> true,
 						'separator'	=> false,
 						'key' 		=> 'single',
@@ -868,11 +897,13 @@ class Breadcrumbs extends Extras_Widget {
 				$cat = get_category( $cat_id );
 
 				$cat_parents = array_reverse( get_ancestors( $cat_id, 'category' ) );
+				$counter = 1;
 
 				foreach ( $cat_parents as $parent ) {
 					$_parent = get_term( $parent );
 
 					$this->render_item( 'category', [
+						'index'		=> $counter,
 						'current' 	=> false,
 						'separator'	=> true,
 						'key' 		=> 'category-' . $_parent->term_id,
@@ -880,9 +911,11 @@ class Breadcrumbs extends Extras_Widget {
 						'content' 	=> $_parent->name,
 						'link'		=> get_term_link( $_parent ),
 					] );
+					$counter++;
 				}
 
 				$this->render_item( 'category', [
+					'index'		=> $counter,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'category',
@@ -899,9 +932,12 @@ class Breadcrumbs extends Extras_Widget {
 						
 					if ( ! isset( $parents ) ) $parents = null;
 
+					$counter = 1;
+
 					foreach ( $anc as $ancestor ) {
 
 						$this->render_item( 'ancestor', [
+							'index'		=> $counter,
 							'current' 	=> false,
 							'separator'	=> true,
 							'key' 		=> 'ancestor-' . $ancestor,
@@ -909,10 +945,15 @@ class Breadcrumbs extends Extras_Widget {
 							'content' 	=> get_the_title( $ancestor ),
 							'link'		=> get_permalink( $ancestor ),
 						] );
+
+						$counter++;
 					}
 				}
 
+				$counter = 1;
+
 				$this->render_item( 'page', [
+					'index'		=> $counter,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'page',
@@ -931,6 +972,7 @@ class Breadcrumbs extends Extras_Widget {
 				$get_term_name 	= $terms[0]->name;
 
 				$this->render_item( 'tag', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'tag',
@@ -941,6 +983,7 @@ class Breadcrumbs extends Extras_Widget {
 			} else if ( $query->is_day() ) {
 
 				$this->render_item( 'year', [
+					'index'		=> 1,
 					'current' 	=> false,
 					'separator'	=> true,
 					'key' 		=> 'year',
@@ -950,6 +993,7 @@ class Breadcrumbs extends Extras_Widget {
 				] );
 
 				$this->render_item( 'month', [
+					'index'		=> 2,
 					'current' 	=> false,
 					'separator'	=> true,
 					'key' 		=> 'month',
@@ -959,6 +1003,7 @@ class Breadcrumbs extends Extras_Widget {
 				] );
 
 				$this->render_item( 'day', [
+					'index'		=> 3,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'day',
@@ -969,6 +1014,7 @@ class Breadcrumbs extends Extras_Widget {
 			} else if ( $query->is_month() ) {
 
 				$this->render_item( 'year', [
+					'index'		=> 1,
 					'current' 	=> false,
 					'separator'	=> true,
 					'key' 		=> 'year',
@@ -978,6 +1024,7 @@ class Breadcrumbs extends Extras_Widget {
 				] );
 
 				$this->render_item( 'month', [
+					'index'		=> 2,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'month',
@@ -988,6 +1035,7 @@ class Breadcrumbs extends Extras_Widget {
 			} else if ( $query->is_year() ) {
 
 				$this->render_item( 'year', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'year',
@@ -1002,6 +1050,7 @@ class Breadcrumbs extends Extras_Widget {
 				$userdata = get_userdata( $author );
 
 				$this->render_item( 'author', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'author',
@@ -1012,6 +1061,7 @@ class Breadcrumbs extends Extras_Widget {
 			} else if ( $query->is_search() ) {
 
 				$this->render_item( 'search', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> 'search',
@@ -1021,6 +1071,7 @@ class Breadcrumbs extends Extras_Widget {
 			} elseif ( $query->is_404() ) {
 
 				$this->render_item( '404', [
+					'index'		=> 1,
 					'current' 	=> true,
 					'separator'	=> false,
 					'key' 		=> '404',
@@ -1041,6 +1092,7 @@ class Breadcrumbs extends Extras_Widget {
 			'key' 			=> false,
 			'ids'			=> [],
 			'content'		=> '',
+			'index'			=> false,
 			'link'			=> false,
 		];
 
@@ -1048,7 +1100,8 @@ class Breadcrumbs extends Extras_Widget {
 
 		$item_key 	= $args['key'] . '-item';
 		$text_key 	= $args['key'] . '-text';
-		$link_key 	= $args['key'] . ( ! $args['current'] ) ? '-link' : '-current';
+		$link_key 	= ( ! $args['current'] ) ? '-link' : '-current';
+		$link_key 	= $args['key'] . $link_key;
 		$link_tag 	= ( ! $args['current'] ) ? 'a' : 'strong';
 		$link 		= ( ! $args['current'] ) ? ' href="' . $args['link'] .'" ' : ' ';
 		$classes 	= [];
@@ -1070,7 +1123,7 @@ class Breadcrumbs extends Extras_Widget {
 			}
 		}
 
-		$this->add_item_render_attribute( $item_key );
+		$this->add_item_render_attribute( $item_key, $args['index'] );
 		$this->add_render_attribute( $item_key, [
 			'class' => $classes,
 		] );
@@ -1093,12 +1146,14 @@ class Breadcrumbs extends Extras_Widget {
 			$this->render_separator();
 	}
 
-	protected function add_item_render_attribute( $key ) {
+	protected function add_item_render_attribute( $key, $index = 0 ) {
+
 		$this->add_render_attribute( $key, [
 			'class' => [
 				'ee-breadcrumbs__item',
 			],
 			'itemprop' 	=> 'itemListElement',
+			'position' 	=> $index,
 			'itemscope' => '',
 			'itemtype' 	=> 'http://schema.org/ListItem',
 		] );

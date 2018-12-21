@@ -544,7 +544,7 @@ class Audio_Player extends Extras_Widget {
 				[
 					'name' 		=> 'player_border',
 					'label' 	=> __( 'Border', 'elementor-extras' ),
-					'selector' 	=> '{{WRAPPER}} .ee-audio-player',
+					'selector' 	=> '{{WRAPPER}} .ee-audio-player__controls',
 				]
 			);
 

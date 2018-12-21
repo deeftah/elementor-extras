@@ -50,10 +50,10 @@
 
 				$links.each( function() {
 					var $link = $(this),
-						$item = $(this).parent(),
+						$item = $link.parent(),
 						$submenu = $link.next( '.ee-menu__sub-menu' ),
 						$arrow = $link.prev( '.ee-menu__arrow' ),
-						$trigger = true === plugin.opts.linkNavigation ? $item : $arrow,
+						$trigger = ( true === plugin.opts.linkNavigation ) ? $link.add( $arrow ) : $arrow,
 						$back = $( '<li class="ee-menu__item ee-menu__back"><span class="ee-menu__arrow"><i class="fa fa-angle-left"></i></span><a href="#" class="ee-menu__item__link ee-menu__sub-item__back">' + plugin.opts.backLabel + '</a></li>' );
 
 					$submenu.prepend( $back );

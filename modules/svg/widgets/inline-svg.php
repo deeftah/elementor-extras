@@ -223,12 +223,11 @@ class Inline_Svg extends Extras_Widget {
 				[
 					'label' 		=> __( 'Override Color', 'elementor-extras' ),
 					'description'	=> __( 'Specify the color for all svg elements that have a fill or stroke color set.', 'elementor-extras' ),
+					'frontend_available' => true,
 					'type' 			=> Controls_Manager::SWITCHER,
 					'default' 		=> '',
 					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
 					'label_off' 	=> __( 'No', 'elementor-extras' ),
-					'return_value' 	=> 'yes',
-					'frontend_available' => true,
 				]
 			);
 

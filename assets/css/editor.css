@@ -28,6 +28,27 @@
   color: #a94442;
   border: 1px solid #e8c4c4;
 }
+#elementor-panel-elements-wrapper .elementor-element {
+  position: relative;
+}
+#elementor-panel-elements-wrapper .elementor-element .nicon:after {
+  content: "EE";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 1px solid #eceeef;
+  border-radius: 1px;
+  padding: 4px 3px 2px;
+  margin: 2px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  font-style: normal;
+}
+#elementor-panel-elements-wrapper .elementor-element:hover .nicon:after {
+  background: #D30C5C;
+  border-color: #D30C5C;
+  color: #ffffff;
+}
 .ee-select2-dropdown .select2-results__option:not(.select2-results__message):not(.select2-results__option--load-more):not(.loading-results) {
   max-width: 33.3333%;
   display: inline-block;

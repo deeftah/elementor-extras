@@ -496,6 +496,135 @@ class Calendar extends Extras_Widget {
 			);
 
 			$this->add_control(
+				'months_heading',
+				[
+					'label'		=> __( 'Months', 'elementor-extras' ),
+					'type' 		=> \Elementor\Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+			$this->add_control(
+				'month_january',
+				[
+					'label'		=> __( 'January', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'January', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_february',
+				[
+					'label'		=> __( 'February', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'February', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_march',
+				[
+					'label'		=> __( 'March', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'March', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_april',
+				[
+					'label'		=> __( 'April', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'April', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_may',
+				[
+					'label'		=> __( 'May', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'May', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_june',
+				[
+					'label'		=> __( 'June', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'June', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_july',
+				[
+					'label'		=> __( 'July', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'July', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_august',
+				[
+					'label'		=> __( 'August', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'August', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_september',
+				[
+					'label'		=> __( 'September', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'September', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_october',
+				[
+					'label'		=> __( 'October', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'October', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_november',
+				[
+					'label'		=> __( 'November', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'November', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
+				'month_december',
+				[
+					'label'		=> __( 'December', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXT,
+					'default' 	=> __( 'December', 'elementor-extras' ),
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
 				'events_heading',
 				[
 					'label'		=> __( 'Events', 'elementor-extras' ),

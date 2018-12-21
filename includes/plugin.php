@@ -477,7 +477,7 @@ class ElementorExtrasPlugin {
 			true );
 
 		wp_register_script(
-			'infinite-scroll',
+			'infinite-scroll-ee',
 			plugins_url( '/assets/lib/infinite-scroll/infinite-scroll.pkgd' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[],
 			'3.0.2',
@@ -600,7 +600,7 @@ class ElementorExtrasPlugin {
 		// Register styles
 		wp_register_style(
 			'magnific-popup',
-			plugins_url( '/assets/lib/magnific-popup/css/magnific-popup' . $direction_suffix . $suffix . '.css', ELEMENTOR_EXTRAS__FILE__ ),
+			plugins_url( '/assets/lib/magnific-popup/css/magnific-popup' . $suffix . '.css', ELEMENTOR_EXTRAS__FILE__ ),
 			[],
 			ELEMENTOR_EXTRAS_VERSION
 		);

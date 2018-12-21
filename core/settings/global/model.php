@@ -51,7 +51,7 @@ class Model extends GeneralModel {
 
 		return [
 			Manager::PANEL_TAB_SETTINGS => [
-				'settings' => [
+				'tooltips_settings' => [
 					'label' => __( 'Tooltips', 'elementor' ),
 					'controls' => [
 						'ee_tooltips_note' => [
@@ -131,7 +131,7 @@ class Model extends GeneralModel {
 				],
 			],
 			Controls_Manager::TAB_STYLE => [
-				'tooltips' => [
+				'tooltips_style' => [
 					'label' => __( 'Tooltips', 'elementor' ),
 					'controls' => [
 						'ee_tooltips_distance' => [
@@ -228,6 +228,19 @@ class Model extends GeneralModel {
 							'selectors' => [
 								'.ee-tooltip' => 'color: {{VALUE}};',
 							],
+						],
+					],
+				],
+				'offcanvas_style' => [
+					'label' => __( 'Offcanvas', 'elementor' ),
+					'controls' => [
+						'ee_offcanvas_container_background_color' => [
+							'label' 	=> __( 'Container Background Color', 'elementor-extras' ),
+							'type' 		=> Controls_Manager::COLOR,
+							'selectors' => [
+								'.ee-offcanvas__container' => 'background-color: {{VALUE}};',
+							],
+							'description' => __( 'The background color of the whole container that wraps the page and that moves when the offcanvas is animated in.', 'elementor-extras' ),
 						],
 					],
 				],

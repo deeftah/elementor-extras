@@ -98,6 +98,14 @@ class Extension_Display_Conditions extends Extension_Base {
 
 		}, 10, 2 );
 
+		// Activate sections for sections
+		add_action( 'elementor/element/section/section_custom_css/after_section_end', function( $element, $args ) {
+
+			$this->add_common_sections( $element, $args );
+
+		}, 10, 2 );
+
+		// Activate sections for widgets if elementor pro
 		add_action( 'elementor/element/common/section_custom_css_pro/after_section_end', function( $element, $args ) {
 
 			$this->add_common_sections( $element, $args );
@@ -483,9 +491,9 @@ class Extension_Display_Conditions extends Extension_Base {
 				'type' 		=> Controls_Manager::REPEATER,
 				'default' 	=> [
 					[
-						'key' 		=> 'authentication',
-						'operator' 	=> 'is',
-						'value' 	=> 'authenticated',
+						'ee_condition_key' 					=> 'authentication',
+						'ee_condition_operator' 			=> 'is',
+						'ee_condition_authentication_value' => 'authenticated',
 					],
 				],
 				'condition'		=> [
@@ -569,7 +577,7 @@ class Extension_Display_Conditions extends Extension_Base {
 			if ( 'yes' === $settings[ 'ee_display_conditions_enable' ] ) {
 
 				// Set the conditions
-				$this->set_conditions( $settings['ee_display_conditions'] );
+				$this->set_conditions( $element->get_id(), $settings['ee_display_conditions'] );
 
 				// if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 				// 	ob_start();
@@ -577,7 +585,7 @@ class Extension_Display_Conditions extends Extension_Base {
 				// 	$widget_content .= ob_get_clean();
 				// }
 
-				if ( ! $this->is_visible( $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
+				if ( ! $this->is_visible( $element->get_id(), $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
 					if ( 'yes' !== $settings['ee_display_conditions_output'] ) {
 						return; // And on frontend we stop the rendering of the widget
 					}
@@ -596,9 +604,9 @@ class Extension_Display_Conditions extends Extension_Base {
 			if ( 'yes' === $settings[ 'ee_display_conditions_enable' ] ) {
 
 				// Set the conditions
-				$this->set_conditions( $settings['ee_display_conditions'] );
+				$this->set_conditions( $element->get_id(), $settings['ee_display_conditions'] );
 
-				if ( ! $this->is_visible( $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
+				if ( ! $this->is_visible( $element->get_id(), $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
 					$element->add_render_attribute( '_wrapper', 'class', 'ee-conditions--hidden' );
 				}
 			}
@@ -613,9 +621,9 @@ class Extension_Display_Conditions extends Extension_Base {
 			if ( 'yes' === $settings[ 'ee_display_conditions_enable' ] ) {
 
 				// Set the conditions
-				$this->set_conditions( $settings['ee_display_conditions'] );
+				$this->set_conditions( $element->get_id(), $settings['ee_display_conditions'] );
 
-				if ( ! $this->is_visible( $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
+				if ( ! $this->is_visible( $element->get_id(), $settings['ee_display_conditions_relation'] ) ) { // Check the conditions
 					$element->add_render_attribute( '_wrapper', 'class', 'ee-conditions--hidden' );
 				}
 			}
@@ -642,7 +650,7 @@ class Extension_Display_Conditions extends Extension_Base {
 	 *
 	 * @return void
 	 */
-	protected function set_conditions( $conditions = [] ) {
+	protected function set_conditions( $id, $conditions = [] ) {
 		if ( ! $conditions )
 			return;
 
@@ -653,7 +661,7 @@ class Extension_Display_Conditions extends Extension_Base {
 
 			if ( method_exists( $this, 'check_' . $key ) ) {
 				$check = call_user_func( [ $this, 'check_' . $key ], $value, $operator );
-				$this->conditions[ $key . '_' . $condition['_id'] ] = $check;
+				$this->conditions[ $id ][ $key . '_' . $condition['_id'] ] = $check;
 			}
 		}
 	}
@@ -672,13 +680,14 @@ class Extension_Display_Conditions extends Extension_Base {
 	 *
 	 * @return bool
 	 */
-	protected function is_visible( $relation ) {
+	protected function is_visible( $id, $relation ) {
+
 		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 			if ( 'any' === $relation ) {
-				if ( ! in_array( true, $this->conditions ) )
+				if ( ! in_array( true, $this->conditions[ $id ] ) )
 					return false;
 			} else {
-				if ( in_array( false, $this->conditions ) )
+				if ( in_array( false, $this->conditions[ $id ] ) )
 					return false;
 			}
 		}

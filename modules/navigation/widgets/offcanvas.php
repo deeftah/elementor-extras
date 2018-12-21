@@ -167,6 +167,74 @@ class Offcanvas extends Extras_Widget {
 				]
 			);
 
+			$this->add_control(
+				'anchor_navigation',
+				[
+					'label' 		=> __( 'Anchor Navigation', 'elementor-extras' ),
+					'description'	=> __( 'Allow navigation to anchors on page', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'yes',
+					'separator'		=> 'before',
+					'frontend_available' => true,
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+				]
+			);
+
+			$this->add_control(
+				'anchor_navigation_close',
+				[
+					'label' 		=> __( 'Close After Scroll', 'elementor-extras' ),
+					'description'	=> __( 'Close offcanvas after animating to anchor', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'yes',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'frontend_available' => true,
+					'condition'		=> [
+						'anchor_navigation!' => '',
+					],
+				]
+			);
+
+			$this->add_control(
+				'anchor_navigation_speed',
+				[
+					'label' => __( 'Anchor Navigation Speed', 'elementor-extras' ),
+					'type' => Controls_Manager::SLIDER,
+					'default' => [
+						'size' => 500,
+					],
+					'range' => [
+						'px' => [
+							'min' => 0,
+							'max' => 10000,
+						],
+					],
+					'frontend_available' => true,
+					'condition'	=> [
+						'anchor_navigation!' => '',
+					],
+				]
+			);
+
+			// $this->add_control(
+			// 	'anchor_navigation_timing',
+			// 	[
+			// 		'label' 	=> __( 'Timing', 'elementor-extras' ),
+			// 		'type' 		=> Controls_Manager::SELECT,
+			// 		'default'	=> 'burger',
+			// 		'options' 	=> [
+			// 			'before' 	=> __( 'Burger', 'elementor-extras' ),
+			// 			'after' 	=> __( 'Element ID', 'elementor-extras' ),
+			// 		],
+			// 		'frontend_available' => true,
+			// 		'condition'	=> [
+			// 			'anchor_navigation!' => '',
+			// 		],
+			// 	]
+			// );
+
 			// $this->add_control(
 			// 	'container_scroll',
 			// 	[
