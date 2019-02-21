@@ -204,7 +204,8 @@ class Text_Divider extends Extras_Widget {
 						'value' => Scheme_Color::COLOR_3,
 					],
 					'selectors' => [
-						'{{WRAPPER}} .ee-text-divider__text' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .ee-text-divider__text,
+						 {{WRAPPER}} .ee-text-divider__text a' => 'color: {{VALUE}};',
 					],
 				]
 			);

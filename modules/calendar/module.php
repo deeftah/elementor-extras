@@ -273,6 +273,8 @@ class Module extends Module_Base {
 				'style' 	=> 'text',
 			] );
 
+			$timestamp = (int)$timestamp;
+
 			$value = date( 'Y-m-d', $timestamp );
 		}
 

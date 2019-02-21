@@ -892,6 +892,13 @@ class Extension_Display_Conditions extends Extension_Base {
 		} else {
 			if ( false !== strpos( $_SERVER['HTTP_USER_AGENT'], $browsers[ $value ] ) ) {
 				$show = true;
+
+				// Additional check for Chrome that returns Safari
+				if ( 'safari' === $value || 'firefox' === $value ) {
+					if ( false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Chrome' ) ) {
+						$show = false;
+					}
+				}
 			}
 		}
 		

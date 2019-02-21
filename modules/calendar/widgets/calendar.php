@@ -2328,8 +2328,9 @@ class Calendar extends Extras_Widget {
 		$settings 	= $this->get_settings_for_display();
 		$events 	= [];
 		$args 		= [
-			'post_type' 	=> $settings['post_type'],
-			'post_status' 	=> 'publish',
+			'post_type' 		=> $settings['post_type'],
+			'post_status' 		=> 'publish',
+			'posts_per_page' 	=> -1,
 		];
 
 		$posts = get_posts( $args );

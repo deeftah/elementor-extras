@@ -55,7 +55,7 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'grid_rows_spacing',
 			[
 				'label' 			=> __( 'Rows Spacing', 'elementor-extras' ),
@@ -114,6 +114,11 @@ abstract class Skin_Base extends Elementor_Skin_Base {
 		$wp_query = $this->parent->get_query();
 
 		if ( ! $wp_query->found_posts ) {
+
+			$message = esc_html( $this->parent->get_settings_for_display( 'nothing_found_message' ) );
+
+			echo '<div class="ee-posts__nothing-found">' . $message . '</div>';
+
 			return;
 		}
 

@@ -48,15 +48,22 @@
 			};
 
 			plugin.checkPosition = function() {
+
 				if ( $element.is('.is--visible') )
 					return;
 
-				if( $window.scrollTop() + $window.height() * 1 > $element.offset().top) {
-					$element.addClass('is--visible');
-					TweenMax.from( $element.find('.ee-image-comparison__image'), 0.7, { width: '0%', ease: Back.easeOut.config( 0.7 ), clearProps: "all" } );
+				if ( ! plugin.opts.animation ) {
+					plugin.animateIn();
+				} else if( $window.scrollTop() + $window.height() * 1 > $element.offset().top) {
+					plugin.animateIn();
 				}
-
+				
 				scrolling = false;
+			};
+
+			plugin.animateIn = function() {
+				$element.addClass('is--visible');
+				TweenMax.from( $element.find('.ee-image-comparison__image'), 0.7, { width: '0%', ease: Back.easeOut.config( 0.7 ), clearProps: "all" } );
 			};
 
 			plugin.checkLabel = function() {

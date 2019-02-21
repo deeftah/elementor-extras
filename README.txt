@@ -2,8 +2,8 @@
 Contributors: Namogo
 Tags: elementor, addons, hotspots, image comparison, heading, parallax, sticky, widgets, button groups, text separator, circle progress, devices, timeline
 Requires at least: 4.5
-Tested up to: 5.0.1
-Stable tag: 2.0.6
+Tested up to: 5.0.3
+Stable tag: 2.0.10
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,48 @@ Elementor Extras is a premium Wordpress plugin for Elementor. It extends its cap
 * Yes. You can activate licenses on local environments without limit and they won't take from your allowed activations count.
 
 == Changelog ==
+
+= 2.0.10 =
+
+* Added: Parallax Elements — Option to allow moving elements when they aren't visible inside viewport
+* Fixed: Google Map — Centering with dynamic tags not working
+* Fixed: Calendar — Don't limit number of posts fetched
+* Fixed: Display Conditions — Chrome check failing
+* Fixed: Breadcrumbs — Responsive item aligning
+* Fixed: Parallax Background — Custom size control compatibility + tweaks
+* Fixed: Posts Extra — Type control condition
+* Tweak: Google Map — Disable fitting and centering when route is enabled
+
+= 2.0.9 =
+
+* Added: Posts Extra — Handle multiple paginated loops
+* Added: Posts Extra — Nothing found message
+* Added: Image Comparison — Option to turn off animation on entrance
+* Added: Posts Extra — Query ID filter on top of elementor pro one
+* Added: Offcanvas — Control to enable page scroll when offcanvas panel is open
+* Fixed: Table — IE cell text wrapping
+* Fixed: Circle Progress — Wrong absolute value when multiple widget instances on same page
+* Fixed: Gallery Slider — Wrong thumbnail order
+* Fixed: Offcanvas — Z-index issues
+* Fixed: Calendar — Convert timestamp to integer
+* Fixed: Gallery module attachment check
+* Tweak: Timeline — Rename timeline script
+* Tweak: Posts Extra — Responsive row spacing control
+* Tweak: Parallax Background — Compatibility with Elementor 2.4
+
+= 2.0.8 =
+
+* Fixed: Text Divider — Selector for link color
+* Fixed: Timeline — Notice
+* Fixed: Offcanvas — Escape jquery expression
+* Fixed: Google Map — Handle invalid or undefined snazzy map style
+
+= 2.0.7 =
+
+* Fixed: Offcanvas — Anchor navigation scroll calculation
+* Added: Timeline — Allow post content to be shown instead of excerpt
+* Added: Timeline — Control to set line progress position relative to viewport
+* Tweak: Offcanvas — Anchor condition
 
 = 2.0.6 =
 

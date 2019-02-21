@@ -2421,7 +2421,7 @@ class Gallery_Slider extends Extras_Widget {
 	protected function render_wp_gallery() {
 
 		$settings 			= $this->get_settings_for_display();
-		$gallery 			= is_rtl() ? array_reverse( $settings['wp_gallery'] ) : $settings['wp_gallery'];
+		$gallery 			= $settings['wp_gallery'];
 		$media_tag 			= 'figure';
 
 		foreach ( $gallery as $index => $item ) {

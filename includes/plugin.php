@@ -351,7 +351,7 @@ class ElementorExtrasPlugin {
 			true );
 
 		wp_register_script(
-			'timeline',
+			'ee-timeline',
 			plugins_url( '/assets/lib/timeline/timeline' . $suffix . '.js', ELEMENTOR_EXTRAS__FILE__ ),
 			[ 'jquery', ],
 			'1.0.0',

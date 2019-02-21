@@ -190,7 +190,7 @@ class Breadcrumbs extends Extras_Widget {
 			$this->add_responsive_control(
 				'items_align',
 				[
-					'label' 		=> __( 'Align', 'elementor-extras' ),
+					'label' 		=> __( 'Align Crumbs', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::CHOOSE,
 					'default' 		=> '',
 					'options' 		=> [
@@ -211,14 +211,14 @@ class Breadcrumbs extends Extras_Widget {
 							'icon' 		=> 'eicon-h-align-stretch',
 						],
 					],
-					'prefix_class' 	=> 'ee-breadcrumbs-align-',
+					'prefix_class' 	=> 'ee-breadcrumbs-align%s-',
 				]
 			);
 
 			$this->add_responsive_control(
 				'items_text_align',
 				[
-					'label' 		=> __( 'Align', 'elementor-extras' ),
+					'label' 		=> __( 'Align Text', 'elementor-extras' ),
 					'type' 			=> Controls_Manager::CHOOSE,
 					'default' 		=> '',
 					'options' 		=> [

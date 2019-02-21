@@ -133,6 +133,19 @@ class Offcanvas extends Extras_Widget {
 			);
 
 			$this->add_control(
+				'container_scroll',
+				[
+					'label' 		=> __( 'Allow Page Scroll', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value'	=> 'yes',
+					'frontend_available' => true,
+				]
+			);
+
+			$this->add_control(
 				'animation',
 				[
 					'label' 	=> __( 'Animation', 'elementor-extras' ),
@@ -217,36 +230,6 @@ class Offcanvas extends Extras_Widget {
 					],
 				]
 			);
-
-			// $this->add_control(
-			// 	'anchor_navigation_timing',
-			// 	[
-			// 		'label' 	=> __( 'Timing', 'elementor-extras' ),
-			// 		'type' 		=> Controls_Manager::SELECT,
-			// 		'default'	=> 'burger',
-			// 		'options' 	=> [
-			// 			'before' 	=> __( 'Burger', 'elementor-extras' ),
-			// 			'after' 	=> __( 'Element ID', 'elementor-extras' ),
-			// 		],
-			// 		'frontend_available' => true,
-			// 		'condition'	=> [
-			// 			'anchor_navigation!' => '',
-			// 		],
-			// 	]
-			// );
-
-			// $this->add_control(
-			// 	'container_scroll',
-			// 	[
-			// 		'label' 		=> __( 'Allow Page Scroll', 'elementor-extras' ),
-			// 		'type' 			=> Controls_Manager::SWITCHER,
-			// 		'default' 		=> '',
-			// 		'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-			// 		'label_off' 	=> __( 'No', 'elementor-extras' ),
-			// 		'return_value'	=> 'yes',
-			// 		'frontend_available' => true,
-			// 	]
-			// );
 
 		$this->end_controls_section();
 	}

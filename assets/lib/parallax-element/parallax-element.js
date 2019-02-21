@@ -8,6 +8,7 @@
 
 			var defaults = {
 				scope 			: $(window),
+				moveOutside		: false,
 				type 			: 'scroll',
 				scroll 			: {
 					relative 	: 'middle',
@@ -160,14 +161,23 @@
 
 				ticking = false;
 
-				if ( $element.visible( true, false, 'vertical' ) ) {
-					switch ( plugin.opts.type ) {
-						case 'mouse' :
-							plugin.pan();
-							break;
-						default :
-							plugin.move();
+				if ( ! plugin.opts.moveOutside ) {
+					if ( $element.visible( true, false, 'vertical' ) ) {
+						plugin.start();
 					}
+				} else {
+					plugin.start();
+				}
+					
+			};
+
+			plugin.start = function() {
+				switch ( plugin.opts.type ) {
+					case 'mouse' :
+						plugin.pan();
+						break;
+					default :
+						plugin.move();
 				}
 			};
 

@@ -66,6 +66,9 @@ class Module extends Module_Base {
 
 			$attachment = get_post( $image_id );
 
+			if ( ! $attachment )
+				return;
+
 			$info['id']			= $image_id;
 			$info['url']		= $image_url;
 			$info['image'] 		= wp_get_attachment_image( $attachment->ID, $image_size, true );

@@ -138,32 +138,45 @@ class Extension_Parallax_Background extends Extension_Base {
 		add_action( 'elementor/element/section/section_background/before_section_end', function( $element, $args ) {
 
 			// Make the background image url available in the frontend
-			$element->update_control( 'background_image', array(
+			$element->update_responsive_control( 'background_image', array(
 				'selectors' => [
-					'{{WRAPPER}} .ee-parallax__inner' 	=> 'background-image: url("{{URL}}");',
-					'{{WRAPPER}}' 						=> 'background-image: url("{{URL}}");',
+					'{{WRAPPER}},
+					 {{WRAPPER}} .ee-parallax__inner' => 'background-image: url("{{URL}}");',
 				],
 				'frontend_available' => true,
 			));
 
-			$element->update_control( 'background_position', array(
+			$element->update_responsive_control( 'background_position', array(
 				'selectors' => [
-					'{{WRAPPER}} .ee-parallax__inner' 	=> 'background-position: {{VALUE}};',
-					'{{WRAPPER}}' 						=> 'background-position: {{VALUE}};',
+					'{{WRAPPER}},
+					 {{WRAPPER}} .ee-parallax__inner' => 'background-position: {{VALUE}};',
 				],
 			));
 
-			$element->update_control( 'background_repeat', array(
-				'selectors' => [
-					'{{WRAPPER}} .ee-parallax__inner' 	=> 'background-repeat: {{VALUE}};',
-					'{{WRAPPER}}' 						=> 'background-repeat: {{VALUE}};',
+			$element->update_control( 'background_attachment', array(
+				'condition' => [
+					'parallax_background_enable!' => 'yes',
 				],
 			));
 
-			$element->update_control( 'background_size', array(
+			$element->update_responsive_control( 'background_repeat', array(
 				'selectors' => [
-					'{{WRAPPER}} .ee-parallax__inner' 	=> 'background-size: {{VALUE}};',
-					'{{WRAPPER}}' 						=> 'background-size: {{VALUE}};',
+					'{{WRAPPER}},
+					 {{WRAPPER}} .ee-parallax__inner' => 'background-repeat: {{VALUE}};',
+				],
+			));
+
+			$element->update_responsive_control( 'background_size', array(
+				'selectors' => [
+					'{{WRAPPER}},
+					 {{WRAPPER}} .ee-parallax__inner' => 'background-size: {{VALUE}};',
+				],
+			));
+
+			$element->update_responsive_control( 'background_bg_width', array(
+				'selectors' => [
+					'{{WRAPPER}},
+					 {{WRAPPER}} .ee-parallax__inner' => 'background-size: {{SIZE}}{{UNIT}} auto',
 				],
 			));
 

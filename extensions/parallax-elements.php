@@ -209,6 +209,22 @@ class Extension_Parallax_Elements extends Extension_Base {
 			]
 		);
 
+		$element->add_control(
+			'parallax_off_viewport', [
+				'label'			=> __( 'Move outside viewport', 'elementor-extras' ),
+				'description'	=> __( 'Move elements even if they are not visible', 'elementor-extras' ),
+				'type' 			=> Controls_Manager::SWITCHER,
+				'default' 		=> '',
+				'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+				'label_off' 	=> __( 'No', 'elementor-extras' ),
+				'return_value' 	=> 'yes',
+				'frontend_available' => true,
+				'condition' 	=> [
+					'parallax_element_enable!' 	=> '',
+				],
+			]
+		);
+
 		$element->add_responsive_control(
 			'parallax_element_pan_distance', [
 				'label' 		=> __( 'Max Distance (px)', 'elementor-extras' ),

@@ -52,7 +52,7 @@ class Timeline extends Extras_Widget {
 
 	public function get_script_depends() {
 		return [
-			'timeline',
+			'ee-timeline',
 			'gsap-js',
 		];
 	}
@@ -973,15 +973,17 @@ class Timeline extends Extras_Widget {
 			$this->add_control(
 				'post_excerpt',
 				[
-					'label' 		=> __( 'Show Excerpt', 'elementor-extras' ),
-					'type' 			=> Controls_Manager::SWITCHER,
-					'default'		=> 'yes',
-					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
-					'label_off' 	=> __( 'No', 'elementor-extras' ),
-					'return_value' 	=> 'yes',
+					'label'   => __( 'Excerpt', 'elementor-extras' ),
+					'type'    => Controls_Manager::SELECT,
+					'options' => [
+						'' 			=> __( 'Hide', 'elementor-extras' ),
+						'yes' 		=> __( 'Post Excerpt', 'elementor-extras' ),
+						'content' 	=> __( 'Post Content', 'elementor-extras' ),
+					],
+					'default' 		=> 'yes',
 					'condition'		=> [
 						'source'	=> 'posts',
-					]
+					],
 				]
 			);
 
@@ -2009,6 +2011,24 @@ class Timeline extends Extras_Widget {
 				]
 			);
 
+			$this->add_control(
+				'line_location',
+				[
+					'label' 	=> __( 'Location', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::SLIDER,
+					'default' 	=> [
+						'size' 	=> 50,
+					],
+					'range' 		=> [
+						'px' 		=> [
+							'min' 	=> 0,
+							'max' 	=> 100,
+						],
+					],
+					'frontend_available' => true,
+				]
+			);
+
 			$this->add_group_control(
 				Group_Control_Border::get_type(),
 				[
@@ -2308,8 +2328,7 @@ class Timeline extends Extras_Widget {
 				$point_content = $this->get_point_icon();
 		}
 
-		?>
-		<div <?php echo $this->get_render_attribute_string( 'item' ); ?>>
+		?><div <?php echo $this->get_render_attribute_string( 'item' ); ?>>
 			<?php if ( $this->get_horizontal_aligment() === 'center' ) { ?>
 				<div <?php echo $this->get_render_attribute_string( 'point' ); ?>>
 					<?php echo $point_content; ?>
@@ -2337,8 +2356,11 @@ class Timeline extends Extras_Widget {
 						if ( is_woocommerce_active() && $settings['post_product_attributes'] === 'yes' && $settings['card_links'] !== 'yes' )
 							$this->render_product_attributes();
 
-						if ( $settings['post_excerpt'] ) 
+						if ( 'yes' === $settings['post_excerpt'] ) {
 							$this->render_excerpt();
+						} elseif ( 'content' === $settings['post_excerpt'] ) {
+							$this->render_post_content();
+						}
 
 						if ( is_woocommerce_active() && $settings['post_buy'] === 'yes' && $settings['card_links'] !== 'yes' )
 							echo do_shortcode('[add_to_cart id="' . get_the_ID() . '" style="border:0px;padding:0px"]');
@@ -2515,6 +2537,12 @@ class Timeline extends Extras_Widget {
 	protected function render_excerpt() {
 		?><div class="timeline-item__excerpt">
 			<?php the_excerpt(); ?>
+		</div><?php
+	}
+
+	protected function render_post_content() {
+		?><div class="timeline-item__excerpt timeline-item__excerpt--content">
+			<?php the_content(); ?>
 		</div><?php
 	}
 

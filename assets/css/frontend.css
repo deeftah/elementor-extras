@@ -2579,6 +2579,7 @@
 }
 .ee-table__cell {
   text-align: left;
+  max-width: 1px;
   vertical-align: middle;
   padding: 0;
 }
@@ -2617,10 +2618,16 @@ body.ee-offcanvas--opening,
 body.ee-offcanvas--closing,
 body.ee-offcanvas--open {
   height: 100%;
+}
+body.ee-offcanvas--open {
   overflow: hidden;
+}
+body.ee-offcanvas--open.ee-offcanvas--scroll {
+  overflow: visible;
 }
 body .ee-offcanvas__container {
   height: 100%;
+  z-index: 997;
 }
 .ee-offcanvas__overlay {
   position: absolute;
@@ -2628,7 +2635,7 @@ body .ee-offcanvas__container {
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 999;
+  z-index: 998;
   background: #000000;
   opacity: 0;
   visibility: hidden;
@@ -2652,6 +2659,7 @@ body .ee-offcanvas__container {
 }
 .ee-offcanvas__slidebar {
   width: 50%;
+  z-index: 999;
 }
 .ee-offcanvas__slidebar .ee-offcanvas__content {
   display: block;
@@ -4042,7 +4050,6 @@ body,
   z-index: 1;
 }
 [canvas=container] {
-  overflow-y: hidden;
   position: relative;
   background-color: white;
   -webkit-overflow-scrolling: touch;
@@ -4089,6 +4096,9 @@ body,
 }
 [off-canvas*=overlay] {
   z-index: 9999;
+}
+[off-canvas*=overlay] + [canvas=container] {
+  transform: none !important;
 }
 [off-canvas*=shift] {
   z-index: 0;
@@ -6013,6 +6023,46 @@ body.ee-offcanvas--open [canvas] {
   .ee-timeline--vertical.ee-timeline-align--center.ee-timeline .timeline-item__card-wrapper {
     margin-left: 10px;
   }
+  .ee-breadcrumbs-align-tablet-left .ee-breadcrumbs {
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+  }
+  .ee-breadcrumbs-align-tablet-left .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-tablet-center .ee-breadcrumbs {
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+  .ee-breadcrumbs-align-tablet-center .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-tablet-right .ee-breadcrumbs {
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+  }
+  .ee-breadcrumbs-align-tablet-right .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-tablet-stretch .ee-breadcrumbs {
+    -ms-flex-pack: stretch;
+    justify-content: stretch;
+  }
+  .ee-breadcrumbs-align-tablet-stretch .ee-breadcrumbs > li {
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+  }
+  .ee-breadcrumbs-align-tablet-stretch .ee-breadcrumbs > li > a {
+    display: block;
+  }
+  .ee-breadcrumbs-align-tablet-stretch .ee-breadcrumbs > .ee-breadcrumbs__separator {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    text-align: center;
+  }
   .ee-trigger-tablet-align--left .ee-button-wrapper {
     -ms-flex-pack: start;
     justify-content: flex-start;
@@ -6407,6 +6457,46 @@ body.ee-offcanvas--open [canvas] {
   .ee-gallery-slider--stack-mobile .ee-gallery-slider .ee-gallery-slider__preview,
   .ee-gallery-slider--stack-mobile .ee-gallery-slider .ee-gallery-slider__gallery {
     width: 100% !important;
+  }
+  .ee-breadcrumbs-align-mobile-left .ee-breadcrumbs {
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+  }
+  .ee-breadcrumbs-align-mobile-left .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-mobile-center .ee-breadcrumbs {
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+  .ee-breadcrumbs-align-mobile-center .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-mobile-right .ee-breadcrumbs {
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+  }
+  .ee-breadcrumbs-align-mobile-right .ee-breadcrumbs > li {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+  }
+  .ee-breadcrumbs-align-mobile-stretch .ee-breadcrumbs {
+    -ms-flex-pack: stretch;
+    justify-content: stretch;
+  }
+  .ee-breadcrumbs-align-mobile-stretch .ee-breadcrumbs > li {
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+  }
+  .ee-breadcrumbs-align-mobile-stretch .ee-breadcrumbs > li > a {
+    display: block;
+  }
+  .ee-breadcrumbs-align-mobile-stretch .ee-breadcrumbs > .ee-breadcrumbs__separator {
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    text-align: center;
   }
   .ee-trigger-mobile-align--left .ee-button-wrapper {
     -ms-flex-pack: start;

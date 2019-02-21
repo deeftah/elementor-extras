@@ -145,6 +145,19 @@ class Image_Comparison extends Extras_Widget {
 		);
 
 			$this->add_control(
+				'entrance_animation',
+				[
+					'label' 		=> __( 'Animate on entrance', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> '',
+					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
+					'label_off' 	=> __( 'No', 'elementor-extras' ),
+					'return_value' 	=> 'yes',
+					'frontend_available' => true
+				]
+			);
+
+			$this->add_control(
 				'click_to_move',
 				[
 					'label' 		=> __( 'Enable click', 'elementor-extras' ),

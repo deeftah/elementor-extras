@@ -242,6 +242,9 @@ class Google_Map extends Extras_Widget {
 				[
 					'type'		=> Controls_Manager::HEADING,
 					'label' 	=> __( 'Center Map', 'elementor-extras' ),
+					'condition'	=> [
+						'route'	=> '',
+					],
 				]
 			);
 
@@ -254,6 +257,9 @@ class Google_Map extends Extras_Widget {
 					'label_on' 		=> __( 'Yes', 'elementor-extras' ),
 					'label_off' 	=> __( 'No', 'elementor-extras' ),
 					'frontend_available' => true,
+					'condition'		=> [
+						'route'		=> '',
+					],
 				]
 			);
 
@@ -265,9 +271,9 @@ class Google_Map extends Extras_Widget {
 					'dynamic'	=> [ 'active' => true ],
 					'default' 	=> '48.8583736',
 					'condition'	=> [
-						'fit' => '',
+						'fit' 	=> '',
+						'route'	=> '',
 					],
-					'frontend_available' => true,
 				]
 			);
 
@@ -279,9 +285,9 @@ class Google_Map extends Extras_Widget {
 					'dynamic'	=> [ 'active' => true ],
 					'default' 	=> '2.2922873',
 					'condition'	=> [
-						'fit' => '',
+						'fit' 	=> '',
+						'route'	=> '',
 					],
-					'frontend_available' => true,
 				]
 			);
 
@@ -301,7 +307,8 @@ class Google_Map extends Extras_Widget {
 						],
 					],
 					'condition' => [
-						'fit' => '', 
+						'fit' 	=> '',
+						'route'	=> '',
 					],
 					'frontend_available' => true,
 				]
@@ -1509,6 +1516,8 @@ class Google_Map extends Extras_Widget {
 				'class' => [
 					'ee-google-map',
 				],
+				'data-lat' => $settings['lat'],
+				'data-lng' => $settings['lng'],
 			],
 			'title' => [
 				'class' => 'ee-google-map__pin__title',

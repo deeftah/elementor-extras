@@ -576,6 +576,21 @@ class Skin_Classic extends Skin_Base {
 			);
 
 			$this->add_control(
+				'pagination_multiple',
+				[
+					'label' 		=> __( 'Handle Multiple', 'elementor-extras' ),
+					'description'	=> __( 'If you have multiple Posts Extra widgets on this page, enable this to make sure one pagination doesn\'t affect the others', 'elementor-extras' ),
+					'type' 			=> Controls_Manager::SWITCHER,
+					'default' 		=> 'yes',
+					'return_value' 	=> 'yes',
+					'condition' 	=> [
+						$this->get_control_id( 'infinite_scroll' ) 		=> '',
+						$this->get_control_id( 'pagination' ) 			=> 'yes',
+					],
+				]
+			);
+
+			$this->add_control(
 				'pagination_show_all',
 				[
 					'label' 		=> __( 'Show All Numbers', 'elementor-extras' ),
@@ -2063,14 +2078,20 @@ class Skin_Classic extends Skin_Base {
 		}
 
 		// Render page links
-		$pagination = paginate_links( [
+		$paginate_args = [
 			'type'					=> 'plain',
 			'total' 				=> $limit,
 			'current' 				=> $this->parent->get_current_page(),
 			'prev_next' 			=> false,
 			'show_all' 				=> 'yes' === $this->get_instance_value('pagination_show_all'),
 			'before_page_number' 	=> '<span class="elementor-screen-only">' . __( 'Page', 'elementor-extras' ) . '</span>',
-		] );
+		];
+
+		if ( 'yes' === $this->get_instance_value( 'pagination_multiple' ) ) {
+			$paginate_args['format'] = 'page/%#%?posts=' . $this->parent->get_id();
+		}
+
+		$pagination = paginate_links( $paginate_args );
 
 		?>
 		<nav <?php echo $this->parent->get_render_attribute_string( 'pagination' ); ?>><?php

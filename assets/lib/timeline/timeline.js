@@ -4,11 +4,12 @@
 ;(
 	function( $, window, document, undefined ) {
 
-		$.timeline = function(element, options) {
+		$.eeTimeline = function(element, options) {
 
 			var defaults = {
 				scope 	: $(window),
 				points 	: '.timeline-item__point',
+				lineLocation : 50,
 			};
 
 			var plugin = this;
@@ -32,7 +33,7 @@
 
 				$line 			= $element.find( '.ee-timeline__line' ),
 				$progress		= $line.find( '.ee-timeline__line__inner' ),
-				$cards			= $element.find( '.timeline-item' );
+				$cards			= $element.find( '.ee-timeline__item' );
 
 
 			plugin.init = function() {
@@ -92,7 +93,7 @@
 				
 				$line.css({
 					'top' 		: $cards.first().find( plugin.opts.points ).offset().top - $cards.first().offset().top,
-					'bottom'	: ( $element.offset().top + $element.outerHeight() ) - $cards.last().find( plugin.opts.points ).offset().top
+					'bottom'	: $element.offset().top + $element.outerHeight() - $cards.last().find( plugin.opts.points ).offset().top,
 				});
 
 			};
@@ -116,10 +117,11 @@
 
 			plugin.progress = function() {
 
-				var _last_pos = $cards.last().find( plugin.opts.points ).offset().top,
-					_pos = ( $window.scrollTop() - $progress.offset().top ) + ( $viewport.outerHeight() / 2 );
+				var _coeff = 100 / plugin.opts.lineLocation,
+					_last_pos = $cards.last().find( plugin.opts.points ).offset().top,
+					_pos = ( $window.scrollTop() - $progress.offset().top ) + ( $viewport.outerHeight() / _coeff );
 
-					if ( _last_pos <= ( $window.scrollTop() + $viewport.outerHeight() / 2 ) ) {
+					if ( _last_pos <= ( $window.scrollTop() + $viewport.outerHeight() / _coeff ) ) {
 						_pos = _last_pos - $progress.offset().top;
 					}
 
@@ -128,7 +130,7 @@
 					});
 
 				$cards.each( function() {
-					if ( $(this).find( plugin.opts.points ).offset().top < ( $window.scrollTop() + $viewport.outerHeight() / 2 ) ) {
+					if ( $(this).find( plugin.opts.points ).offset().top < ( $window.scrollTop() + $viewport.outerHeight() / _coeff ) ) {
 						$(this).addClass('is--focused');
 					} else {
 						$(this).removeClass('is--focused');
@@ -140,7 +142,7 @@
 			plugin.destroy = function() {
 
 				// $window.off( 'scroll', plugin.update );
-				$element.removeData( 'timeline' );
+				$element.removeData( 'eeTimeline' );
 
 			};
 
@@ -148,20 +150,20 @@
 
 		};
 
-		$.fn.timeline = function(options) {
+		$.fn.eeTimeline = function(options) {
 
 			return this.each(function() {
 
-				$.fn.timeline.destroy = function() {
+				$.fn.eeTimeline.destroy = function() {
 					if( 'undefined' !== typeof( plugin ) ) {
-						$(this).data( 'timeline' ).destroy();
-						$(this).removeData( 'timeline' );
+						$(this).data( 'eeTimeline' ).destroy();
+						$(this).removeData( 'eeTimeline' );
 					}
 				}
 
-				if (undefined === $(this).data('timeline')) {
-					var plugin = new $.timeline(this, options);
-					$(this).data('timeline', plugin);
+				if (undefined === $(this).data('eeTimeline')) {
+					var plugin = new $.eeTimeline(this, options);
+					$(this).data('eeTimeline', plugin);
 				}
 			});
 

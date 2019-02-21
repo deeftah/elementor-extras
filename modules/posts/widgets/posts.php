@@ -10,6 +10,7 @@ use ElementorExtras\Modules\Posts\Skins;
 
 // Elementor Classes
 use Elementor\Repeater;
+use Elementor\Scheme_Color;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
@@ -281,6 +282,14 @@ class Posts extends Extras_Widget {
 			return 1;
 		}
 
+		if ( 'yes' === $this->get_current_skin()->get_instance_value( 'pagination_multiple' ) ) {
+			$widget = isset( $_GET['posts'] ) ? $_GET['posts'] : '';
+
+			if ( '' !== $widget && $widget !== $this->get_id() ) {
+				return 1;
+			}
+		}
+
 		return max( 1, get_query_var( 'paged' ), get_query_var( 'page' ) );
 	}
 
@@ -309,6 +318,8 @@ class Posts extends Extras_Widget {
 		$this->register_excerpt_style_controls();
 		$this->register_button_style_controls();
 		$this->register_hover_animation_controls();
+
+		$this->register_advanced_controls();
 	}
 
 	protected function register_layout_content_controls() {
@@ -616,6 +627,78 @@ class Posts extends Extras_Widget {
 					'condition' => [
 						'post_comments_position!' => '',
 					],
+				]
+			);
+
+		$this->end_controls_section();
+
+	}
+
+	protected function register_advanced_controls() {
+		
+		$this->start_controls_section(
+			'section_advanced',
+			[
+				'label' => __( 'Advanced', 'elementor-extras' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+			$this->add_control(
+				'nothing_found_message',
+				[
+					'label' 	=> __( 'Nothing Found Message', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::TEXTAREA,
+					'default' 	=> __( 'It seems we can\'t find what you\'re looking for.', 'elementor-extras' ),
+					'dynamic' 	=> [
+						'active' => true,
+					],
+				]
+			);
+
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_advanced',
+			[
+				'tab' 		=> Controls_Manager::TAB_STYLE,
+				'label' 	=> __( 'Advanced', 'elementor-extras' ),
+				'condition' => [
+					'nothing_found_message!' => '',
+				],
+			]
+		);
+
+			$this->add_control(
+				'nothing_found_style_heading',
+				[
+					'label' 	=> __( 'Nothing Found Message', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::HEADING,
+				]
+			);
+
+			$this->add_control(
+				'nothing_found_color',
+				[
+					'label' 	=> __( 'Color', 'elementor-extras' ),
+					'type' 		=> Controls_Manager::COLOR,
+					'scheme' 	=> [
+						'type' 	=> Scheme_Color::get_type(),
+						'value' => Scheme_Color::COLOR_3,
+					],
+					'selectors' => [
+						'{{WRAPPER}} .ee-posts__nothing-found' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' 		=> 'nothing_found_typography',
+					'scheme' 	=> Scheme_Typography::TYPOGRAPHY_3,
+					'selector' 	=> '{{WRAPPER}} .ee-posts__nothing-found',
 				]
 			);
 
@@ -3230,6 +3313,9 @@ class Posts extends Extras_Widget {
 						'line_height',
 						'letter_spacing',
 					],
+					'condition' => [
+						'post_comments_position!' => '',
+					],
 				]
 			);
 
@@ -4644,5 +4730,6 @@ class Posts extends Extras_Widget {
 		 * @param Posts     $this
 		 */
 		do_action( "elementor_pro/posts/query/{$query_id}", $wp_query, $this );
+		do_action( "elementor_extras/posts_extra/query/{$query_id}", $wp_query, $this );
 	}
 }

@@ -396,7 +396,15 @@
 
 			ee.GoogleMap.init = function() {
 
-				var mapStyle = ( 'api' === settings.map_style_type && JSON.parse( settings.map_style_api ) ) ? JSON.parse( settings.map_style_api ).json : settings.map_style_json;
+				var mapStyle = settings.map_style_json;
+
+				if ( 'api' === settings.map_style_type && settings.map_style_api ) {
+					var jsonParse = JSON.parse( settings.map_style_api );
+
+					if ( jsonParse ) {
+						mapStyle = JSON.parse( settings.map_style_api ).json;
+					}
+				}
 
 				if ( '' !== $.trim( mapStyle ) && undefined !== mapStyle ) {
 					gmapArgs.styles = ee.GoogleMap.parseStyles( mapStyle );
@@ -407,8 +415,8 @@
 						gmapArgs.zoom = settings.zoom.size;
 					}
 
-					if ( '' !== settings.lat && '' !== settings.lng ) {
-						gmapArgs.center = [ settings.lat, settings.lng ];
+					if ( $map.data('lat') && $map.data('lng') ) {
+						gmapArgs.center = [ $map.data('lat'), $map.data('lng') ];
 					}
 				}
 
@@ -425,14 +433,14 @@
 				if ( 'yes' === settings.polygon )
 					ee.GoogleMap.addPolygon();
 
-				if ( 'yes' === settings.fit )
-					instance.wait(2000).fit();
-
 				if ( 'yes' === settings.navigation )
 					ee.GoogleMap.navigation();
 
 				// Init events
 				ee.GoogleMap.events();
+
+				// Center to fit or custom
+				ee.GoogleMap.center();
 			};
 
 			ee.GoogleMap.events = function() {
@@ -440,8 +448,12 @@
 			};
 
 			ee.GoogleMap.onResize = function() {
-				if ( settings.fit ) {
-					instance.fit();
+				ee.GoogleMap.center();
+			};
+
+			ee.GoogleMap.center = function() {
+				if ( 'yes' === settings.fit ) {
+					instance.wait(2000).fit();
 				} else {
 					instance.get(0).setCenter( new google.maps.LatLng( gmapArgs.center[0], gmapArgs.center[1] ) );
 				}
@@ -847,6 +859,10 @@
 
 					$body.removeClass( 'ee-offcanvas--closed ee-offcanvas--opening' );
 					$body.addClass('ee-offcanvas--open');
+
+					if ( 'yes' === ee.Offcanvas.elementSettings.container_scroll ) {
+						$body.addClass('ee-offcanvas--scroll');
+					}
 				} );
 
 				$( offcanvas.controller.events ).on( 'closing', function ( event, id ) {
@@ -858,6 +874,13 @@
 				$( offcanvas.controller.events ).on( 'closed', function ( event, id ) {
 
 					$body.removeClass( 'ee-offcanvas--open ee-offcanvas--closing' );
+
+					if ( 'yes' === ee.Offcanvas.elementSettings.container_scroll ) {
+						$body.removeClass('ee-offcanvas--scroll');
+					}
+
+					ee.Offcanvas.removeOverflows();
+
 					$body.removeClass( function ( index, className ) {
 						return (className.match (/(^|\s)ee-offcanvas--id-\S+/g) || []).join(' ');
 					});
@@ -865,8 +888,6 @@
 					$body.addClass( 'ee-offcanvas--closed' );
 
 					$( '.ee-offcanvas__trigger' ).removeClass( 'ee--is-active' );
-
-					ee.Offcanvas.removeOverflows();
 				} );
 
 				ee.onElementRemove( $scope, function() {
@@ -876,18 +897,19 @@
 
 			ee.Offcanvas.anchorNavigation = function() {
 
-				var $links = $content.find("a[href^=#]");
+				var $links = $content.find("a[href^=\\#]");
 
 				$links.each( function() {
 					var $link 	= $(this),
 						url 	= $link.attr('href'),
 						hash 	= url.substring( url.indexOf('#') + 1 ),
 						$el 	= $( '#' + hash ),
-						top 	= $el.offset().top + $wrapper.scrollTop(),
-						speed 	= ( 'undefined' !== typeof ee.Offcanvas.elementSettings.anchor_navigation_speed.size ) ? ee.Offcanvas.elementSettings.anchor_navigation_speed.size : 0;
+						speed 	= ( 'undefined' !== typeof ee.Offcanvas.elementSettings.anchor_navigation_speed.size ) ? ee.Offcanvas.elementSettings.anchor_navigation_speed.size : 0;						
 
 					if ( ! $el.length )
 						return;
+
+					var top = $el.offset().top + $wrapper.scrollTop();
 
 					$link.on( 'click', function( e ) {
 						e.preventDefault();
@@ -906,9 +928,9 @@
 				// Get current scroll
 				var _scroll = $window.scrollTop();
 
-				$html.css( { 'height' : '100%' } );
+				$wrapper.animate({ scrollTop: _scroll }, 0 );
 
-				$wrapper.scrollTop( _scroll ).on( 'scroll', function() {
+				$wrapper.on( 'scroll', function() {
 					$overlay.css({
 						'top' : $wrapper.scrollTop(),
 					});
@@ -918,10 +940,8 @@
 			ee.Offcanvas.removeOverflows = function() {
 				var _scroll = $wrapper.scrollTop();
 
-				$html.css( { 'height' : '' } );
-
-				$wrapper.scrollTop( 0 );
-				$window.scrollTop( _scroll );
+				$window.animate({ scrollTop: _scroll }, 0 );
+				$wrapper.animate({ scrollTop: 0 }, 0 );
 			};
 
 			ee.Offcanvas.getClickedTriggerId = function( $trigger ) {
@@ -2182,16 +2202,17 @@
 			var $element = $scope,
 				instance = $scope.data( 'parallaxElement' ),
 				parallaxElementArgs = {
-					type 	: ee.ParallaxElement.elementSettings.parallax_element_type,
-					invert 	: 'yes' === ee.ParallaxElement.elementSettings.parallax_element_invert,
-					scroll 	: {
-						relative : ee.ParallaxElement.elementSettings.parallax_element_relative,
+					type 			: ee.ParallaxElement.elementSettings.parallax_element_type,
+					invert 			: 'yes' === ee.ParallaxElement.elementSettings.parallax_element_invert,
+					moveOutside 	: 'yes' === ee.ParallaxElement.elementSettings.parallax_off_viewport,
+					scroll 			: {
+						relative 	: ee.ParallaxElement.elementSettings.parallax_element_relative,
 					},
-					mouse 	: {
-						relative : ee.ParallaxElement.elementSettings.parallax_element_pan_relative,
-						axis 	 : ee.ParallaxElement.elementSettings.parallax_element_pan_axis,
+					mouse 			: {
+						relative 	: ee.ParallaxElement.elementSettings.parallax_element_pan_relative,
+						axis 	 	: ee.ParallaxElement.elementSettings.parallax_element_pan_axis,
 					},
-					speed 	: {},
+					speed 			: {},
 				};;
 
 			ee.ParallaxElement.maybeDestroy = function() {
@@ -2328,7 +2349,11 @@
 					timelineArgs.scope = window.elementor.$previewContents;
 				}
 
-				$timeline.timeline( timelineArgs );
+				if ( 'undefined' !== typeof ee.Timeline.elementSettings.line_location && ee.Timeline.elementSettings.line_location.size ) {
+					timelineArgs.lineLocation = ee.Timeline.elementSettings.line_location.size;
+				}
+
+				$timeline.eeTimeline( timelineArgs );
 			};
 
 			ee.Timeline.init();
@@ -2379,6 +2404,7 @@
 
 			var $images = $scope.find('.ee-image-comparison'),
 				imageComparisonArgs = {
+					animation 		: 'yes' === ee.ImageComparison.elementSettings.entrance_animation,
 					clickToMove 	: 'yes' === ee.ImageComparison.elementSettings.click_to_move,
 					clickLabels 	: 'yes' === ee.ImageComparison.elementSettings.click_labels,
 					animateClick 	: 'yes' === ee.ImageComparison.elementSettings.click_animate,
@@ -2538,7 +2564,7 @@
 
 		CircleProgress : function( $scope, $ ) {
 
-			ee.CircleProgress.elementSettings 	= ee.getElementSettings( $scope );
+			var elementSettings = ee.getElementSettings( $scope );
 
 			var $circle 		= $scope.find( '.ee-circle-progress' ),
 				$value 			= $circle.find( '.ee-circle-progress__value .value' ),
@@ -2550,59 +2576,59 @@
 				_decimals 		= ElementorExtrasUtils.countDecimals( _value ),
 				cpArgs 			= {
 					value 		: 0.75,
-					reverse 	: 'yes' === ee.CircleProgress.elementSettings.reverse,
-					lineCap		: ee.CircleProgress.elementSettings.lineCap,
+					reverse 	: 'yes' === elementSettings.reverse,
+					lineCap		: elementSettings.lineCap,
 					startAngle 	: -Math.PI,
 					animation 	: {
-						easing 	: ee.CircleProgress.elementSettings.easing,
+						easing 	: elementSettings.easing,
 					},
 				};
 
 			ee.CircleProgress.init = function() {
 
-				if ( ee.CircleProgress.elementSettings.value_max ) {
-					_max_value = ee.CircleProgress.elementSettings.value_max;
+				if ( elementSettings.value_max ) {
+					_max_value = elementSettings.value_max;
 				}
 
-				if ( 'undefined' !== typeof ee.CircleProgress.elementSettings.value_decimal_move ) {
-					_move_decimal = ee.CircleProgress.elementSettings.value_decimal_move.size * -1;
+				if ( 'undefined' !== typeof elementSettings.value_decimal_move ) {
+					_move_decimal = elementSettings.value_decimal_move.size * -1;
 				}
 
 				if ( 'undefined' !== typeof _value ) {
 
-					if ( 'percentage' === ee.CircleProgress.elementSettings.value_progress ) {
+					if ( 'percentage' === elementSettings.value_progress ) {
 						_value = _value / 100;
-					} else if ( 'absolute' === ee.CircleProgress.elementSettings.value_progress ) {
+					} else if ( 'absolute' === elementSettings.value_progress ) {
 						_value = _value / _max_value;
 					}
 
 					cpArgs.value = _value;
 				}
 
-				if ( ee.CircleProgress.elementSettings.size.size ) {
-					cpArgs.size = ee.CircleProgress.elementSettings.size.size;
+				if ( elementSettings.size.size ) {
+					cpArgs.size = elementSettings.size.size;
 				}
 
-				if ( ee.CircleProgress.elementSettings.thickness.size ) {
+				if ( elementSettings.thickness.size ) {
 
 					// Prevent thickness from going over the radius value of the circle
-					if ( ee.CircleProgress.elementSettings.thickness.size > ( ee.CircleProgress.elementSettings.size.size / 2 ) ) {
-						cpArgs.thickness = ee.CircleProgress.elementSettings.size.size / 2;
+					if ( elementSettings.thickness.size > ( elementSettings.size.size / 2 ) ) {
+						cpArgs.thickness = elementSettings.size.size / 2;
 					} else {
-						cpArgs.thickness = ee.CircleProgress.elementSettings.thickness.size;
+						cpArgs.thickness = elementSettings.thickness.size;
 					}
 				}
 
-				if ( ee.CircleProgress.elementSettings.angle.size ) {
-					cpArgs.startAngle = cpArgs.startAngle + ee.CircleProgress.elementSettings.angle.size;
+				if ( elementSettings.angle.size ) {
+					cpArgs.startAngle = cpArgs.startAngle + elementSettings.angle.size;
 				}
 
-				if ( ee.CircleProgress.elementSettings.emptyFill ) {
-					cpArgs.emptyFill = ee.CircleProgress.elementSettings.emptyFill;
+				if ( elementSettings.emptyFill ) {
+					cpArgs.emptyFill = elementSettings.emptyFill;
 				}
 
-				if ( ee.CircleProgress.elementSettings.duration.size ) {
-					cpArgs.animation.duration = ee.CircleProgress.elementSettings.duration.size;
+				if ( elementSettings.duration.size ) {
+					cpArgs.animation.duration = elementSettings.duration.size;
 				}
 
 				$circle.circleProgress( cpArgs ).on( 'circle-animation-progress', ee.CircleProgress.onProgress );
@@ -2629,7 +2655,7 @@
 			};
 
 			ee.CircleProgress.onProgress = function( event, progress, stepValue ) {
-				var _stepValue = ( 'percentage' === ee.CircleProgress.elementSettings.value_progress ) ? stepValue * 100 : _absolute * stepValue / _value;
+				var _stepValue = ( 'percentage' === elementSettings.value_progress ) ? stepValue * 100 : _absolute * stepValue / _value;
 					_stepValue = _stepValue.toFixed( _decimals );
 
 				if ( _move_decimal ) {
